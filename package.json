@@ -1,0 +1,46 @@
+{
+  "name": "aass",
+  "version": "0.0.1",
+  "description": "(Abstract) Asyncronous Strategy (Game) Server",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "grunt"
+  },
+  "dependencies": {
+    "express": "3.x",
+    "mongoose": "~3.8.0",
+    "q": "~0.9.7",
+    "mongoose-q": "0.0.4",
+    "async": "~0.2.9",
+    "notifier": "~0.1.1",
+    "passport": "latest",
+    "passport-local": "latest",
+    "connect-mongo": "latest",
+    "connect-flash": "latest",
+    "winston": "latest",
+    "forever": "*"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*",
+    "grunt-cli": "*",
+    "time-grunt": "*",
+    "grunt-simple-mocha": "~0.4.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-jshint": "~0.7.1",
+    "supertest": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/nik0kin/ProjectMule"
+  },
+  "author": "@nikpoklitar",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/nik0kin/ProjectMule/issues"
+  }
+}
