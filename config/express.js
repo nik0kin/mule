@@ -40,9 +40,10 @@ module.exports = function (app, config, passport) {
     app.use(express.cookieParser());
 
     // bodyParser should be above methodOverride
-    app.use(express.bodyParser());
+    app.use(express.json());
+    app.use(express.urlencoded());
     app.use(express.methodOverride());
-    /*
+
     // express/mongo session storage
     app.use(express.session({
       secret: 'mulejs',
@@ -61,6 +62,7 @@ module.exports = function (app, config, passport) {
 
     // should be declared after session and flash
    // app.use(helpers(pkg.name));
+    /*
 
     // adds CSRF support
     if (process.env.NODE_ENV !== 'test') {

@@ -37,7 +37,7 @@ fs.readdirSync(models_path).forEach(function (file) {
 });
 
 // bootstrap passport config
-//require('./config/passport')(passport,config);
+require('./config/passport')(passport, config);
 
 app = express();
 // express settings

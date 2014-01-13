@@ -5,8 +5,23 @@ var mongoose = require('mongoose'),
     winston = require('winston'),
     _ = require('underscore');
 
-exports.createUserHelper = function(parameters, callback){
-  var newUser = new User({accountName: parameters.accountName});
+var login = function (req, res) {
+  var redirectTo = req.session.returnTo ? req.session.returnTo : '/success'
+  delete req.session.returnTo
+  res.redirect(redirectTo)
+}
+
+//exports.signin = function (req, res) {}
+
+/**
+ * Auth callback
+ */
+
+exports.authCallback = login
+
+exports.createUserHelper = function(req, parameters, callback){
+  var newUser = new User({accountName: parameters.accountName, password: parameters.password});
+  newUser.provider = 'local'
   newUser.save(function (err,user) {
     if (err) {
       console.log("err: "+ err);
@@ -14,6 +29,7 @@ exports.createUserHelper = function(parameters, callback){
     }
     // saved!
     winston.log('info',"saved: "+user);
+
     if (typeof callback === "function")
       callback(err, user);
   });
@@ -25,9 +41,9 @@ exports.createUserHelper = function(parameters, callback){
 //body =   ?
 //query =  ?
 exports.createUser = function createUser(req, res){
-  var params = (req.params && req.params.length > 0 ? req.params : (req.query && !_.isEmpty(req.query) ? req.query : req.body));
+  var params = req.body;//(req.params && req.params.length > 0 ? req.params : (req.query && !_.isEmpty(req.query) ? req.query : req.body));
   console.log("params: " + params);
-  exports.createUserHelper(params, function(err, user){
+  exports.createUserHelper(req, params, function(err, user){
     var responseJSON = {
       status: 0,
       statusMsg: "Success",
@@ -38,6 +54,10 @@ exports.createUser = function createUser(req, res){
       return res.status(200).send(responseJSON);
     }
 
+    // manually login the user once successfully signed up
+    req.logIn(user, function(err) {
+      if (err) return next(err)
+    })
   });
 };
 //returns a query object
@@ -53,4 +73,20 @@ exports.getAllUsers = function getAllUsers(callback){
     });
 
 };
+
+
+/**
+ * Logout
+ */
+
+exports.logout = function (req, res) {
+  req.logout()
+  res.redirect('/public')
+}
+
+/**
+ * Session
+ */
+
+exports.session = login
 

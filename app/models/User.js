@@ -6,7 +6,40 @@
 
 */
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    crypto = require('crypto');
+
+
+var UserSchema = new mongoose.Schema({
+  accountName: {
+    type: String, 
+    validate: [validatePresenceOf, "an accountName is required"],
+    index: true
+  },
+  hashed_password: { type: String, default: '' },
+  salt: { type: String, default: '' },
+  authToken: { type: String, default: '' },
+  realname: {first: String, last: String},
+//  profilePicture: "NYI",
+  friends: [UserSchema]
+});
+
+/**
+ * Virtuals
+ */
+
+UserSchema
+  .virtual('password')
+  .set(function(password) {
+    this._password = password
+    this.salt = this.makeSalt()
+    this.hashed_password = this.encryptPassword(password)
+  })
+  .get(function() { return this._password })
+
+/**
+ * Validations
+ */
 
 function validatePresenceOf(value){
   if( value && value.length)
@@ -15,16 +48,61 @@ function validatePresenceOf(value){
     return false;
 }
 
-var UserSchema = new mongoose.Schema({
-  accountName: {
-    type: String, 
-    validate: [validatePresenceOf, "an accountName is required"],
-    index: true
+UserSchema.path('accountName').validate(function (_accountName) {
+  return _accountName.length
+}, 'accountName cannot be blank')
+
+UserSchema.path('hashed_password').validate(function (hashed_password) {
+  return hashed_password.length
+}, 'Password cannot be blank')
+
+/**
+ * Methods
+ */
+
+UserSchema.methods = {
+
+  /**
+   * Authenticate - check if the passwords are the same
+   *
+   * @param {String} plainText
+   * @return {Boolean}
+   * @api public
+   */
+
+  authenticate: function (plainText) {
+    return this.encryptPassword(plainText) === this.hashed_password
   },
-  password: String, //for now
-  realname: {first: String, last: String},
-//  profilePicture: "NYI",
-  friends: [UserSchema]
-});
-   
+
+  /**
+   * Make salt
+   *
+   * @return {String}
+   * @api public
+   */
+
+  makeSalt: function () {
+    return Math.round((new Date().valueOf() * Math.random())) + ''
+  },
+
+  /**
+   * Encrypt password
+   *
+   * @param {String} password
+   * @return {String}
+   * @api public
+   */
+
+  encryptPassword: function (password) {
+    if (!password) return ''
+    var encrypred
+    try {
+      encrypred = crypto.createHmac('sha1', this.salt).update(password).digest('hex')
+      return encrypred
+    } catch (err) {
+      return ''
+    }
+  }
+}
+
 module.exports = mongoose.model('User', UserSchema);

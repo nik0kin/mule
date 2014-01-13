@@ -74,7 +74,7 @@ var startServer = function(){
   app.get('/hello', serveHellos_api);
   app.put('/hello/:num', updateHellos_api);
   app.listen(3000);
-  console.log('Listening on port 3000');
+  console.log('Promises: Listening on port 3000');
 };
 
 fs.exists('hello.txt',function(exists){
