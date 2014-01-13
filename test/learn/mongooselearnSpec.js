@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
     should = require('should'),
     mongooselearn = require ('../../learn/mongooselearn.js');
 
-describe('User functions: ', function () {
+describe('learn: User functions: ', function () {
 /*  before(function(){
     //add one user
     mongooselearn.createUser({accountName: "db ghost"},function(){});

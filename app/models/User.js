@@ -18,7 +18,7 @@ function validatePresenceOf(value){
 var UserSchema = new mongoose.Schema({
   accountName: {
     type: String, 
-    validate: [validatePresenceOf, "an accountname is required"],
+    validate: [validatePresenceOf, "an accountName is required"],
     index: true
   },
   password: String, //for now

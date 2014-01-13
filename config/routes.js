@@ -24,6 +24,12 @@ var auth = require('./middlewares/authorization'),
 module.exports = function (app, passport) {
 
   // user routes
+  app.post('/users', users.createUser);
+
+
+
+
+
 /*  app.get('/login', users.login)
   app.get('/signup', users.signup)
   app.get('/logout', users.logout)

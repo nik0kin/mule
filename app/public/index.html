@@ -20,7 +20,7 @@
 
   <body>
 	<script type="text/javascript">
-   var contextPath = "";//"http://localhost:9590/td/";
+   var contextPath = "../";//"http://localhost:9590/td/";
    
    
    $(function() {
@@ -32,9 +32,9 @@
       if(password == undefined) password = "pw";
       $.ajax({
             type: "POST",
-            url: contextPath+"RegisterPlayer ",
+            url: contextPath+"users",
             data: { 
-               username: username,
+               accountName: username,
                password: password
             }
          }).done(function(data ) {

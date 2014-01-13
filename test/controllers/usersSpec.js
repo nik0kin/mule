@@ -18,21 +18,21 @@ describe('Controllers', function () {
         console.log(users);
       });
     });*/
-    describe('addUser: ', function(){
+    describe('createUser: ', function(){
       it('should execute a callback with a valid User object',function (done){
         var _accountName = "toodly_woodly";
-        users.createUser(
-          { 
+        users.createUserHelper(
+          {
             accountName: _accountName,
             password: "testoff"
           },function(err,user){
-            user.should.be.ok; 
+            user.should.be.ok;
             user.accountName.should.eql(_accountName);
             done();
           });
       });
       it('should fail when you dont pass an accountName',function(done){
-        users.createUser({
+        users.createUserHelper({
             password: "justpass"
           }, function(err,user){
             should(user).not.be.ok;
@@ -47,8 +47,8 @@ describe('Controllers', function () {
           userz.should.be.an.instanceOf(Array);
           userz.should.be.empty;
 
-          //now put a user in, and check if its there          
-          users.createUser({accountName:'fred',password: 'fredfish'},function(){
+          //now put a user in, and check if its there
+          users.createUserHelper({accountName:'fred',password: 'fredfish'},function(){
             users.getAllUsers(function (err, userz2){
               userz2.should.not.be.empty;
               userz2.pop().accountName.should.eql('fred');
@@ -58,7 +58,7 @@ describe('Controllers', function () {
         });
       });
       it('should return a Query object ', function(done){
-        users.createUser({accountName:'jeff',password: 'fej'},function(){
+        users.createUserHelper({accountName:'jeff',password: 'fej'},function(){
           var query = users.getAllUsers(function (err, users){});
 
           should(query).have.property('mongooseCollection');

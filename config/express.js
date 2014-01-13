@@ -30,7 +30,7 @@ module.exports = function (app, config, passport) {
 
 
   app.configure(function () {
-    /*    // expose package.json to views
+        // expose package.json to views
     app.use(function (req, res, next) {
       res.locals.pkg = pkg;
       next();
@@ -42,7 +42,7 @@ module.exports = function (app, config, passport) {
     // bodyParser should be above methodOverride
     app.use(express.bodyParser());
     app.use(express.methodOverride());
-
+    /*
     // express/mongo session storage
     app.use(express.session({
       secret: 'mulejs',
@@ -60,7 +60,7 @@ module.exports = function (app, config, passport) {
     app.use(flash());
 
     // should be declared after session and flash
-    //app.use(helpers(pkg.name));
+   // app.use(helpers(pkg.name));
 
     // adds CSRF support
     if (process.env.NODE_ENV !== 'test') {
@@ -71,8 +71,8 @@ module.exports = function (app, config, passport) {
         res.locals.csrf_token = req.csrfToken();
         next();
       });
-    }*/
-
+    }
+     */
     // routes should be at the last
     app.use(app.router);
 
@@ -80,7 +80,7 @@ module.exports = function (app, config, passport) {
     // is a 404. this is somewhat silly, but
     // valid, you can do whatever you like, set
     // properties, use instanceof etc.
-  /*  app.use(function(err, req, res, next){
+    /*app.use(function(err, req, res, next){
       // treat as 404
       if (err.message && (~err.message.indexOf('not found') || (~err.message.indexOf('Cast to ObjectId failed')))) {
         return next();
@@ -92,19 +92,19 @@ module.exports = function (app, config, passport) {
 
       // error page
       res.status(500).render('500', { error: err.stack });
-    });
-*/
+    });*/
+/*
     // assume 404 since no middleware responded
     app.use(function(req, res, next){
       res.status(404).render('404', {
         url: req.originalUrl,
         error: 'Not found'
       });
-    });
+    });*/
   });
 
   // development env config
-  app.configure('development', function () {
+ // app.configure('development', function () {
     app.locals.pretty = true;
-  });
+ // });
 };
