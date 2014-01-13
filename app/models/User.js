@@ -18,10 +18,10 @@ var UserSchema = new mongoose.Schema({
   },
   hashed_password: { type: String, default: '' },
   salt: { type: String, default: '' },
-  authToken: { type: String, default: '' },
-  realname: {first: String, last: String},
+  authToken: { type: String, default: '' },       //is this used?
+  realname: {first: String, last: String}
 //  profilePicture: "NYI",
-  friends: [UserSchema]
+//  friends: [UserSchema]
 });
 
 /**

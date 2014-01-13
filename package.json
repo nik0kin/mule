@@ -8,7 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "grunt"
+    "test": "grunt",
+    "debug": "node --debug server.js"
   },
   "dependencies": {
     "express": "3.x",

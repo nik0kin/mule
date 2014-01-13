@@ -1,6 +1,8 @@
 winston_log.log
 .idea
 node_modules
+*.iml
+
 
 #auto below this
 
