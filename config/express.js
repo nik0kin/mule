@@ -104,7 +104,9 @@ module.exports = function (app, config, passport) {
       });
     });*/
   });
-
+    app.get('*', function (req, res) {
+      res.send("<b>mule</b><br>" + req.originalUrl + " : loooooooooool 404");
+    });
   // development env config
  // app.configure('development', function () {
     app.locals.pretty = true;

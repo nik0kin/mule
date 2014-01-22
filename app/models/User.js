@@ -11,9 +11,9 @@ var mongoose = require('mongoose'),
 
 
 var UserSchema = new mongoose.Schema({
-  accountName: {
+  username: {
     type: String, 
-    validate: [validatePresenceOf, "an accountName is required"],
+    validate: [validatePresenceOf, "an username is required"],
     index: true
   },
   hashed_password: { type: String, default: '' },
@@ -48,9 +48,9 @@ function validatePresenceOf(value){
     return false;
 }
 
-UserSchema.path('accountName').validate(function (_accountName) {
-  return _accountName.length
-}, 'accountName cannot be blank')
+UserSchema.path('username').validate(function (_username) {
+  return _username && _username.length
+}, 'username cannot be blank')
 
 UserSchema.path('hashed_password').validate(function (hashed_password) {
   return hashed_password.length

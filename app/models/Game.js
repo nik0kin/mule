@@ -17,9 +17,9 @@ var GameSchema = new mongoose.Schema({
   name: {type: String, default: "Unnamed Game"},
   location: { x: Number, y: Number },
   numberOfPlayers: { type: Number, default: 0 },
-  gameStatus: {type: Enum, default: 0},
+//  gameStatus: {type: Enum, default: 0},
   turnNumber: {type: Number, default: 0},        //open, inprogress, finished
-  map: {type: null },
+//  map: {type: null },
   currentLocalIDCounter: {type: Number, default: 0} //counter for id's of all units of the game
 });
 

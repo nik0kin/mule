@@ -1,15 +1,17 @@
+var _ = require('underscore'),
+  mongoose = require('mongoose'),
+  winston = require('winston');
+
+var utils = require('../utils');
+    User = mongoose.model('User');
 
 
-var mongoose = require('mongoose'),
-    User = mongoose.model('User'),
-    winston = require('winston'),
-    _ = require('underscore');
 
 var login = function (req, res) {
-  var redirectTo = req.session.returnTo ? req.session.returnTo : '/success'
-  delete req.session.returnTo
-  res.redirect(redirectTo)
-}
+  var redirectTo = req.session.returnTo ? req.session.returnTo : '/success';
+  delete req.session.returnTo;
+  res.redirect(redirectTo);
+};
 
 //exports.signin = function (req, res) {}
 
@@ -17,15 +19,16 @@ var login = function (req, res) {
  * Auth callback
  */
 
+
 exports.authCallback = login
 
-exports.createUserHelper = function(req, parameters, callback){
-  var newUser = new User({accountName: parameters.accountName, password: parameters.password});
-  newUser.provider = 'local'
+exports.createUserHelper = function(parameters, callback){
+  var newUser = new User({username: parameters.username, password: parameters.password});
+  newUser.provider = 'local';
   newUser.save(function (err,user) {
     if (err) {
       console.log("err: "+ err);
-      return callback(err,user); //    return handleError(err);
+      return callback && callback(err,user); //    return handleError(err);
     }
     // saved!
     winston.log('info',"saved: "+user);
@@ -39,18 +42,29 @@ exports.createUserHelper = function(req, parameters, callback){
 
 //params = ?
 //body =   ?
-//query =  ?
+//query =  /users?thiswould=beaquery
 exports.createUser = function createUser(req, res){
-  var params = req.body;//(req.params && req.params.length > 0 ? req.params : (req.query && !_.isEmpty(req.query) ? req.query : req.body));
-  console.log("params: " + params);
-  exports.createUserHelper(req, params, function(err, user){
-    var responseJSON = {
-      status: 0,
-      statusMsg: "Success",
-      token: ""
-    };
+  var responseJSON = {
+    originalURL : req.originalUrl,
+    status: 0,
+    statusMsg: "Success",
+    token: ""
+  };
+
+  //(req.params && req.params.length > 0 ? req.params : (req.query && !_.isEmpty(req.query) ? req.query : req.body));
+  var params = utils.validateJSONBody(req.body,{username: true, password : true}, function(missingKey){
+    responseJSON.status = -1;
+    responseJSON.statusMsg = "Missing: " + missingKey + " parameter";
+    return res.status(400).send(responseJSON);
+  });
+
+  console.log( "params: " + JSON.stringify(params) );
+  exports.createUserHelper(params, function(err, user){
+
     if (!err){
-      responseJSON.token = user.accountName;
+      responseJSON.token = user.username;
+console.log("No way:")
+console.log(user)
       return res.status(200).send(responseJSON);
     }
 
@@ -62,7 +76,7 @@ exports.createUser = function createUser(req, res){
 };
 //returns a query object
 exports.getAllUsers = function getAllUsers(callback){
-  return User.find({},'accountName password',
+  return User.find({},'username password',
     function (err, users) {
 
       if (err){

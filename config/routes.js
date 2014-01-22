@@ -23,22 +23,31 @@ var auth = require('./middlewares/authorization'),
 
 module.exports = function (app, passport) {
 
+
+  ////////// DATA MODELS //////////
   // user routes
   app.post('/users', users.createUser);
 
 
+  ////////// ETC ////////////
 
+  // both login
+  app.post('/LoginAuth', passport.authenticate('local', {
+    failureRedirect: '/failure',
+    failureFlash: 'Invalid email or password.'
+  }), users.session);
 
+  app.post('/users/session',
+    passport.authenticate('local', {
+      failureRedirect: '/failure',
+      failureFlash: 'Invalid email or password.'
+    }), users.session);
 
  //app.get('/login', users.login)
   /*  app.get('/signup', users.signup)
   app.get('/logout', users.logout)
   app.post('/users', users.create)*/
-  app.post('/users/session',
-    passport.authenticate('local', {
-      failureRedirect: '/failure',
-      failureFlash: 'Invalid email or password.'
-    }), users.session)
+
   /*app.get('/users/:userId', users.show)
   app.get('/auth/facebook',
     passport.authenticate('facebook', {

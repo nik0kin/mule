@@ -20,18 +20,18 @@ describe('Controllers', function () {
     });*/
     describe('createUser: ', function(){
       it('should execute a callback with a valid User object',function (done){
-        var _accountName = "toodly_woodly";
+        var _username = "toodly_woodly";
         users.createUserHelper(
           {
-            accountName: _accountName,
+            username: _username,
             password: "testoff"
           },function(err,user){
             user.should.be.ok;
-            user.accountName.should.eql(_accountName);
+            user.username.should.eql(_username);
             done();
           });
       });
-      it('should fail when you dont pass an accountName',function(done){
+      it('should fail when you dont pass an username',function(done){
         users.createUserHelper({
             password: "justpass"
           }, function(err,user){
@@ -48,24 +48,24 @@ describe('Controllers', function () {
           userz.should.be.empty;
 
           //now put a user in, and check if its there
-          users.createUserHelper({accountName:'fred',password: 'fredfish'},function(){
+          users.createUserHelper({username:'fred',password: 'fredfish'},function(){
             users.getAllUsers(function (err, userz2){
               userz2.should.not.be.empty;
-              userz2.pop().accountName.should.eql('fred');
+              userz2.pop().username.should.eql('fred');
               done();
             });
           });
         });
       });
       it('should return a Query object ', function(done){
-        users.createUserHelper({accountName:'jeff',password: 'fej'},function(){
+        users.createUserHelper({username:'jeff',password: 'fej'},function(){
           var query = users.getAllUsers(function (err, users){});
 
           should(query).have.property('mongooseCollection');
 
-          query.findOne({accountName:'jeff'},function(err,jeff){
-            jeff.accountName.should.be.ok;
-            jeff.accountName.should.eql('jeff');
+          query.findOne({username:'jeff'},function(err,jeff){
+            jeff.username.should.be.ok;
+            jeff.username.should.eql('jeff');
           });
           done();
         });
@@ -74,7 +74,7 @@ describe('Controllers', function () {
     after(function(done){
       require('./helper').clearDb(function(){
         console.log('now here');
-        mongooselearn.createUser({accountName:'bill'},function(err){
+        mongooselearn.createUser({username:'bill'},function(err){
           if(err) console.log(err);
           console.log('created user');
           done();
