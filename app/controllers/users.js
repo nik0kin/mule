@@ -58,7 +58,7 @@ exports.createUser = function createUser(req, res){
     return res.status(400).send(responseJSON);
   });
 
-  console.log( "params: " + JSON.stringify(params) );
+  console.log( "User attempting to login: params: " + JSON.stringify(params) );
   exports.createUserHelper(params, function(err, user){
 
     if (!err){
