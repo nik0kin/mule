@@ -95,18 +95,18 @@ module.exports = function (app, config, passport) {
       // error page
       res.status(500).render('500', { error: err.stack });
     });*/
-/*
+
     // assume 404 since no middleware responded
-    app.use(function(req, res, next){
+    /*app.use(function(req, res, next){
       res.status(404).render('404', {
         url: req.originalUrl,
         error: 'Not found'
       });
     });*/
   });
-    app.get('*', function (req, res) {
+    /*app.get('*', function (req, res) {
       res.send("<b>mule</b><br>" + req.originalUrl + " : loooooooooool 404");
-    });
+    });*/
   // development env config
  // app.configure('development', function () {
     app.locals.pretty = true;

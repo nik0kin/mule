@@ -9,7 +9,8 @@ module.exports = function (grunt) {
     pkg: require('./package.json'),
     jshint: {
       source: {
-        src: ['server.js','*.js','app/**/*.js','config/**/*.js','learn/**/*.js']
+        src: ['server.js','app/**/*.js','config/**/*.js','learn/**/*.js'],
+        ignores: ['src_old/**/*.js']
       },
       tests: {
         src: ['test/**/*.js']

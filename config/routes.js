@@ -25,9 +25,11 @@ module.exports = function (app, passport) {
 
 
   ////////// DATA MODELS //////////
-  // user routes
+  // user //
   app.post('/users', users.createUser);
 
+  // games //
+  require('../app/controllers/games/routes')(app);
 
   ////////// ETC ////////////
 
