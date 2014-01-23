@@ -4,11 +4,19 @@ var mongoose = require('mongoose'),
     mongooselearn = require ('../../learn/mongooselearn.js');
 
 describe('learn: User functions: ', function () {
+  console.log("WOW A");
 /*  before(function(){
     //add one user
     mongooselearn.createUser({accountName: "db ghost"},function(){});
   });*/
   describe('addUser: ', function(){
+    beforeEach(function(done){
+      User.collection.remove(function(err){
+        if (err) return done(err);
+          done();
+      });
+    });
+
     it('should execute a callback with a valid User object',function (done){
       var _accountName = "toodly_woodly";
       mongooselearn.createUser(
@@ -35,6 +43,12 @@ describe('learn: User functions: ', function () {
     });
   });
   describe('getAllUsers: ',function(){
+    beforeEach(function(done){
+      User.collection.remove(function(err){
+        if (err) return done(err);
+          done();
+      });
+    });
     it('should have a callback([users])', function(done){
       mongooselearn.getAllUsers(function(users){
         users.should.be.an.instanceOf(Array);

@@ -63,8 +63,6 @@ exports.createUser = function createUser(req, res){
 
     if (!err){
       responseJSON.token = user.username;
-console.log("No way:")
-console.log(user)
       return res.status(200).send(responseJSON);
     }
 
