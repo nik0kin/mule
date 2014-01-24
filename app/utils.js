@@ -6,25 +6,79 @@
 
 var _ = require("underscore");
 
-exports.validateJSONBody = function(bodyJSON, requiredParams, missingParamCallback){
+/*
+bodyJSON example:
+  {"booleankey" : true }
+
+ parameterSpecs example:
+  {
+    booleankey: {
+      required: true,
+      type: "Boolean"
+    }
+  }
+*/
+exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallback){
   if (!bodyJSON) throw "undefined bodyJSON";
 
-  if (requiredParams && !missingParamCallback) throw "need callback, if there is required Parameters";
+  if (parameterSpecs && !missingParamCallback) throw "need callback, if there is required Parameters";
 
-  var params = {};
+  var validatedParams = {};
 
-  _.each(bodyJSON, function (value, key){
-    if(!requiredParams || (requiredParams && requiredParams[key]))
-    params[key] = value;
+  _.each(bodyJSON, function (bodyValue, bodyKey){
+    if(!parameterSpecs || (parameterSpecs && !parameterSpecs[bodyKey]) ) {
+      validatedParams[bodyKey] = bodyValue;
+      return;
+    }
 
-    if(requiredParams && requiredParams[key])
-      requiredParams[key] = false;
+    var paramSpec = parameterSpecs[bodyKey];
+
+    if (paramSpec === true) { //depreciated
+      parameterSpecs[bodyKey] = false; //mark as done
+      validatedParams[bodyKey] = bodyValue;
+      return;
+    }
+
+    var validateBodyValueWithParam = function(parameterSpec) {
+      //if its not defined ( .required), or required === true TODO refactor this lol
+      //  then validate it
+      if(typeof parameterSpec.required === 'undefined' || parameterSpec.required === true || parameterSpec.required === false){
+        switch (parameterSpec.type) {
+          case "Boolean":
+            if (bodyValue === "true")
+              bodyValue = true;
+            else if(bodyValue === "false")
+              bodyValue = false;
+
+            if (typeof bodyValue === "boolean")  {
+            } else {
+              //call error
+              missingParamCallback(bodyKey)
+            }
+            break;
+          case "Number":
+            break;
+          case "String":
+            break;
+        }
+        validatedParams[bodyKey] = bodyValue;
+      }else{//if its required and doesnt exist,
+        //call error
+        missingParamCallback(bodyKey)
+      }
+
+    };
+
+    if (typeof paramSpec === "object") {
+      validateBodyValueWithParam(paramSpec);
+    }
+
   });
 
-  _.each(requiredParams, function(value, key){
-    if(value)
+  _.each(parameterSpecs, function(value, key){
+    if(value === true)//depriciated
       missingParamCallback(key);
   });
 
-  return params;
+  return validatedParams;
 };
