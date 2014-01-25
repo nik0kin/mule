@@ -44,6 +44,7 @@ exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallba
       //  then validate it
       if(typeof parameterSpec.required === 'undefined' || parameterSpec.required === true || parameterSpec.required === false){
         switch (parameterSpec.type) {
+          case "boolean":
           case "Boolean":
             if (bodyValue === "true")
               bodyValue = true;
@@ -53,18 +54,34 @@ exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallba
             if (typeof bodyValue === "boolean")  {
             } else {
               //call error
-              missingParamCallback(bodyKey)
+              return missingParamCallback(bodyKey)
             }
             break;
+          case "number":
           case "Number":
+            if (_.isNumber(bodyValue))
+              break;
+            else if (!_.isNaN(Number(bodyValue))){
+              bodyValue = Number(bodyValue);
+              break;
+            } else {
+              //call error
+              return missingParamCallback(bodyKey)
+            }
+
             break;
+          case "string":
           case "String":
+            if (_.isString(bodyValue)){
+            }else
+              return missingParamCallback(bodyKey)
+
             break;
         }
         validatedParams[bodyKey] = bodyValue;
       }else{//if its required and doesnt exist,
         //call error
-        missingParamCallback(bodyKey)
+        return missingParamCallback(bodyKey)
       }
 
     };
