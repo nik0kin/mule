@@ -8,6 +8,8 @@ var _ = require('underscore'),
   mongoose = require('mongoose'),
   winston = require('winston');
 
+var fs = require('fs');
+
 var utils = require('../../utils');
 var gameHelper = require('./helper');
 
@@ -32,7 +34,10 @@ exports.create = function(req, res){
     statusMsg: "Success",
     gameID: ""
   };
-                                   console.log("attempting to crate: " + req.body);
+
+  console.log("attempting to crate: ");
+  console.log(req.body);
+
   var params = utils.validateJSONBody(req.body,{gameConfig : true}, function(){
     console.log( "User attempting to create new game: params: " + JSON.stringify(params) );
     gameHelper.create(params, function(err, user){

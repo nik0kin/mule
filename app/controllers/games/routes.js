@@ -7,7 +7,7 @@ var auth = require('../../../config/middlewares/authorization'),//TODO hmmmmmmmm
 
 module.exports = function (app){
   app.get ('/games', gameController.index)
-  app.post('/games', auth.requiresLogin, gameController.create);
+  app.post('/games', /*auth.requiresLogin,*/ gameController.create);
   app.get ('/games/:id', gameController.read);
   app.put ('/games/:id', auth.requiresLogin, gameController.update);  //TODO change auth function
   app.del ('/games/:id', auth.requiresLogin, gameController.destroy); // ^^

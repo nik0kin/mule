@@ -35,7 +35,6 @@ describe('API', function () {
     beforeEach(function(done){
       User.collection.remove(function(err){
         if (err) return done(err);
-
         registerAndLogin(done);
       });
     });

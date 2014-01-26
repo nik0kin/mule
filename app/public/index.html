@@ -57,6 +57,33 @@
 			alert("createUser Fail");
 		});
    }
+   function createGame(){//test create game
+       $.ajax({
+           type: "POST",
+           url: contextPath+"games",
+           data: {
+               gameConfig : { "lol" : "really"}
+           }
+       }).done(function(data ) {
+
+                   console.log( "Data Recieved: " + data );
+
+                   data = JSON.parse(data);
+
+                   if(data.status != 0){
+                       alert("createGame failed: "+data.statusMsg);
+                       return;
+                   }
+                   token = data.token;
+
+                   console.log("token: "+token);
+
+
+
+               }).fail(function(msg){
+                   alert("createGame Fail");
+               });
+   }
    
    function tryLogin(){
       var username = $("#usernameText").val();
@@ -224,8 +251,9 @@
       <input id="usernameText" type="text" name="username"> <br>
       Password: (NYI)
       <input id="passwordText" type="text" name="password"> <br>
-    <input type="button" onclick="tryLogin();" value="Login">
     <input type="button" onclick="createUser();" value="Register">
+    <input type="button" onclick="tryLogin();" value="Login">
+    <input type="button" onclick="createGame();" value="TRYGAME">
     <br><br>
     <h3>Start Game</h3><br>
       GameName: 
