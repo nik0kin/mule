@@ -45,7 +45,7 @@ module.exports = function (app, passport) {
       failureFlash: 'Invalid email or password.'
     }), users.session);
 
- //app.get('/login', users.login)
+ //app.get('/login', users.login);
   /*  app.get('/signup', users.signup)
   app.get('/logout', users.logout)
   app.post('/users', users.create)*/

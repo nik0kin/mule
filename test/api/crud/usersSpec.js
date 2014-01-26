@@ -1,8 +1,10 @@
 /*jshint expr: true*/
-var mongoose = require('mongoose'),
-  should = require('should');
-  User = require('../../app/models/User');
- var app = require ('../../server.js');
+
+require('mongoose');
+
+var should = require('should');
+  User = require('../../../app/models/User');
+var app = require ('../../../server.js');
 
 var request = require('supertest');
 
@@ -22,7 +24,7 @@ describe('API', function () {
         request(app) //"http://localhost:3130")
           .post('/users')
           .send({username: "fart", password: "piss"})
-          //.set('Accept', 'application/json')
+          .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res){
             if (err) return done(err);
@@ -30,7 +32,7 @@ describe('API', function () {
           });
       });
       it('TMP: should send a token which is your user name', function(done){
-        request("http://localhost:3130")
+        request(app)
           .post('/users')
           .send(dumbAccount)
           .set('Accept', 'application/json')

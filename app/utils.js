@@ -18,12 +18,14 @@ bodyJSON example:
     }
   }
 */
-exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallback){
+exports.validateJSONBody = function(bodyJSON, parameterSpecs, allSuccessfulCallback, missingParamCallback){
   if (!bodyJSON) throw "undefined bodyJSON";
 
   if (parameterSpecs && !missingParamCallback) throw "need callback, if there is required Parameters";
 
   var validatedParams = {};
+
+  var allGood = true;
 
   _.each(bodyJSON, function (bodyValue, bodyKey){
     if(!parameterSpecs || (parameterSpecs && !parameterSpecs[bodyKey]) ) {
@@ -54,6 +56,7 @@ exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallba
             if (typeof bodyValue === "boolean")  {
             } else {
               //call error
+              allGood = false;
               return missingParamCallback(bodyKey)
             }
             break;
@@ -66,6 +69,7 @@ exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallba
               break;
             } else {
               //call error
+              allGood = false;
               return missingParamCallback(bodyKey)
             }
 
@@ -73,14 +77,16 @@ exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallba
           case "string":
           case "String":
             if (_.isString(bodyValue)){
-            }else
+            }else{
+              allGood = false;
               return missingParamCallback(bodyKey)
-
+            }
             break;
         }
         validatedParams[bodyKey] = bodyValue;
       }else{//if its required and doesnt exist,
         //call error
+        allGood = false;
         return missingParamCallback(bodyKey)
       }
 
@@ -93,9 +99,14 @@ exports.validateJSONBody = function(bodyJSON, parameterSpecs, missingParamCallba
   });
 
   _.each(parameterSpecs, function(value, key){
-    if(value === true)//depriciated
+    if(value === true){//depriciated
       missingParamCallback(key);
+      allGood = false;
+    }
   });
+
+  if (allGood && typeof allSuccessfulCallback === "function")
+    allSuccessfulCallback(validatedParams);
 
   return validatedParams;
 };

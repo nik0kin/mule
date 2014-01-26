@@ -17,8 +17,8 @@ exports.index = function(parameters, callback){
 };
 
 exports.create = function(parameters, callback){
-
-
+  console.log("doing create stuff");
+  callback()
 };
 
 exports.read = function(parameters, callback){

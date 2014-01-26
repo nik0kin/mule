@@ -28,7 +28,7 @@
   });
    function createUser(){
       var username = $("#usernameText").val();
-      var password = $("passwordText").val();
+      var password = $("#passwordText").val();
       if(password == undefined) password = "pw";
       $.ajax({
             type: "POST",
@@ -60,12 +60,13 @@
    
    function tryLogin(){
       var username = $("#usernameText").val();
+       var password = $("#passwordText").val();
       $.ajax({
             type: "POST",
             url: contextPath+"LoginAuth",
             data: { 
                username: username,
-               password: "pw"
+               password: password
             }
          }).done(function(data ) {
             
@@ -74,7 +75,7 @@
             data = JSON.parse(data);
             
             if(data.status != 0){
-               alert("login failed: "+data.statusMsg);
+               alert("login failed: "+data);
                return;
             }
             token = data.token;
@@ -84,7 +85,7 @@
             
 
    	}).fail(function(msg){
-			alert("login Fail");
+			alert("login Fail: " +msg.body);
 		});
       
       
@@ -222,7 +223,7 @@
       Username: 
       <input id="usernameText" type="text" name="username"> <br>
       Password: (NYI)
-      <input id="usernameText" type="text" name="username"> <br>
+      <input id="passwordText" type="text" name="password"> <br>
     <input type="button" onclick="tryLogin();" value="Login">
     <input type="button" onclick="createUser();" value="Register">
     <br><br>

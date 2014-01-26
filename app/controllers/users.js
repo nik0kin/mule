@@ -8,9 +8,11 @@ var utils = require('../utils');
 
 
 var login = function (req, res) {
-  var redirectTo = req.session.returnTo ? req.session.returnTo : '/success';
-  delete req.session.returnTo;
-  res.redirect(redirectTo);
+  //var redirectTo = req.session.returnTo ? req.session.returnTo : '/success';
+  //delete req.session.returnTo;
+  res.status(200).send("yee");
+  //console.log("login result: " + redirectTo);
+  //res.redirect(redirectTo);
 };
 
 //exports.signin = function (req, res) {}
@@ -51,26 +53,29 @@ exports.createUser = function createUser(req, res){
     token: ""
   };
 
-  //(req.params && req.params.length > 0 ? req.params : (req.query && !_.isEmpty(req.query) ? req.query : req.body));
-  var params = utils.validateJSONBody(req.body,{username: true, password : true}, function(missingKey){
+  console.log("create ");
+  utils.validateJSONBody(req.body, {username: true, password : true}, function (params) {
+    console.log( "User attempting to register: params: " + JSON.stringify(params) );
+    exports.createUserHelper(params, function(err, user){
+      if (!err){
+        // manually login the user once successfully signed up
+        req.logIn(user, function(err) {
+          if (err) return next(err)
+        });
+
+        console.log(user.username +' created and logged in');
+        responseJSON.token = user.username;
+        return res.status(200).send(responseJSON);
+      } else {
+        console.log("login failed");
+      }
+    });
+  }, function(missingKey) {
     responseJSON.status = -1;
     responseJSON.statusMsg = "Missing: " + missingKey + " parameter";
     return res.status(400).send(responseJSON);
   });
 
-  console.log( "User attempting to login: params: " + JSON.stringify(params) );
-  exports.createUserHelper(params, function(err, user){
-
-    if (!err){
-      responseJSON.token = user.username;
-      return res.status(200).send(responseJSON);
-    }
-
-    // manually login the user once successfully signed up
-    req.logIn(user, function(err) {
-      if (err) return next(err)
-    })
-  });
 };
 //returns a query object
 exports.getAllUsers = function getAllUsers(callback){
