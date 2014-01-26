@@ -5,6 +5,7 @@
 
 exports.requiresLogin = function (req, res, next) {
   if (!req.isAuthenticated()) {
+    console.log("unauth: redirecting '"+req.originalUrl+"' to /login");
     req.session.returnTo = req.originalUrl;
     return res.redirect('/login');
   }

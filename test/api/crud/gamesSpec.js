@@ -2,6 +2,8 @@
  * utilsSpec.js
  *
  * Created by niko on 1/25/14.
+ *
+ * http://stackoverflow.com/questions/14001183/how-to-authenticate-supertest-requests-with-passport
  */
 var mongoose =require('mongoose');
 
@@ -16,20 +18,16 @@ var request = require('supertest');
 
 var serverIP = 'http://localhost:3130';
 
+var user1 = request.agent(serverIP);
+
 describe('API', function () {
   var fakeuser = {username: "nikolas", password: "poklitar"};
   var registerAndLogin = function (callback) {
-    request(app).post('/users').send(fakeuser).expect(200).end(function(err, res){
-      //console.log("register callback");
-      login(callback);
-    });
-  };
-  var login = function (callback) {
-    request(app).post('/LoginAuth').send(fakeuser).expect(200).end(function(err, res){
-      //console.log("login callback");
+    user1.post('/users').send(fakeuser).expect(200).end(function(err, res){
       callback();
     });
   };
+
   describe('Games: ', function() {
 
     beforeEach(function(done){
@@ -44,7 +42,7 @@ describe('API', function () {
 
     describe('POST /games', function() {
       it('respond with json', function(done) {
-        request(app) //"http://localhost:3130")
+        user1 //"http://localhost:3130")
           .post('/games')
           .send({gameConfig: {} })
           .set('Accept', 'application/json')
