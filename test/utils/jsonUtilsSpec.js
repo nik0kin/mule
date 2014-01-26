@@ -6,7 +6,7 @@
 
 var should = require("should");
 
-var utils = require("../app/utils");
+var utils = require("../../app/utils/jsonUtils");
 
 
 

@@ -10,7 +10,7 @@ var _ = require('underscore'),
 
 var fs = require('fs');
 
-var utils = require('../../utils');
+var utils = require('../../utils/jsonUtils');
 var gameHelper = require('./helper');
 
 exports.index = function(req, res){

@@ -2,7 +2,7 @@ var _ = require('underscore'),
   mongoose = require('mongoose'),
   winston = require('winston');
 
-var utils = require('../utils');
+var utils = require('../utils/jsonUtils');
     User = mongoose.model('User');
 
 
