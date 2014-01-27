@@ -4,109 +4,75 @@
  * Created by niko on 1/21/14.
  */
 
-var _ = require("underscore");
+var _ = require("underscore"),
+  Q = require('q');
+
+var help = require('./jsonUtilsHelper');
 
 /*
-bodyJSON example:
-  {"booleankey" : true }
+ bodyJSON example:
+ {"booleankey" : true }
 
  parameterSpecs example:
-  {
-    booleankey: {
-      required: true,
-      type: "Boolean"
-    }
-  }
-*/
-exports.validateJSONBody = function(bodyJSON, parameterSpecs, allSuccessfulCallback, missingParamCallback){
+ {
+ booleankey: {
+ required: true,
+ type: "Boolean"
+ }
+ }
+ */
+exports.validateJSONBody = function(bodyJSON, parameterSpecs, allSuccessfulCallback, unsuccessfulParamsCallback){
   if (!bodyJSON) throw "undefined bodyJSON";
 
-  if (parameterSpecs && !missingParamCallback) throw "need callback, if there is required Parameters";
+  if (parameterSpecs && !unsuccessfulParamsCallback) throw "need callback, if there is required Parameters";
 
   var validatedParams = {};
+  var problemParams = {};
 
-  var allGood = true;
+  var validationPromises = [];
 
-  _.each(bodyJSON, function (bodyValue, bodyKey){
-    if(!parameterSpecs || (parameterSpecs && !parameterSpecs[bodyKey]) ) {
+  if (!parameterSpecs){
+    //old i think?, we should always have a spec, (but required can be false for optional parameters)
+    _.each(bodyJSON, function (bodyValue, bodyKey){
       validatedParams[bodyKey] = bodyValue;
-      return;
-    }
+    });
+  } else {
+    _.each(parameterSpecs, function (specValue, specKey){
+      var bodyValue = bodyJSON[specKey];
 
-    var paramSpec = parameterSpecs[bodyKey];
-
-    if (paramSpec === true) { //depreciated
-      parameterSpecs[bodyKey] = false; //mark as done
-      validatedParams[bodyKey] = bodyValue;
-      return;
-    }
-
-    var validateBodyValueWithParam = function(parameterSpec) {
-      //if its not defined ( .required), or required === true TODO refactor this lol
-      //  then validate it
-      if(typeof parameterSpec.required === 'undefined' || parameterSpec.required === true || parameterSpec.required === false){
-        switch (parameterSpec.type) {
-          case "boolean":
-          case "Boolean":
-            if (bodyValue === "true")
-              bodyValue = true;
-            else if(bodyValue === "false")
-              bodyValue = false;
-
-            if (typeof bodyValue === "boolean")  {
-            } else {
-              //call error
-              allGood = false;
-              return missingParamCallback(bodyKey)
-            }
-            break;
-          case "number":
-          case "Number":
-            if (_.isNumber(bodyValue))
-              break;
-            else if (!_.isNaN(Number(bodyValue))){
-              bodyValue = Number(bodyValue);
-              break;
-            } else {
-              //call error
-              allGood = false;
-              return missingParamCallback(bodyKey)
-            }
-
-            break;
-          case "string":
-          case "String":
-            if (_.isString(bodyValue)){
-            }else{
-              allGood = false;
-              return missingParamCallback(bodyKey)
-            }
-            break;
-        }
-        validatedParams[bodyKey] = bodyValue;
-      }else{//if its required and doesnt exist,
-        //call error
-        allGood = false;
-        return missingParamCallback(bodyKey)
+      if (typeof parameterSpecs[specKey] !== "object") {
+        throw "no support for non object parameterSpecs"
       }
 
-    };
+      var paramSpec = parameterSpecs[specKey];
+      if (typeof paramSpec === "object") {
+        var newPromise = Q.promise(function(resolve, reject) {
+          help.validateBodyValueWithParam(specKey, bodyValue, paramSpec)
+            .done(function(value) {
+              validatedParams[specKey] = value;
+              resolve();
+            }, function(err) {
+              problemParams[specKey] = err;
+              resolve();
+            });
+        });
+        validationPromises.push(newPromise);
+      }
+    });
+  }
 
-    if (typeof paramSpec === "object") {
-      validateBodyValueWithParam(paramSpec);
-    }
+  Q.all(validationPromises)
+    .done(function(value){
+      //console.log("success: " + JSON.stringify(validatedParams));
+      //console.log("fail: " + JSON.stringify(problemParams));
 
-  });
+      if (!_.isEmpty(validatedParams) && _.isEmpty(problemParams) && typeof allSuccessfulCallback === "function")
+        allSuccessfulCallback(validatedParams);
 
-  _.each(parameterSpecs, function(value, key){
-    if(value === true){//depriciated
-      missingParamCallback(key);
-      allGood = false;
-    }
-  });
+      if (!_.isEmpty(problemParams) && typeof unsuccessfulParamsCallback === "function")
+        unsuccessfulParamsCallback(problemParams);
 
-  if (allGood && typeof allSuccessfulCallback === "function")
-    allSuccessfulCallback(validatedParams);
-
-  return validatedParams;
+    }, function(err){
+      throw "ohhhhhhhh shit" + err;
+    });
 };

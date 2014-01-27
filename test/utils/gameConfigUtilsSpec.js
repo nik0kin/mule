@@ -9,7 +9,7 @@ describe('Utils', function() {
   describe('gameConfigUtils: ', function() {
     describe('validate():', function() {
       it('should work', function(done) {
-        gameConfigUtils.validate(15)
+        gameConfigUtils.promiseToValidate(15)
           .then(function(value) {
             console.log(value);
             return value + value;

@@ -38,7 +38,7 @@ exports.create = function(req, res){
   console.log("attempting to crate: ");
   console.log(req.body);
 
-  var params = utils.validateJSONBody(req.body,{gameConfig : true}, function(){
+  var params = utils.validateJSONBody(req.body,{gameConfig : {required : true, type: 'object'}}, function(){
     console.log( "User attempting to create new game: params: " + JSON.stringify(params) );
     gameHelper.create(params, function(err, user){
       if (!err){
@@ -47,7 +47,7 @@ exports.create = function(req, res){
     });
   }, function(missingKey){
     responseJSON.status = -1;
-    responseJSON.statusMsg = "Err on: " + missingKey + " parameter";
+    responseJSON.statusMsg = "Err on: " + JSON.stringify(missingKey) + " parameter";
     return res.status(400).send(responseJSON);
   });
 };

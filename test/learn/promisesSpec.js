@@ -1,18 +1,24 @@
-/*jshint expr: true*/
-var app = require('../../learn/promises_without.js');
-var should = require('should');
-console.log('hello');
+/**
+ * Created by niko on 1/26/14.
+ */
 
-describe('Promises-Learn Functions:', function(){
-  describe('serveHellos:', function(){
-    it('should load', function(){
-      app.serveHellos.should.be.ok;
-    });
-    it('should call a callback with the responseString', function(){
-      app.serveHellos(function(err,responseString){
-        should(err).not.be.ok;
-        responseString.should.be.ok; 
+var plearn = require("../../learn/promises");
+
+describe('jsonUtilsHelpers:', function() {
+  it('should work', function(done) {
+    plearn.promiseMeChicken(true)
+      .done(function(value) {
+        done();
+      }, function(err) {
+        throw "incorect";
       });
-    });
+  });
+  it('shouldnt work', function(done) {
+    plearn.promiseMeChicken()
+      .done(function(value) {
+        throw "incorect";
+      }, function(err) {
+        done();
+      });
   });
 });

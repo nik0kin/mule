@@ -54,7 +54,7 @@ exports.createUser = function createUser(req, res){
   };
 
   console.log("create ");
-  utils.validateJSONBody(req.body, {username: true, password : true}, function (params) {
+  utils.validateJSONBody(req.body, {username: {required : true, type: 'string'}, password : {required : true, type: 'string'}}, function (params) {
     console.log( "User attempting to register: params: " + JSON.stringify(params) );
     exports.createUserHelper(params, function(err, user){
       if (!err){

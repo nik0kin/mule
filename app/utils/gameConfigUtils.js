@@ -23,7 +23,7 @@ var jsonUtils = require('./jsonUtils');
 
 
 //return a promise
-exports.validate = function(value) {
+exports.promiseToValidate = function(value) {
   var myPromise = Q.promise(function(resolve, reject){
     if (value > 0)
       resolve(value);

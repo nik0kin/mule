@@ -44,7 +44,7 @@ describe('API', function () {
       it('respond with json', function(done) {
         user1 //"http://localhost:3130")
           .post('/games')
-          .send({gameConfig: {} })
+          .send({gameConfig: {"test" : "test"} })
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res){
