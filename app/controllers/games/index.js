@@ -10,7 +10,8 @@ var fs = require('fs'),
   winston = require('winston');
 
 var Game = require('../../models/Game'),
-  utils = require('../../utils/jsonUtils'),
+  jsonUtils = require('../../utils/jsonUtils'),
+  gameConfigUtils = require('../../utils/gameConfigUtils'),
   gameHelper = require('./helper');
 
 var errorResponse = function (res) {
@@ -63,18 +64,19 @@ exports.create = function(req, res){
   console.log("attempting to crate: ");
   console.log(req.body);
 
-  var params = utils.validateJSONBody(req.body,{gameConfig : {required : true, type: 'object'}}, function(){
-    console.log( "User attempting to create new game: params: " + JSON.stringify(params) );
-    gameHelper.create(params, function (err, user){
-      if (!err){
-        return res.status(200).send(responseJSON);
-      }
+  gameConfigUtils.promiseToValidate(req.body.gameConfig)
+    .done(function (validatedParams) {
+      console.log( "User attempting to create new game: params: " + JSON.stringify(validatedParams) );
+      gameHelper.create(validatedParams, function (err, user){
+        if (!err){
+          return res.status(200).send(responseJSON);
+        }
+      });
+    }, function (err) {
+      responseJSON.status = -1;
+      responseJSON.statusMsg = err;
+      return res.status(400).send(responseJSON);
     });
-  }, function(missingKey){
-    responseJSON.status = -1;
-    responseJSON.statusMsg = "Err on: " + JSON.stringify(missingKey) + " parameter";
-    return res.status(400).send(responseJSON);
-  });
 };
 
 exports.read = function (req, res){

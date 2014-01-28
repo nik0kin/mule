@@ -29,6 +29,9 @@ exports.validateBodyValueWithParam = function(specKey, bodyValue, parameterSpec)
   //if its not defined ( .required), or required === true TODO add required
   //  then validate it
   return Q.promise(function(resolve, reject) {
+    if (typeof bodyValue === "undefined")
+      reject('missing')
+
     if(typeof parameterSpec.required === 'undefined' || parameterSpec.required === true || parameterSpec.required === false){
       switch (parameterSpec.type) {
         case "boolean":
@@ -38,7 +41,7 @@ exports.validateBodyValueWithParam = function(specKey, bodyValue, parameterSpec)
               resolve(value);
             }, function(err) {
               err["key"] = specKey;
-              resolve(err)
+              reject(err)
             });
           break;
         case "number":
@@ -48,7 +51,7 @@ exports.validateBodyValueWithParam = function(specKey, bodyValue, parameterSpec)
           }else if (!_.isNaN(Number(bodyValue))){
             resolve( Number(bodyValue));
           } else {
-            reject(specKey)
+            reject('not number:' + specKey)
           }
 
           break;
@@ -57,14 +60,11 @@ exports.validateBodyValueWithParam = function(specKey, bodyValue, parameterSpec)
           if (_.isString(bodyValue)){
             resolve(bodyValue);
           } else {
-            reject(specKey)
+            reject('not string:' + specKey)
           }
           break;
         default:
-          if (typeof bodyValue === "undefined")
-            reject(specKey)
-          else
-            resolve(bodyValue)
+          reject('WTF: ' + specKey + ' ' + bodyValue + ' ' + JSON.stringify(parameterSpec));//hmm
       }
     } else {//if its required and doesnt exist,
       reject(specKey)

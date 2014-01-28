@@ -34,6 +34,14 @@ describe('Utils', function() {
         "fog": false,
         "turnstyle": "realtime"
       };
+      var invalidGameConfig2 = {
+        "name": "SILYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+        "numofplayers": "notanumber",
+        "width": 01,
+        "height": 313,
+        "fog": "notabloolean",
+        "turnstyle": "realtime"
+      };
 
       it('should accept a basic gameConfig', function(done) {
         gameConfigUtils.promiseToValidate(validGameConfig)
@@ -57,6 +65,10 @@ describe('Utils', function() {
       });
       it('should reject a gameConfig missing 2 parameters', function(done) {
         gameConfigUtils.promiseToValidate(invalidGameConfig)
+          .done(help.shouldntThrowHereCallback, help.shouldThrowHereCallback(done));
+      });
+      it('should reject a gameConfig with correct keys, but incorrect types', function(done) {
+        gameConfigUtils.promiseToValidate(invalidGameConfig2)
           .done(help.shouldntThrowHereCallback, help.shouldThrowHereCallback(done));
       });
     });

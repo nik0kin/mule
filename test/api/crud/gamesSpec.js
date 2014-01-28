@@ -37,11 +37,33 @@ describe('API', function () {
       });
     });
 
+    var validCreateGamesBody = {
+      gameConfig : {
+        "name": "fun game 3v3",
+        "numofplayers": 6,
+        "width": 40,
+        "height": '40',
+        "fog": 'false',
+        "turnstyle": "realtime"
+      }
+    } ;
+
     describe('POST /games', function () {
+      it('reject missing gameConfig', function (done) {
+        user1 //"http://localhost:3130")
+          .post('/games')
+          .send({'fart' : 'dumb'})
+          .set('Accept', 'application/json')
+          .expect(400)
+          .end(function(err, res){
+            if (err) return done(err);
+            done()
+          });
+      });
       it('respond with json', function (done) {
         user1 //"http://localhost:3130")
           .post('/games')
-          .send({gameConfig: {"test" : "test"} })
+          .send(validCreateGamesBody)
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res){
