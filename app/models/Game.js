@@ -14,7 +14,13 @@ var GameSchema = new mongoose.Schema({
     index: true
   },
   name: {type: String, default: "Unnamed Game"},
-  location: { x: Number, y: Number },
+
+  width: {type: Number, default: 1},
+  height: {type: Number, default: 1},
+
+  fog: {type: String, default: 'default'},
+
+  turnStyle : {type : String, default : 'default'},
   numberOfPlayers: { type: Number, default: 0 },
 //  gameStatus: {type: Enum, default: 0},
   turnNumber: {type: Number, default: 0},        //open, inprogress, finished

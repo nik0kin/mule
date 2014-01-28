@@ -89,7 +89,7 @@ function getGameTable(gameData){
   string += "<td><input type=\'button\' onclick=\'tryJoinGame("+gameData.id+");\' value=\'Join Game\' "+disabled+"></td>";
   string += "</tr>";
   string += "<tr>";
-  string += "<td>Players: "+gameData.numofplayers+"</td>";
+  string += "<td>Players: "+gameData.numberOfPlayers+"</td>";
   string += "<td><input type=\'button\' onclick=\'selectGame("+gameData.id+");\' value=\'View Game\'></td>";
   string += "</tr>";
   string += "<tr>";
@@ -129,7 +129,7 @@ function getGameInfoTable(gameInfo){
   string += "<td>ID: "+gameInfo.gameID+"<br><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></td>";
   string += "</tr>";
   string += "<tr>";
-  string += "<td>Turn: "+gameInfo.turn+"<br>"+gameInfo.numofplayers+" players</td>";
+  string += "<td>Turn: "+gameInfo.turn+"<br>"+gameInfo.numberOfPlayers+" players</td>";
   string += "<td> "+gameInfo.width+"x"+gameInfo.height+" map</td>";
   string += "</tr>";
   string += "<tr>";

@@ -5,7 +5,8 @@
  *
  * http://stackoverflow.com/questions/14001183/how-to-authenticate-supertest-requests-with-passport
  */
-var mongoose =require('mongoose');
+var mongoose = require('mongoose'),
+  _ = require('underscore')
 
 //var app = require ('../../../server.js');
 
@@ -40,13 +41,22 @@ describe('API', function () {
     var validCreateGamesBody = {
       gameConfig : {
         "name": "fun game 3v3",
-        "numofplayers": 6,
-        "width": 40,
-        "height": '40',
-        "fog": 'false',
-        "turnstyle": "realtime"
+        "numberOfPlayers" : '6',
+        "width" : 40,
+        "height" : '40',
+        "fog" : 'false',
+        "turnStyle" : "realtime"
       }
-    } ;
+    };
+
+    var expectedCreatedGameBody = {
+      "name": "fun game 3v3",
+      "numberOfPlayers" : 6,
+      "width" : 40,
+      "height" : 40,
+      "fog" : 'false',
+      "turnStyle" : "realtime"
+    };
 
     describe('POST /games', function () {
       it('reject missing gameConfig', function (done) {
@@ -73,7 +83,35 @@ describe('API', function () {
       });
 
       it('take a correct gameConfig, save to DB, and return _id ', function (done) {
-        done();
+        user1
+          .post('/games')
+          .send(validCreateGamesBody)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end(function(err, res){
+            if (err) return done(err);
+
+            var gameID = res.body.gameID;
+            should(gameID).ok;
+            //now check if we can GET it
+            user1
+              .get('/games/'+gameID)
+              .send(validCreateGamesBody)
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end(function(err, res){
+                if (err) return done(err);
+
+                var body = res.body;
+                _.each(expectedCreatedGameBody, function (value, key) {
+                  //console.log(key + ': ' + body[key] + ' ?= ' + value)
+                  should(body[key]).equal(value);
+                });
+
+                done()
+              });
+          });
+
       });
       it('reject an incorrect gameConfig', function (done) {
         done();

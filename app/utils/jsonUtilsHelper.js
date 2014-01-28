@@ -31,8 +31,7 @@ exports.validateBodyValueWithParam = function(specKey, bodyValue, parameterSpec)
   return Q.promise(function(resolve, reject) {
     if (typeof bodyValue === "undefined")
       reject('missing')
-
-    if(typeof parameterSpec.required === 'undefined' || parameterSpec.required === true || parameterSpec.required === false){
+    else if(typeof parameterSpec.required === 'undefined' || parameterSpec.required === true || parameterSpec.required === false){
       switch (parameterSpec.type) {
         case "boolean":
         case "Boolean":

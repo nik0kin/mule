@@ -61,17 +61,11 @@ exports.create = function(req, res){
     gameID: ""
   };
 
-  console.log("attempting to crate: ");
-  console.log(req.body);
-
   gameConfigUtils.promiseToValidate(req.body.gameConfig)
-    .done(function (validatedParams) {
-      console.log( "User attempting to create new game: params: " + JSON.stringify(validatedParams) );
-      gameHelper.create(validatedParams, function (err, user){
-        if (!err){
-          return res.status(200).send(responseJSON);
-        }
-      });
+    .then(gameHelper.createQ)
+    .done(function (value) {
+      responseJSON.gameID = value._id;
+      return res.status(200).send(responseJSON);
     }, function (err) {
       responseJSON.status = -1;
       responseJSON.statusMsg = err;

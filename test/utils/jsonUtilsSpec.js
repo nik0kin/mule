@@ -50,7 +50,7 @@ describe("utils", function(){
     });
 
     it("should call missingParamCallback when appropriate", function(done) {
-      var object = utils.validateJSONBody({"key" : "value" }, {missingkey: {required: true}}, help.shouldntThrowHereCallback, function(problemParams){
+      var object = utils.validateJSONBody({"key" : "value" }, {missingkey: {required: true}}, help.shouldntGoHereCallback(done), function(problemParams){
         problemParams.should.have.property("missingkey");
         done();
       });
@@ -81,32 +81,32 @@ describe("utils", function(){
           utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
             should(validatedParams).have.property('booleankey', true);
             done();
-          }, help.shouldntThrowHereCallback);
+          }, help.shouldntGoHereCallback(done));
         });
         it("'true' works" , function(done) {
           var jsonBody = {"booleankey" : 'true' };
           utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
             should(validatedParams).have.property('booleankey', true);
             done();
-          }, help.shouldntThrowHereCallback);
+          }, help.shouldntGoHereCallback(done));
         });
         it("'false' works" , function(done) {
           var jsonBody = {"booleankey" : "false" };
           utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
             should(validatedParams).have.property('booleankey', false);
             done();
-          }, help.shouldntThrowHereCallback);
+          }, help.shouldntGoHereCallback(done));
         });
         it("false works" , function(done) {
           var jsonBody = {"booleankey" : false };
           utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
             should(validatedParams).have.property('booleankey', false);
             done();
-          }, help.shouldntThrowHereCallback);
+          }, help.shouldntGoHereCallback(done));
         });
         it("reject a string" , function(done) {
           var jsonBody = {"booleankey" : "badvaluelol" };
-          var object = utils.validateJSONBody(jsonBody, requiredParams, help.generateDoneCallback(done), help.shouldThrowHereCallback(done));
+          var object = utils.validateJSONBody(jsonBody, requiredParams, help.generateDoneCallback(done), help.shouldGoHereCallback(done));
         });
       });
 
@@ -123,28 +123,28 @@ describe("utils", function(){
             utils.validateJSONBody({"numberkey" : 1 }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', 1);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
 
           it('case2', function(done){
             utils.validateJSONBody({"numberkey" : "1000000000000" }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', 1000000000000);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
 
           it('case3', function(done){
             utils.validateJSONBody({"numberkey" : -1 }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', -1);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
 
           it('case4', function(done){
             utils.validateJSONBody({"numberkey" : 0 }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', 0);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
         });
 
@@ -153,31 +153,31 @@ describe("utils", function(){
             utils.validateJSONBody({"numberkey" : 1.1 }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', 1.1);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
           it('case2', function(done){
             utils.validateJSONBody({"numberkey" : "1000000000000.1" }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', 1000000000000.1);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
           it('case3', function(done){
             utils.validateJSONBody({"numberkey" : -1.1 }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', -1.1);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
           it('case4', function(done){
             utils.validateJSONBody({"numberkey" : 0.0 }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('numberkey', 0.0);
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
 
         });
         it("reject a string" , function(done) {
           var jsonBody = {"numberkey" : "badvaluelol" };
-          var object = utils.validateJSONBody(jsonBody, requiredParams, help.shouldntThrowHereCallback, help.shouldThrowHereCallback(done));
+          var object = utils.validateJSONBody(jsonBody, requiredParams, help.shouldntGoHereCallback(done), help.shouldGoHereCallback(done));
         });
       });
       describe("String:" , function() {
@@ -194,25 +194,25 @@ describe("utils", function(){
             utils.validateJSONBody({"stringkey" : "apple" }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('stringkey', "apple");
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
           it('case4', function(done){
             utils.validateJSONBody({"stringkey" : "1000000000000" }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('stringkey', "1000000000000");
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
           it('case4', function(done){
             utils.validateJSONBody({"stringkey" : "" }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('stringkey', "");
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
           it('case4', function(done){
             utils.validateJSONBody({"stringkey" : "/oaldoasd?Adadkloakdadad/ aae 23 534534 65 asda dz d" }, requiredParams, function (validatedParams){
               should(validatedParams).have.property('stringkey', "/oaldoasd?Adadkloakdadad/ aae 23 534534 65 asda dz d");
               done();
-            }, help.shouldntThrowHereCallback);
+            }, help.shouldntGoHereCallback(done));
           });
         });
         describe("reject: ", function() {
@@ -220,25 +220,25 @@ describe("utils", function(){
             var jsonBody = {"stringkey" : 12 };
             var object = utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
               done();
-            }, help.shouldThrowHereCallback(done));
+            }, help.shouldGoHereCallback(done));
           });
           it("decimals", function(done){
             var jsonBody = {"stringkey" : 1.3 };
             var object = utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
               done();
-            }, help.shouldThrowHereCallback(done));
+            }, help.shouldGoHereCallback(done));
           });
           it("objects", function(done){
             var jsonBody = {"stringkey" : {"farting": "wow"} };
             var object = utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
               done();
-            }, help.shouldThrowHereCallback(done));
+            }, help.shouldGoHereCallback(done));
           });
           it("arrays", function(done){
             var jsonBody = {"stringkey" : ["nonya"] };
             var object = utils.validateJSONBody(jsonBody, requiredParams, function (validatedParams){
               done();
-            }, help.shouldThrowHereCallback(done));
+            }, help.shouldGoHereCallback(done));
           });
         });
       });

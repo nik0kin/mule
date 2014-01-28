@@ -13,11 +13,11 @@ take in jsonBody = gameConfig, make sure it looks like the following:
  Example gameConfig
  {
  "name": "fun game 3v3",
- "numofplayers": 6,
+ "numberOfPlayers": 6,
  "width": 40,
  "height": 40,
  "fog": false,
- "turnstyle": "realtime"
+ "turnStyle": "realtime"
  }
 
 return validatedParams if all goes well
@@ -27,13 +27,13 @@ return err if not
 
 //return a promise
 exports.promiseToValidate = function(jsonBody) {
-  var gameConfigParamSpec = {
+  var gameConfigParamSpec = {  //TODO can this be mapped to model and validated there?
     name:         {required: true, type : 'string'},
-    numofplayers: {required: true, type : 'number'},
+    numberOfPlayers: {required: true, type : 'number'},
     width:        {required: true, type : 'number'},
     height:       {required: true, type : 'number'},
-    fog:          {required: true, type : 'boolean'},
-    turnstyle:    {required: true, type : 'string'}
+    fog:          {required: true, type : 'string'},
+    turnStyle:    {required: true, type : 'string'}
   };
 
   var myPromise = Q.promise(function(resolve, reject){

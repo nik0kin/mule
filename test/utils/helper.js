@@ -7,8 +7,10 @@ exports.generateDoneCallback = function(done) {
     done();
   };
 };
-exports.shouldThrowHereCallback = exports.generateDoneCallback;
+exports.shouldGoHereCallback = exports.generateDoneCallback;
 
-exports.shouldntThrowHereCallback = function(err){
-  throw "this shouldn't throw here: " + err;
+exports.shouldntGoHereCallback = function(done) {
+  return function(err) {
+    done("this shouldn't throw here: " + err);
+  };
 };
