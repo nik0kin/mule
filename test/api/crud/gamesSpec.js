@@ -28,20 +28,17 @@ describe('API', function () {
     });
   };
 
-  describe('Games: ', function() {
+  describe('Games: ', function () {
 
-    beforeEach(function(done){
-      User.collection.remove(function(err){
+    beforeEach(function (done){
+      User.collection.remove(function (err){
         if (err) return done(err);
         registerAndLogin(done);
       });
     });
-    /*it('helper funcs', function(done) {
-      done();           //registerAndLogin()
-    });*/
 
-    describe('POST /games', function() {
-      it('respond with json', function(done) {
+    describe('POST /games', function () {
+      it('respond with json', function (done) {
         user1 //"http://localhost:3130")
           .post('/games')
           .send({gameConfig: {"test" : "test"} })
@@ -51,6 +48,13 @@ describe('API', function () {
             if (err) return done(err);
             done()
           });
+      });
+
+      it('take a correct gameConfig, save to DB, and return _id ', function (done) {
+        done();
+      });
+      it('reject an incorrect gameConfig', function (done) {
+        done();
       });
     });
   });

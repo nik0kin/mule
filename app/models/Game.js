@@ -6,8 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var mongoose = require('mongoose');
-
+var mongoose = require('mongoose-q')(require('mongoose'));
 
 var GameSchema = new mongoose.Schema({
   id: {
