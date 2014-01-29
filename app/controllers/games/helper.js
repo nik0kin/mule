@@ -18,6 +18,9 @@ exports.index = function(parameters, callback){
 
 exports.createQ = function(validatedParams){
   console.log( "User attempting to create new game: params: " + JSON.stringify(validatedParams) );
+
+  validatedParams.gameStatus = 'open';
+
   var newGame = new Game(validatedParams);
 
   return newGame.saveQ();

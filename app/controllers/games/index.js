@@ -9,8 +9,7 @@ var fs = require('fs'),
   mongoose = require('mongoose'),
   winston = require('winston');
 
-var Game = require('../../models/Game'),
-  jsonUtils = require('../../utils/jsonUtils'),
+var Game = require('../../models/Game/index'),
   gameConfigUtils = require('../../utils/gameConfigUtils'),
   gameHelper = require('./helper');
 

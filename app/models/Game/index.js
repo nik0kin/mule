@@ -8,6 +8,8 @@
 
 var mongoose = require('mongoose-q')(require('mongoose'));
 
+var validateHelp = require('./validateHelper');
+
 var GameSchema = new mongoose.Schema({
   id: {
     type: Number,
@@ -22,11 +24,13 @@ var GameSchema = new mongoose.Schema({
 
   turnStyle : {type : String, default : 'default'},
   numberOfPlayers: { type: Number, default: 0 },
-//  gameStatus: {type: Enum, default: 0},
+  gameStatus: {type: String, default: 'open'},
   turnNumber: {type: Number, default: 0},        //open, inprogress, finished
 //  map: {type: null },
   currentLocalIDCounter: {type: Number, default: 0} //counter for id's of all units of the game
 });
+
+validateHelp.addValidators(GameSchema);
 
 /**
  * Methods
@@ -36,7 +40,7 @@ GameSchema.methods = {
 
   //name : function(){}
 
-}
+};
 
 
 

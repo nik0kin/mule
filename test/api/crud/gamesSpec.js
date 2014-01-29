@@ -12,7 +12,7 @@ var mongoose = require('mongoose'),
 
 var should = require('should'),
   User = require('../../../app/models/User'),
-  Game = require('../../../app/models/Game');
+  Game = require('../../../app/models/Game/index');
 var app = require ('../../../server.js');
 
 var request = require('supertest');
@@ -58,6 +58,59 @@ describe('API', function () {
       "turnStyle" : "realtime"
     };
 
+    var validCreateGamesBodyWithAlteredGameStatus = {
+      gameConfig : {
+        "name": "fun game 3v3",
+        "numberOfPlayers" : '6',
+        "width" : 40,
+        "height" : '40',
+        "fog" : 'false',
+        "turnStyle" : "realtime",
+        "gameStatus" : "}{}#$%#$^sh run OMG hax"
+      }
+    };
+
+    var invalidCreateGamesBody = {
+      gameConfig : {
+        "name": "fun game 3v3",
+        "numberOfPlayers" : '6',
+        "width" : 0,
+        "height" : -1,
+        "fog" : 'false',
+        "turnStyle" : "realtime"
+      }
+    };
+    var invalidCreateGamesBody2 = {
+      gameConfig : {
+        "name": "fun game 3v3",
+        "numberOfPlayers" : '6',
+        "width" : 50000,
+        "height" : 501,
+        "fog" : 'false',
+        "turnStyle" : "realtime"
+      }
+    };
+    var invalidCreateGamesBody3 = {
+      gameConfig : {
+        "name": "fun game 3v3",
+        "numberOfPlayers" : '11',
+        "width" : 5,
+        "height" : 5,
+        "fog" : 'false',
+        "turnStyle" : "realtime"
+      }
+    };
+    var invalidCreateGamesBody4 = {
+      gameConfig : {
+        "name": "fun game 3v3",
+        "numberOfPlayers" : '1',
+        "width" : 5,
+        "height" : 5,
+        "fog" : 'false',
+        "turnStyle" : "realtime"
+      }
+    };
+
     describe('POST /games', function () {
       it('reject missing gameConfig', function (done) {
         user1 //"http://localhost:3130")
@@ -96,7 +149,7 @@ describe('API', function () {
             //now check if we can GET it
             user1
               .get('/games/'+gameID)
-              .send(validCreateGamesBody)
+              .send()
               .set('Accept', 'application/json')
               .expect(200)
               .end(function(err, res){
@@ -108,13 +161,135 @@ describe('API', function () {
                   should(body[key]).equal(value);
                 });
 
-                done()
+                done();
               });
           });
-
       });
-      it('reject an incorrect gameConfig', function (done) {
-        done();
+
+      it('take a correct gameConfig LACKING gameStatus, the system should set gameStatus to \'open\'', function (done) {
+        user1
+          .post('/games')
+          .send(validCreateGamesBody)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end(function(err, res){
+            if (err) return done(err);
+
+            var gameID = res.body.gameID;
+            should(gameID).ok;
+            user1
+              .get('/games/'+gameID)
+              .send()
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end(function(err, res){
+                if (err) return done(err);
+
+                should(res.body).have.property('gameStatus', 'open');
+
+                done();
+              });
+          });
+      });
+
+      it('take a correct gameConfig WITH a invalid gameStatus value, the system should ignore it, and set gameStatus to \'open\'', function (done) {
+        user1
+          .post('/games')
+          .send(validCreateGamesBodyWithAlteredGameStatus)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end(function(err, res){
+            if (err) return done(err);
+
+            var gameID = res.body.gameID;
+            should(gameID).ok;
+            user1
+              .get('/games/'+gameID)
+              .send()
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end(function(err, res){
+                if (err) return done(err);
+
+                should(res.body).have.property('gameStatus', 'open');
+
+                done();
+              });
+          });
+      });
+
+      describe('reject an incorrect gameConfig: ', function () {
+        it('valid parameter types, but height/width needs to be greater than 0', function (done) {
+          user1
+            .post('/games')
+            .send(invalidCreateGamesBody)
+            .set('Accept', 'application/json')
+            .expect(400)
+            .end(function(err, res){
+              if (err) return done(err);
+
+              var body = res.body;
+              should(body).ok;
+              should(body.statusMsg).ok;
+              should(body.statusMsg.errors).ok;
+              should(body.statusMsg.errors).have.property('height');
+              should(body.statusMsg.errors).have.property('width');
+              done();
+            });
+        });
+        it('valid parameter types, but height/width needs to be less or equal to 500', function (done) {
+          user1
+            .post('/games')
+            .send(invalidCreateGamesBody2)
+            .set('Accept', 'application/json')
+            .expect(400)
+            .end(function(err, res){
+              if (err) return done(err);
+
+              var body = res.body;
+              should(body).ok;
+              should(body.statusMsg).ok;
+              should(body.statusMsg.errors).ok;
+              should(body.statusMsg.errors).have.property('height');
+              should(body.statusMsg.errors).have.property('width');
+              done();
+            });
+        });
+
+        it('valid parameter types, but numberOfPlayers needs to be 10 or less', function (done) {
+          user1
+            .post('/games')
+            .send(invalidCreateGamesBody3)
+            .set('Accept', 'application/json')
+            .expect(400)
+            .end(function(err, res){
+              if (err) return done(err);
+
+              var body = res.body;
+              should(body).ok;
+              should(body.statusMsg).ok;
+              should(body.statusMsg.errors).ok;
+              should(body.statusMsg.errors).have.property('numberOfPlayers');
+              done();
+            });
+        });
+        it('valid parameter types, but numberOfPlayers needs to be 2 or greater', function (done) {
+          user1
+            .post('/games')
+            .send(invalidCreateGamesBody4)
+            .set('Accept', 'application/json')
+            .expect(400)
+            .end(function(err, res){
+              if (err) return done(err);
+
+              var body = res.body;
+              should(body).ok;
+              should(body.statusMsg).ok;
+              should(body.statusMsg.errors).ok;
+              should(body.statusMsg.errors).have.property('numberOfPlayers');
+              done();
+            });
+        });
       });
     });
   });
