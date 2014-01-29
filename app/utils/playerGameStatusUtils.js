@@ -13,4 +13,4 @@ exports.validatePlayerStatus = function (playerStatus) {
     default:
       return false;
   }
-}
+};

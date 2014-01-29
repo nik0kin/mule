@@ -5,7 +5,8 @@
  */
 var _ = require('underscore');
 
-var gameStatusUtils = require('../../utils/gameStatusUtils');
+var gameStatusUtils = require('../../utils/gameStatusUtils'),
+  playerGameStatusUtils = require('../../utils/playerGameStatusUtils');
 
 exports.addValidators = function (GameSchema) {
   GameSchema.path('width').validate(validateWidthAndHeight, 'width must be within the range: 1 - 500');
@@ -30,7 +31,7 @@ var validateNumberOfPlayers = function (number) {
 var validateGamePlayersObject = function (players) {
   var allGood = true;
   _.each(players, function (value, key) {
-    if (!value.playerID && value.playerStatus)
+    if (!value.playerID && value.playerStatus && playerGameStatusUtils.validatePlayerStatus(value.playerStatus))
       allGood = false;
   });
   return allGood;

@@ -22,8 +22,8 @@ describe('API', function () {
   describe('Games: ', function () {
     before(function (done){
       loginHelper.registerAndLoginQ
-        .then(function (value) {
-          loggedInUser = value;
+        .then(function (user) {
+          loggedInUser = user;
           done();
         }, function (err) {
           done(err);
