@@ -21,7 +21,7 @@ describe('Models: ', function () {
       var ourUserParams = {username : "joe", password : "blow"};
       var ourGameParams = {
         "name": "fun game 3v3",
-        "numberOfPlayers" : 6,
+        "numberOfPlayers" : 3,
         "width" : 40,
         "height" : 40,
         "fog" : 'false',
@@ -70,14 +70,22 @@ describe('Models: ', function () {
 
 /*
       it('should update a non-empty Game with one more player', function (done) {
+      //make 2 user and join
+      //join on our user
 done()
       });
 
       it('should REJECT an attempt join a full game', function (done) {
+      //make 3 users and join
+
+      //join on our user
 done()
       });
 
       it('should REJECT an attempt join a game you are already in', function (done) {
+      //join a game
+
+      //try to join a game again
 done()
       });*/
     });

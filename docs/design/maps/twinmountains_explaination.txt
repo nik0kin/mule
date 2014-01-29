@@ -1,0 +1,22 @@
+TC = Town Center - the starting building during every game, this building creates villagers
+        - 2,3,4 refer to if there was 'addons' to the TownCenter
+F = Farmland - must be next to Town Center
+
+H = House, 4 houses near each other could turn into a bigger house?
+
+R = Resource gathering point,
+        - mill, lumber camp, mining camp etc
+
+T = Tower (watch tower)
+
+W = wall
+
+C = castle (2x2)
+
+M = market or a trade building
+
+B = Barracks. place to train units
+
+
+
+These are all very generic at the moment
