@@ -6,36 +6,37 @@
  * http://stackoverflow.com/questions/14001183/how-to-authenticate-supertest-requests-with-passport
  */
 var mongoose = require('mongoose'),
-  _ = require('underscore')
+  _ = require('underscore'),
+  should = require('should'),
+  Q = require('q');
 
-//var app = require ('../../../server.js');
+var loginHelper = require('../../loginHelper')('http://localhost:3130'),
+  User = require('../../../../app/models/User'),
+  Game = require('../../../../app/models/Game/index');
+var app = require ('../../../../server.js');
 
-var should = require('should'),
-  User = require('../../../app/models/User'),
-  Game = require('../../../app/models/Game/index');
-var app = require ('../../../server.js');
 
-var request = require('supertest');
-
-var serverIP = 'http://localhost:3130';
-
-var user1 = request.agent(serverIP);
+var loggedInUser;
 
 describe('API', function () {
-  var fakeuser = {username: "nikolas", password: "poklitar"};
-  var registerAndLogin = function (callback) {
-    user1.post('/users').send(fakeuser).expect(200).end(function(err, res){
-      callback();
-    });
-  };
-
   describe('Games: ', function () {
+    before(function (done){
+      loginHelper.registerAndLoginQ
+        .then(function (value) {
+          loggedInUser = value;
+          done();
+        }, function (err) {
+          done(err);
+        });
+    });
 
-    beforeEach(function (done){
-      User.collection.remove(function (err){
-        if (err) return done(err);
-        registerAndLogin(done);
-      });
+    after(function (done) {
+      Q.all([User.collection.removeQ, Game.collection.removeQ])
+        .done(function (value) {
+          done()
+        }, function (err) {
+          done(err);
+        });
     });
 
     var validCreateGamesBody = {
@@ -113,7 +114,7 @@ describe('API', function () {
 
     describe('POST /games', function () {
       it('reject missing gameConfig', function (done) {
-        user1 //"http://localhost:3130")
+        loggedInUser //"http://localhost:3130")
           .post('/games')
           .send({'fart' : 'dumb'})
           .set('Accept', 'application/json')
@@ -124,7 +125,7 @@ describe('API', function () {
           });
       });
       it('respond with json', function (done) {
-        user1 //"http://localhost:3130")
+        loggedInUser //"http://localhost:3130")
           .post('/games')
           .send(validCreateGamesBody)
           .set('Accept', 'application/json')
@@ -136,7 +137,7 @@ describe('API', function () {
       });
 
       it('take a correct gameConfig, save to DB, and return _id ', function (done) {
-        user1
+        loggedInUser
           .post('/games')
           .send(validCreateGamesBody)
           .set('Accept', 'application/json')
@@ -147,7 +148,7 @@ describe('API', function () {
             var gameID = res.body.gameID;
             should(gameID).ok;
             //now check if we can GET it
-            user1
+            loggedInUser
               .get('/games/'+gameID)
               .send()
               .set('Accept', 'application/json')
@@ -167,7 +168,7 @@ describe('API', function () {
       });
 
       it('take a correct gameConfig LACKING gameStatus, the system should set gameStatus to \'open\'', function (done) {
-        user1
+        loggedInUser
           .post('/games')
           .send(validCreateGamesBody)
           .set('Accept', 'application/json')
@@ -177,7 +178,7 @@ describe('API', function () {
 
             var gameID = res.body.gameID;
             should(gameID).ok;
-            user1
+            loggedInUser
               .get('/games/'+gameID)
               .send()
               .set('Accept', 'application/json')
@@ -193,7 +194,7 @@ describe('API', function () {
       });
 
       it('take a correct gameConfig WITH a invalid gameStatus value, the system should ignore it, and set gameStatus to \'open\'', function (done) {
-        user1
+        loggedInUser
           .post('/games')
           .send(validCreateGamesBodyWithAlteredGameStatus)
           .set('Accept', 'application/json')
@@ -203,7 +204,7 @@ describe('API', function () {
 
             var gameID = res.body.gameID;
             should(gameID).ok;
-            user1
+            loggedInUser
               .get('/games/'+gameID)
               .send()
               .set('Accept', 'application/json')
@@ -220,7 +221,7 @@ describe('API', function () {
 
       describe('reject an incorrect gameConfig: ', function () {
         it('valid parameter types, but height/width needs to be greater than 0', function (done) {
-          user1
+          loggedInUser
             .post('/games')
             .send(invalidCreateGamesBody)
             .set('Accept', 'application/json')
@@ -238,7 +239,7 @@ describe('API', function () {
             });
         });
         it('valid parameter types, but height/width needs to be less or equal to 500', function (done) {
-          user1
+          loggedInUser
             .post('/games')
             .send(invalidCreateGamesBody2)
             .set('Accept', 'application/json')
@@ -257,7 +258,7 @@ describe('API', function () {
         });
 
         it('valid parameter types, but numberOfPlayers needs to be 10 or less', function (done) {
-          user1
+          loggedInUser
             .post('/games')
             .send(invalidCreateGamesBody3)
             .set('Accept', 'application/json')
@@ -274,7 +275,7 @@ describe('API', function () {
             });
         });
         it('valid parameter types, but numberOfPlayers needs to be 2 or greater', function (done) {
-          user1
+          loggedInUser
             .post('/games')
             .send(invalidCreateGamesBody4)
             .set('Accept', 'application/json')

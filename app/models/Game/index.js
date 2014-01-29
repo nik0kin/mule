@@ -8,22 +8,26 @@
 
 var mongoose = require('mongoose-q')(require('mongoose'));
 
-var validateHelp = require('./validateHelper');
+var validateHelp = require('./validateHelper'),
+  instanceMethodsHelp = require('./instanceMethodsHelper');
 
 var GameSchema = new mongoose.Schema({
   id: {
     type: Number,
     index: true
   },
-  name: {type: String, default: "Unnamed Game"},
+  name : {type: String, default: "Unnamed Game"},
 
-  width: {type: Number, default: 1},
-  height: {type: Number, default: 1},
+  width : {type: Number, default: 1},
+  height : {type: Number, default: 1},
 
-  fog: {type: String, default: 'default'},
+  fog : {type: String, default: 'default'},
 
   turnStyle : {type : String, default : 'default'},
-  numberOfPlayers: { type: Number, default: 0 },
+
+  numberOfPlayers : { type: Number, default: 0 },
+  players : {type : mongoose.Schema.Types.Mixed, default : {} },
+
   gameStatus: {type: String, default: 'open'},
   turnNumber: {type: Number, default: 0},        //open, inprogress, finished
 //  map: {type: null },
@@ -36,11 +40,7 @@ validateHelp.addValidators(GameSchema);
  * Methods
  */
 
-GameSchema.methods = {
-
-  //name : function(){}
-
-};
+GameSchema.methods = instanceMethodsHelp;
 
 
 

@@ -22,7 +22,6 @@ exports.createQ = function(validatedParams){
   validatedParams.gameStatus = 'open';
 
   var newGame = new Game(validatedParams);
-
   return newGame.saveQ();
 };
 

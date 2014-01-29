@@ -1,5 +1,5 @@
 var _ = require('underscore'),
-  mongoose = require('mongoose'),
+  mongoose = require('mongoose-q')(require('mongoose')),
   winston = require('winston');
 
 var utils = require('../utils/jsonUtils');
@@ -24,20 +24,23 @@ var login = function (req, res) {
 
 exports.authCallback = login
 
-exports.createUserHelper = function(parameters, callback){
+exports.createUserHelper = function (parameters, callback) {
   var newUser = new User({username: parameters.username, password: parameters.password});
   newUser.provider = 'local';
-  newUser.save(function (err,user) {
-    if (err) {
-      console.log("err: "+ err);
-      return callback && callback(err,user); //    return handleError(err);
-    }
+  newUser.saveQ()
+    .done(function (user) {
+
     // saved!
     winston.log('info',"saved: "+user);
 
     if (typeof callback === "function")
-      callback(err, user);
-  });
+      callback(undefined, user);
+    }, function (err) {
+      if (err) {
+        console.log("err: "+ err);
+        return callback && callback(err);
+      }
+    });
 };
 // createUser({accountname,password })
   // returns a promise (does it?)

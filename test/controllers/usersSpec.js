@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
     User = require('../../app/models/User'),
     users = require('../../app/controllers/users');
 
-describe('Controllers', function () {
+describe('Controllers: ', function () {
   describe('Users: ', function() {
     beforeEach(function(done){
       User.collection.remove(function(err){
@@ -70,17 +70,7 @@ describe('Controllers', function () {
           done();
         });
       });
-    });/*
-    after(function(done){
-      require('./helper').clearDb(function(){
-        console.log('now here');
-        mongooselearn.createUser({username:'bill'},function(err){
-          if(err) console.log(err);
-          console.log('created user');
-          done();
-        });
-      });
-    });*/
+    });
   });
 });
 
