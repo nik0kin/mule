@@ -31,8 +31,11 @@ var validateNumberOfPlayers = function (number) {
 var validateGamePlayersObject = function (players) {
   var allGood = true;
   _.each(players, function (value, key) {
-    if (!value.playerID && value.playerStatus && playerGameStatusUtils.validatePlayerStatus(value.playerStatus))
-      allGood = false;
+    if (!value.playerID && value.playerStatus
+        && playerGameStatusUtils.validatePlayerStatus(value.playerStatus) ){
+        allGood = false;
+      console.log(value)
+    }
   });
   return allGood;
 };

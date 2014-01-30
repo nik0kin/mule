@@ -13,7 +13,7 @@ var help = require('./helper'),
 
 
 
-describe("utils", function(){
+describe("Utils", function(){
   describe('jsonUtilsHelpers:', function() {
     describe('checkBoolean:', function() {
       it('should not work when value==undefined', function(done) {

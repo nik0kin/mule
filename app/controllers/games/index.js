@@ -75,7 +75,8 @@ exports.create = function(req, res){
 exports.read = function (req, res){
   console.log('GET /users/:id');
 
-  Game.findByIdQ(req.params.id)
+
+  gameHelper.readQ(req.params.id)
     .then(function (game){
       res.send(game);
     })

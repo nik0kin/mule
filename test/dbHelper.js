@@ -27,16 +27,18 @@ exports.clearUsersAndGamesCollection = function (done) {
 };
 
 exports.addUserQ = function (userParameters) {
-  return Q.promise(function (resolve, reject) {
-    users.createUserHelper(userParameters, function (err, user) {
-      if (err)
-        reject(err);
-      else
-        resolve(user)
-    })
-  });
+ return users.createQ(userParameters);
 };
+
+exports.getUserQ = function (userID) {
+  return users.readQ(userID);
+};
+
 
 exports.addGameQ = function (userParameters) {
   return gamesHelper.createQ(userParameters);
+};
+
+exports.getGameQ = function (gameID) {
+  return gamesHelper.readQ(gameID);
 };

@@ -5,7 +5,7 @@
  */
 
 exports.validatePlayerStatus = function (playerStatus) {
-  switch (gameStatus){
+  switch (playerStatus){
     case 'inGame' :
     case 'kicked' :
     case 'surrendered' :

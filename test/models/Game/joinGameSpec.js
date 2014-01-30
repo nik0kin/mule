@@ -5,12 +5,14 @@
  */
 
 var Q = require('q'),
-  should = require('should');
+  should = require('should'),
+  _ = require('underscore');
 
 var app = require('../../../server')
-  Game = require('../../../app/models/Game/index'),
+Game = require('../../../app/models/Game/index'),
   User = require('../../../app/models/User'),
-  dbHelper = require('../../dbHelper');
+  dbHelper = require('../../dbHelper'),
+  testHelper = require('../../helper');
 
 describe('Models: ', function () {
   describe('Game: ', function () {
@@ -30,9 +32,9 @@ describe('Models: ', function () {
       //clear databases TODO this could be prettier
       dbHelper.clearUsersAndGamesCollectionQ()
         .done(function () {
-          // and then make a user and a game
           dbHelper.addUserQ(ourUserParams)
             .done(function (user) {
+              should(user._id).ok;
               ourPlayerID = user._id;
               dbHelper.addGameQ(ourGameParams)
                 .done(function (game) {
@@ -42,18 +44,10 @@ describe('Models: ', function () {
                       should(game).ok;
                       ourGame = game;
                       done()
-                    }, function (err) {
-                      done(err);
-                    });
-                }, function (err) {
-                  done(err);
-                });
-            }, function (err) {
-              done(err);
-            });
-        }, function (err) {
-          done(err);
-        });
+                    }, testHelper.mochaError(done));
+                }, testHelper.mochaError(done));
+            }, testHelper.mochaError(done));
+        }, testHelper.mochaError(done));
     });
 
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
@@ -62,32 +56,37 @@ describe('Models: ', function () {
       it('should update a empty Game with one more player', function (done) {
         ourGame.joinGameQ(ourPlayerID)
           .done(function (value) {
-            done();
-          }, function (err) {
-            done(err);
-          });
+            dbHelper.getGameQ(ourGame._id)
+              .done(function (result) {
+                should(result).ok;
+                should(result.players).ok;
+                should(_.keys(result.players).length).eql(1);
+                done()
+              }, testHelper.mochaError(done));
+          }, testHelper.mochaError(done));
       });
 
-/*
-      it('should update a non-empty Game with one more player', function (done) {
-      //make 2 user and join
-      //join on our user
-done()
-      });
+      /*
+       it('should update a non-empty Game with one more player', function (done) {
+       //make 2 user and join
+       //join on our user
+       done()
+       });
 
-      it('should REJECT an attempt join a full game', function (done) {
-      //make 3 users and join
+       it('should REJECT an attempt join a full game', function (done) {
+       //make 3 users and join
 
-      //join on our user
-done()
-      });
+       //join on our user
+       done()
+       });
 
-      it('should REJECT an attempt join a game you are already in', function (done) {
-      //join a game
+       it('should REJECT an attempt join a game you are already in', function (done) {
+       //join a game
 
-      //try to join a game again
-done()
-      });*/
+       //try to join a game again
+       done()
+       });*/
     });
   });
 });
+

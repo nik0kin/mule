@@ -6,6 +6,7 @@
 
 var _ = require('underscore'),
   mongoose = require('mongoose'),
+  Q = require('q'),
   winston = require('winston');
 
 var utils = require('../../utils/jsonUtils');
@@ -17,17 +18,19 @@ exports.index = function(parameters, callback){
 };
 
 exports.createQ = function(validatedParams){
-  console.log( "User attempting to create new game: params: " + JSON.stringify(validatedParams) );
+  return Q.promise( function (resolve, reject) {
+    console.log( "User attempting to create new game: params: " + JSON.stringify(validatedParams) );
 
-  validatedParams.gameStatus = 'open';
+    validatedParams.gameStatus = 'open';
 
-  var newGame = new Game(validatedParams);
-  return newGame.saveQ();
+    var newGame = new Game(validatedParams);
+    newGame.saveQ()
+      .done(resolve, reject);
+  });
 };
 
-exports.read = function(parameters, callback){
-
-
+exports.readQ = function(gameID){
+  return Game.findByIdQ(gameID);
 };
 
 exports.update = function(parameters, callback){

@@ -27,7 +27,7 @@ var GameSchema = new mongoose.Schema({
 
   turnStyle : {type : String, default : 'default'},
 
-  numberOfPlayers : { type: Number, default: 0 },
+  numberOfPlayers : { type: Number, default: 0 },   //TODO rename this
   players : {type : mongoose.Schema.Types.Mixed, default : {} },
 
   gameStatus: {type: String, default: 'open'},
@@ -41,7 +41,7 @@ var GameSchema = new mongoose.Schema({
  */
 
 GameSchema.virtual('players.count').get(function () {
-  return _.values(this.players);
+  return _.values(this.players).length;
 });
 GameSchema.virtual('full').get(function () {
   return this.players.count === this.numberOfPlayers;
@@ -61,8 +61,6 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
   joinGameQ : function (playerID) {
     var that = this;
     return Q.promise(function (resolve, reject) {
-      //this = that;
-      //console.log(this)
       //valid user?
 
       //are we full?
@@ -78,19 +76,29 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
         "playerStatus" : 'inGame'
       };
 
+      that.players = {         //faking it for today
+        "p1" : newPlayerGameInfo
+      };
+
       //update db
-
-
-      console.log('HELLO')
-      console.log(playerID);
-      resolve();
+      that.saveQ()
+        .then(function () {
+          console.log('saved?')
+          resolve();
+        })
+        .fail(reject)
+        .done();
     });
   },
 
-  getNextPlayerPositionQ :function () {
+  getNextPlayerPositionQ : function () {
     return Q.promise(function (resolve, reject) {
 
     });
+  },
+
+  getPlayerPosition : function (playerID) {
+
   }
 };
 

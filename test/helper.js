@@ -34,3 +34,6 @@ exports.clearDb = function (done) {
   });
 };
 
+exports.mochaError = function (done) {
+  return function (err) { done(err); }
+};

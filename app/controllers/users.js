@@ -1,5 +1,8 @@
+//TODO refactor PLZ
+
 var _ = require('underscore'),
   mongoose = require('mongoose-q')(require('mongoose')),
+  Q = require('q'),
   winston = require('winston');
 
 var utils = require('../utils/jsonUtils');
@@ -24,6 +27,18 @@ var login = function (req, res) {
 
 exports.authCallback = login
 
+exports.createQ = function (validatedParams) {
+  return Q.promise( function (resolve, reject) {
+    console.log( "Attempting to create user: params: " + JSON.stringify(validatedParams) );
+
+    var newUser = new User(validatedParams);
+    newUser.provider = 'local';
+
+    newUser.saveQ()
+      .done(resolve, reject);
+  });
+}
+
 exports.createUserHelper = function (parameters, callback) {
   var newUser = new User({username: parameters.username, password: parameters.password});
   newUser.provider = 'local';
@@ -32,6 +47,7 @@ exports.createUserHelper = function (parameters, callback) {
 
     // saved!
     winston.log('info',"saved: "+user);
+    console.log('saved newUser: '+user.username)
 
     if (typeof callback === "function")
       callback(undefined, user);
@@ -79,6 +95,11 @@ exports.createUser = function createUser(req, res){
   });
 
 };
+
+exports.readQ = function(userID){
+  return User.findByIdQ(userID);
+};
+
 //returns a query object
 exports.getAllUsers = function getAllUsers(callback){
   return User.find({},'username password',
