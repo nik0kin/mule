@@ -9,7 +9,7 @@
 
 exports.validGameParams = {
   "name": "fun game 3v3",
-  "numberOfPlayers" : 3,
+  "numberOfPlayers" : 2,
   "width" : 40,
   "height" : 40,
   "fog" : 'false',

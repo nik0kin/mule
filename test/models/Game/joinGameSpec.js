@@ -8,34 +8,31 @@ var Q = require('q'),
   should = require('should'),
   _ = require('underscore');
 
-var app = require('../../../server')
-Game = require('../../../app/models/Game/index'),
+var app = require('../../../server');
+
+var Game = require('../../../app/models/Game/index'),
   User = require('../../../app/models/User'),
   dbHelper = require('../../dbHelper'),
-  testHelper = require('../../helper');
+  testHelper = require('../../helper'),
+  validParams = require('../../validParams');
 
 describe('Models: ', function () {
   describe('Game: ', function () {
-    var ourPlayerID;
+    var ourPlayer;
     var ourGame;
 
     beforeEach(function (done) {
       var ourUserParams = {username : "joe", password : "blow"};
-      var ourGameParams = {
-        "name": "fun game 3v3",
-        "numberOfPlayers" : 3,
-        "width" : 40,
-        "height" : 40,
-        "fog" : 'false',
-        "turnStyle" : "realtime"
-      };
+      var ourGameParams = validParams.validGameParams;
+      ourGameParams.dontJoinCreator = true;
+
       //clear databases TODO this could be prettier
       dbHelper.clearUsersAndGamesCollectionQ()
         .done(function () {
           dbHelper.addUserQ(ourUserParams)
             .done(function (user) {
               should(user._id).ok;
-              ourPlayerID = user._id;
+              ourPlayer = user;
               dbHelper.addGameQ(ourGameParams)
                 .done(function (game) {
                   var ourGameID = game._id;
@@ -43,7 +40,7 @@ describe('Models: ', function () {
                     .done(function (game) {
                       should(game).ok;
                       ourGame = game;
-                      done()
+                      done();
                     }, testHelper.mochaError(done));
                 }, testHelper.mochaError(done));
             }, testHelper.mochaError(done));
@@ -54,38 +51,75 @@ describe('Models: ', function () {
 
     describe('.joinGameQ(playerID)', function () {
       it('should update a empty Game with one more player', function (done) {
-        ourGame.joinGameQ(ourPlayerID)
+        ourGame.joinGameQ(ourPlayer)
           .done(function (value) {
             dbHelper.getGameQ(ourGame._id)
               .done(function (result) {
                 should(result).ok;
                 should(result.players).ok;
                 should(_.keys(result.players).length).eql(1);
-                done()
+                done();
               }, testHelper.mochaError(done));
           }, testHelper.mochaError(done));
       });
 
-      /*
-       it('should update a non-empty Game with one more player', function (done) {
-       //make 2 user and join
-       //join on our user
-       done()
-       });
+      it('should update a non-empty Game with one more player', function (done) {
+        //make another user and join
+        dbHelper.addUserQ({username : "USER2", password : "iamaprohacker"})
+          .done(function (user) {
+            ourGame.joinGameQ(user)
+              .done(function (result) {
+                // then join on our user
+                ourGame.joinGameQ(ourPlayer)
+                  .done(function (value) {
+                    dbHelper.getGameQ(ourGame._id)
+                      .done(function (result) {
+                        should(result).ok;
+                        should(result.players).ok;
+                        should(_.size(result.players)).eql(2);
+                        var keys = _.keys(result.players);
+                        should(result.players[keys[0]].playerID).not.eql(result.players[keys[1]].playerID);
+                        done();
+                      }, testHelper.mochaError(done));
+                  }, testHelper.mochaError(done));
+              }, testHelper.mochaError(done));
+          }, testHelper.mochaError(done));
+      });
 
-       it('should REJECT an attempt join a full game', function (done) {
-       //make 3 users and join
+      it('should REJECT an attempt join a full game', function (done) {
+        //make 2 users and join
+        dbHelper.addUserQ({username : "USER3", password : "iamapr0hacker"})
+          .done(function (user) {
+            ourGame.joinGameQ(user)
+              .done(function (result) {
+                dbHelper.addUserQ({username : "USER2", password : "iamaprohacker"})
+                  .done(function (user) {
+                    ourGame.joinGameQ(user)
+                      .done(function (result) {
+                        // then join on our user
+                        ourGame.joinGameQ(ourPlayer)
+                          .done(testHelper.mochaError(done), function (err) {
+                            should(err).eql('Game Full');
+                            done();
+                          });
+                      }, testHelper.mochaError(done));
+                  }, testHelper.mochaError(done));
+              }, testHelper.mochaError(done));
+          }, testHelper.mochaError(done));
+      });
 
-       //join on our user
-       done()
-       });
-
-       it('should REJECT an attempt join a game you are already in', function (done) {
-       //join a game
-
-       //try to join a game again
-       done()
-       });*/
+      it('should REJECT an attempt join a game you are already in', function (done) {
+        //join a game
+        ourGame.joinGameQ(ourPlayer)
+          .done(function (value) {
+            //try to join a game again
+            ourGame.joinGameQ(ourPlayer)
+              .done(testHelper.mochaError(done), function (err) {
+                should(err).eql('Player is already in Game');
+                done();
+              });
+          }, testHelper.mochaError(done));
+      });
     });
   });
 });

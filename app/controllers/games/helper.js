@@ -24,6 +24,13 @@ exports.createQ = function(validatedParams){
     validatedParams.gameStatus = 'open';
 
     var newGame = new Game(validatedParams);
+
+    if (validatedParams.dontJoinCreator) {
+      console.log('doing unit tests')
+    } else {
+      //TODO join player to game
+    }
+
     newGame.saveQ()
       .done(resolve, reject);
   });

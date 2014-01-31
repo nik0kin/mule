@@ -11,7 +11,8 @@ var mongoose = require('mongoose-q')(require('mongoose')),
   _ = require('underscore');
 
 var validateHelp = require('./validateHelper'),
-  instanceMethodsHelp = require('./instanceMethodsHelper');
+  instanceMethodsHelp = require('./instanceMethodsHelper'),
+  users = require('../../controllers/users');
 
 var GameSchema = new mongoose.Schema({
   id: {
@@ -40,11 +41,11 @@ var GameSchema = new mongoose.Schema({
  * Virtuals
  */
 
-GameSchema.virtual('players.count').get(function () {
+GameSchema.virtual('playersCount').get(function () {
   return _.values(this.players).length;
 });
 GameSchema.virtual('full').get(function () {
-  return this.players.count === this.numberOfPlayers;
+  return this.playersCount === this.numberOfPlayers;
 });
 
 /**
@@ -58,10 +59,13 @@ validateHelp.addValidators(GameSchema);
  */
 GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
 {
-  joinGameQ : function (playerID) {
+  joinGameQ : function (player) {
     var that = this;
     return Q.promise(function (resolve, reject) {
       //valid user?
+      if (!player || !player._id){
+        return reject('invalid player');
+      }
 
       //are we full?
       if (that.full){
@@ -69,36 +73,54 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
       }
 
       //is the player in this Game already?
+      if (that.getPlayerPosition(player._id) !== -1) {
+        return reject('Player is already in Game');
+      }
 
       //make object
       var newPlayerGameInfo = { //aka piggie
-        "playerID" : playerID,
+        "playerID" : player._id,
         "playerStatus" : 'inGame'
       };
 
-      that.players = {         //faking it for today
-        "p1" : newPlayerGameInfo
-      };
+      var position = that.getNextPlayerPosition();
+      //that.players['p1'] = newPlayerGameInfo; // WHY DOESN'T THIS WORK
+
+      var playersCopy = _.clone(that.players); //ugly fix
+      playersCopy[position] = newPlayerGameInfo;
+      that.players = playersCopy;
+
+    /*  that.players = { //works
+        'p1' : newPlayerGameInfo
+      };*/
 
       //update db
       that.saveQ()
-        .then(function () {
-          console.log('saved?')
-          resolve();
+        .then(function (result) {
+          console.log('player[' + player.username + '] added to game: ' + result._id + ' [' + result.playersCount + '/' + result.numberOfPlayers + ']');
+          resolve(result);
         })
         .fail(reject)
         .done();
     });
   },
 
-  getNextPlayerPositionQ : function () {
-    return Q.promise(function (resolve, reject) {
-
-    });
+  //simple for now, but later it should adapt when people 'leave' a game before it starts
+  getNextPlayerPosition : function () {
+    if (this.playersCount >= this.numberOfPlayers)
+      throw 'playerCount exceeds numberOfPlayers';
+    return 'p' + (this.playersCount + 1);
   },
 
+  //returns -1 if player is not in game
   getPlayerPosition : function (playerID) {
-
+    var position = -1;
+    _.each(this.players, function (value, key) {
+      if (value.playerID === playerID) {
+        position = key;
+      }
+    });
+    return position;
   }
 };
 
