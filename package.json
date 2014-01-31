@@ -1,6 +1,6 @@
 {
-  "name": "aass",
-  "version": "0.0.1",
+  "name": "ProjectMule",
+  "version": "0.1.0",
   "description": "(Abstract) Asyncronous Strategy (Game) Server",
   "main": "server.js",
   "directories": {
@@ -8,6 +8,8 @@
     "test": "test"
   },
   "scripts": {
+    "start": "mkdir logs & forever start -a -p . -o ./logs/forever-out.log -e ./logs/forever-err.log -l ./logs/forever.log server.js",
+    "stop": "forever stop server.js",
     "test": "grunt",
     "debug": "node --debug port 5858 server.js"
   },
