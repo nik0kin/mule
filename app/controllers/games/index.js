@@ -61,10 +61,16 @@ exports.create = function(req, res){
   };
 
   gameConfigUtils.promiseToValidate(req.body.gameConfig)
-    .then(gameHelper.createQ)
-    .done(function (value) {
-      responseJSON.gameID = value._id;
-      return res.status(200).send(responseJSON);
+    .done(function (result) {
+      gameHelper.createQ({validatedParams: result, creator : req.user})
+        .done(function (value) {
+          responseJSON.gameID = value._id;
+          return res.status(200).send(responseJSON);
+        }, function (err) {
+          responseJSON.status = -1;
+          responseJSON.statusMsg = err;
+          return res.status(400).send(responseJSON);
+        });
     }, function (err) {
       responseJSON.status = -1;
       responseJSON.statusMsg = err;

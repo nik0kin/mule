@@ -49,17 +49,17 @@ function getGameTable(gameData){
   var statusMsg = "";
   var disabled = "";
   var playDisabled = ""; //disabled if not in game
-  switch(gameData.status){
-    case 0:
+  switch(gameData.gameStatus){
+    case 'open':
       color = "#00FF00";
       statusMsg = "Open";
       break;
-    case 1:
+    case 'inProgress':
       color = "#0000FF";
       statusMsg = "In Progress";
       disabled = "disabled";
       break;
-    case 2:
+    case 'finished':
       color = "#FF0000";
       statusMsg = "Ended";
       disabled = "disabled";
@@ -85,7 +85,7 @@ function getGameTable(gameData){
   string += joinedMsg+"</td>";
   string += "</tr>";
   string += "<tr>";
-  string += "<td>Turn: "+gameData.turn+"</td>";
+  string += "<td>Turn: "+gameData.turnNumber+"</td>";
   string += "<td><input type=\'button\' onclick=\'tryJoinGame("+gameData.id+");\' value=\'Join Game\' "+disabled+"></td>";
   string += "</tr>";
   string += "<tr>";

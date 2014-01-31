@@ -11,6 +11,7 @@ var mongoose = require('mongoose'),
   Q = require('q');
 
 var loginHelper = require('../../loginHelper')('http://localhost:3130'),
+  dbHelper = require('../../../dbHelper'),
   User = require('../../../../app/models/User'),
   Game = require('../../../../app/models/Game/index');
 var app = require ('../../../../server.js');
@@ -30,14 +31,7 @@ describe('API', function () {
         });
     });
 
-    after(function (done) {
-      Q.all([User.collection.removeQ, Game.collection.removeQ])
-        .done(function (value) {
-          done()
-        }, function (err) {
-          done(err);
-        });
-    });
+    after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
     var validCreateGamesBody = {
       gameConfig : {
@@ -45,7 +39,6 @@ describe('API', function () {
         "numberOfPlayers" : '6',
         "width" : 40,
         "height" : '40',
-        "fog" : 'false',
         "turnStyle" : "realtime"
       }
     };
@@ -54,9 +47,7 @@ describe('API', function () {
       "name": "fun game 3v3",
       "numberOfPlayers" : 6,
       "width" : 40,
-      "height" : 40,
-      "fog" : 'false',
-      "turnStyle" : "realtime"
+      "height" : 40
     };
 
     var validCreateGamesBodyWithAlteredGameStatus = {
@@ -65,7 +56,6 @@ describe('API', function () {
         "numberOfPlayers" : '6',
         "width" : 40,
         "height" : '40',
-        "fog" : 'false',
         "turnStyle" : "realtime",
         "gameStatus" : "}{}#$%#$^sh run OMG hax"
       }
@@ -77,7 +67,6 @@ describe('API', function () {
         "numberOfPlayers" : '6',
         "width" : 0,
         "height" : -1,
-        "fog" : 'false',
         "turnStyle" : "realtime"
       }
     };
@@ -87,7 +76,6 @@ describe('API', function () {
         "numberOfPlayers" : '6',
         "width" : 50000,
         "height" : 501,
-        "fog" : 'false',
         "turnStyle" : "realtime"
       }
     };
@@ -97,7 +85,6 @@ describe('API', function () {
         "numberOfPlayers" : '11',
         "width" : 5,
         "height" : 5,
-        "fog" : 'false',
         "turnStyle" : "realtime"
       }
     };
@@ -107,7 +94,6 @@ describe('API', function () {
         "numberOfPlayers" : '1',
         "width" : 5,
         "height" : 5,
-        "fog" : 'false',
         "turnStyle" : "realtime"
       }
     };
@@ -136,7 +122,7 @@ describe('API', function () {
           });
       });
 
-      it('take a correct gameConfig, save to DB, and return _id ', function (done) {
+      it('take a correct gameConfig, save to DB, and user should exist in players object ', function (done) {
         loggedInUser
           .post('/games')
           .send(validCreateGamesBody)
@@ -162,6 +148,9 @@ describe('API', function () {
                   should(body[key]).equal(value);
                 });
 
+                should(_.size(body.players)).eql(1);
+                console.log('players: ')
+                console.log(body.players[_.keys(body.players)[0]]);
                 done();
               });
           });

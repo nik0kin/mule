@@ -35,8 +35,8 @@ exports.getUserQ = function (userID) {
 };
 
 
-exports.addGameQ = function (userParameters) {
-  return gamesHelper.createQ(userParameters);
+exports.addGameQ = function (createGameParameters, creator) {
+  return gamesHelper.createQ({validatedParams: createGameParameters, "creator": creator});
 };
 
 exports.getGameQ = function (gameID) {

@@ -47,7 +47,6 @@ describe('Utils', function() {
         gameConfigUtils.promiseToValidate(validGameConfig)
           .done(function(value) {
             should(value).have.property("height", 313);
-            should(value).have.property("fog", 'true');
             done();
           }, help.shouldGoHereCallback(done));
       });
@@ -55,7 +54,6 @@ describe('Utils', function() {
         gameConfigUtils.promiseToValidate(validGameConfig2)
           .done(function(value) {
             should(value).have.property("height", 40);
-            should(value).have.property("fog", 'false');
             done();
           }, help.shouldGoHereCallback(done));
       });

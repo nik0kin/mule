@@ -17,7 +17,10 @@ exports.index = function(parameters, callback){
 
 };
 
-exports.createQ = function(validatedParams){
+exports.createQ = function(params){
+  var validatedParams = params.validatedParams;
+  var creator = params.creator;//expecting a user
+
   return Q.promise( function (resolve, reject) {
     console.log( "User attempting to create new game: params: " + JSON.stringify(validatedParams) );
 
@@ -25,14 +28,21 @@ exports.createQ = function(validatedParams){
 
     var newGame = new Game(validatedParams);
 
-    if (validatedParams.dontJoinCreator) {
-      console.log('doing unit tests')
+    if (!creator) {
+      console.log('doing unit tests');
+
+      newGame.saveQ()
+        .done(resolve, reject);
     } else {
-      //TODO join player to game
+      newGame.joinGameQ(creator)
+        .done(function () {
+          newGame.saveQ()
+            .done(resolve, reject);
+        }, reject);
+
     }
 
-    newGame.saveQ()
-      .done(resolve, reject);
+
   });
 };
 

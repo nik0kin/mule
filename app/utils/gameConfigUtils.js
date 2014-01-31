@@ -30,10 +30,10 @@ exports.promiseToValidate = function(jsonBody) {
   var gameConfigParamSpec = {  //TODO can this be mapped to model and validated there?
     name:         {required: true, type : 'string'},
     numberOfPlayers: {required: true, type : 'number'},
-    width:        {required: true, type : 'number'},
-    height:       {required: true, type : 'number'},
-    fog:          {required: true, type : 'string'},
-    turnStyle:    {required: true, type : 'string'}
+    width:        {required: true, type : 'number'}, //might be tied to RuleBundle later
+    height:       {required: true, type : 'number'}/*,
+    fog:          {required: true, type : 'string'}, //tied to RuleBundle
+    turnStyle:    {required: true, type : 'string'}*/
   };
 
   var myPromise = Q.promise(function(resolve, reject){

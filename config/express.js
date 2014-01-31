@@ -21,7 +21,7 @@ module.exports = function (app, config, passport) {
   }));
 
   //statically serve test site
-  app.use('/public', express.static(config.root + '/app/public' ));
+  app.use('/public', express.static(config.root + '/public' ));
 
   // don't use logger for test env
   if (process.env.NODE_ENV !== 'test') {

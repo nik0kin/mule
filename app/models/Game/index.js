@@ -63,7 +63,8 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
     var that = this;
     return Q.promise(function (resolve, reject) {
       //valid user?
-      if (!player || !player._id){
+      if (!player || !player._id){//TODO lazy, didnt check db
+        console.log(player)
         return reject('invalid player');
       }
 
