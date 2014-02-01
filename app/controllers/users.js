@@ -3,7 +3,7 @@
 var _ = require('underscore'),
   mongoose = require('mongoose-q')(require('mongoose')),
   Q = require('q'),
-  winston = require('winston');
+  logger = require('winston');
 
 var utils = require('../utils/jsonUtils');
     User = mongoose.model('User');
@@ -11,10 +11,11 @@ var utils = require('../utils/jsonUtils');
 
 
 var login = function (req, res) {
-  //var redirectTo = req.session.returnTo ? req.session.returnTo : '/success';
-  //delete req.session.returnTo;
+  var redirectTo = req.session.returnTo ? req.session.returnTo : '/success';
+  delete req.session.returnTo;
+
   res.status(200).send("yee");
-  //console.log("login result: " + redirectTo);
+  logger.info(req.user.username + "login result: " + redirectTo);
   //res.redirect(redirectTo);
 };
 
@@ -25,11 +26,11 @@ var login = function (req, res) {
  */
 
 
-exports.authCallback = login
+exports.authCallback = login;
 
 exports.createQ = function (validatedParams) {
   return Q.promise( function (resolve, reject) {
-    console.log( "Attempting to create user: params: " + JSON.stringify(validatedParams) );
+    logger.info( "Attempting to create user: params: ", validatedParams );
 
     var newUser = new User(validatedParams);
     newUser.provider = 'local';
@@ -46,14 +47,13 @@ exports.createUserHelper = function (parameters, callback) {
     .done(function (user) {
 
     // saved!
-    winston.log('info',"saved: "+user);
-    console.log('saved newUser: '+user.username)
+    logger.info('saved newUser: '+user.username)
 
     if (typeof callback === "function")
       callback(undefined, user);
     }, function (err) {
       if (err) {
-        console.log("err: "+ err);
+        logger.info("createUser err: "+ err);
         return callback && callback(err);
       }
     });
@@ -73,7 +73,7 @@ exports.createUser = function createUser(req, res){
   };
 
   utils.validateJSONBody(req.body, {username: {required : true, type: 'string'}, password : {required : true, type: 'string'}}, function (params) {
-    console.log( "User attempting to register: params: " + JSON.stringify(params) );
+    logger.log('info', "User attempting to register: params: ", params );
     exports.createUserHelper(params, function(err, user){
       if (!err){
         // manually login the user once successfully signed up
@@ -81,11 +81,11 @@ exports.createUser = function createUser(req, res){
           if (err) return next(err)
         });
 
-        console.log(user.username +' created and logged in');
+        logger.info(user.username +' created and logged in');
         responseJSON.token = user.username;
         return res.status(200).send(responseJSON);
       } else {
-        console.log("login failed");
+        logger.info("regester failed");
       }
     });
   }, function(missingKey) {

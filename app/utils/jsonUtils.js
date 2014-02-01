@@ -63,9 +63,6 @@ exports.validateJSONBody = function(bodyJSON, parameterSpecs, allSuccessfulCallb
 
   Q.all(validationPromises)
     .done(function(value){
-      //console.log("success: " + JSON.stringify(validatedParams));
-      //console.log("fail: " + JSON.stringify(problemParams));
-
       if (!_.isEmpty(validatedParams) && _.isEmpty(problemParams) && typeof allSuccessfulCallback === "function")
         allSuccessfulCallback(validatedParams);
 

@@ -13,11 +13,8 @@ describe('Controllers: ', function () {
           done();
       });
     });
-/*    afterEach(function(){  //sanity test
-      users.getAllUsers(function (users){
-        console.log(users);
-      });
-    });*/
+    //TODO after kill db
+
     describe('createUser: ', function(){
       it('should execute a callback with a valid User object',function (done){
         var _username = "toodly_woodly";

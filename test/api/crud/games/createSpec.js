@@ -144,13 +144,10 @@ describe('API', function () {
 
                 var body = res.body;
                 _.each(expectedCreatedGameBody, function (value, key) {
-                  //console.log(key + ': ' + body[key] + ' ?= ' + value)
                   should(body[key]).equal(value);
                 });
 
                 should(_.size(body.players)).eql(1);
-                console.log('players: ')
-                console.log(body.players[_.keys(body.players)[0]]);
                 done();
               });
           });

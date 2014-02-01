@@ -7,7 +7,7 @@
 var _ = require('underscore'),
   mongoose = require('mongoose'),
   Q = require('q'),
-  winston = require('winston');
+  logger = require('winston');
 
 var utils = require('../../utils/jsonUtils');
   Game = mongoose.model('Game');
@@ -22,18 +22,19 @@ exports.createQ = function(params){
   var creator = params.creator;//expecting a user
 
   return Q.promise( function (resolve, reject) {
-    console.log( "User attempting to create new game: params: " + JSON.stringify(validatedParams) );
+    logger.log('info', "User attempting to create new game: params: ", validatedParams );
 
     validatedParams.gameStatus = 'open';
 
     var newGame = new Game(validatedParams);
 
     if (!creator) {
-      console.log('doing unit tests');
+      logger.info('doing unit tests');
 
       newGame.saveQ()
         .done(resolve, reject);
     } else {
+      logger.log('log', 'creating game with creator: ', creator);
       newGame.joinGameQ(creator)
         .done(function () {
           newGame.saveQ()

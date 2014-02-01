@@ -15,9 +15,7 @@ var Game = require('../../models/Game/index'),
 
 var errorResponse = function (res) {
   return function (_err) {
-    //logger.error(err);
-    console.log("err:")
-    console.log(_err);
+    winston.error(_err);
     res.status(400).send({
       status: -1,
       statusMsg: _err
@@ -25,14 +23,8 @@ var errorResponse = function (res) {
   }
 };
 
-var error = function (err) {
-  //logger.error(err);
-  console.log("err:")
-  console.log(err);
-};
-
 exports.index = function(req, res){
-  console.log('GET /users');
+  winston.info('GET /users');
 
   Game.find().execQ()
     .then(function (games) {
@@ -53,6 +45,8 @@ attempt to do make the game
  */
 
 exports.create = function(req, res){
+  winston.info('POST /games');
+
   var responseJSON = {
     originalURL : req.originalUrl,
     status: 0,
@@ -79,8 +73,7 @@ exports.create = function(req, res){
 };
 
 exports.read = function (req, res){
-  console.log('GET /users/:id');
-
+  winston.info('GET /games/:id', req.params.id);
 
   gameHelper.readQ(req.params.id)
     .then(function (game){
@@ -91,9 +84,9 @@ exports.read = function (req, res){
 };
 
 exports.update = function (req, res){
-  res.status(200).send("update");
+  res.status(500).send("update");
 };
 
 exports.destroy = function (req, res){
-  res.status(200).send("destroy");
+  res.status(500).send("destroy");
 };

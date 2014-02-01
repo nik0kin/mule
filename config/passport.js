@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
-    LocalStrategy = require('passport-local').Strategy,
-    User = mongoose.model('User');
+  LocalStrategy = require('passport-local').Strategy,
+  User = mongoose.model('User'),
+  winston = require('winston');
 
 
 module.exports = function (passport, config) {
@@ -23,7 +24,7 @@ module.exports = function (passport, config) {
       passwordField: 'password'
     },
     function(_username, password, done) {//later revert back to email?
-      console.log("attempting to login: \nusername= "+_username+"\npassword= "+password);
+      logger.info("attempting to login: \nusername= "+_username+"\npassword= "+password);
       User.findOne({ username: _username }, function (err, user) {
         if (err) { return done(err); }
         if (!user) {

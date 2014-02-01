@@ -14,7 +14,8 @@
 var express = require('express'),
     fs = require('fs'),
     passport = require('passport'),
-    winston = require('winston');
+    winston = require('winston'),
+    dateUtils = require(__dirname + '/app/utils/dateUtils');
 
 /**
  * Configs
@@ -25,7 +26,7 @@ var env = process.env.NODE_ENV || 'development',
     mongoose = require('mongoose');
 
 //Winston Config
-winston.add(winston.transports.File, { filename: 'winston_log.log' });
+winston.add(winston.transports.File, { filename: 'mule' + dateUtils.getNiceDate()  + '.log' });
 winston.remove(winston.transports.Console);
 
 //Bootstrap db connection

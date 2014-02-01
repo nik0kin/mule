@@ -22,7 +22,7 @@ describe('Models: ', function () {
               dbHelper.getGameQ(game._id)
                 .done(function (gotGame) {
                   should(gotGame).ok;
-                  console.log(gotGame)
+                  winston.log(gotGame)
                   should(gotGame.players.count).ok;
                   should(gotGame.players.count).be.a.Number;
                 }, testHelper.mochaError(done))

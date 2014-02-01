@@ -12,7 +12,8 @@ var mongoose = require('mongoose-q')(require('mongoose')),
 
 var validateHelp = require('./validateHelper'),
   instanceMethodsHelp = require('./instanceMethodsHelper'),
-  users = require('../../controllers/users');
+  users = require('../../controllers/users'),
+  winston = require('winston');
 
 var GameSchema = new mongoose.Schema({
   id: {
@@ -64,7 +65,7 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
     return Q.promise(function (resolve, reject) {
       //valid user?
       if (!player || !player._id){//TODO lazy, didnt check db
-        console.log(player)
+        winston.error('invalid player')
         return reject('invalid player');
       }
 
@@ -98,7 +99,7 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
       //update db
       that.saveQ()
         .then(function (result) {
-          console.log('player[' + player.username + '] added to game: ' + result._id + ' [' + result.playersCount + '/' + result.numberOfPlayers + ']');
+          winston.info('player[' + player.username + '] added to game: ' + result._id + ' [' + result.playersCount + '/' + result.numberOfPlayers + ']');
           resolve(result);
         })
         .fail(reject)

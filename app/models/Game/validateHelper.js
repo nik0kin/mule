@@ -34,8 +34,8 @@ var validateGamePlayersObject = function (players) {
     if (!value.playerID && value.playerStatus
         && playerGameStatusUtils.validatePlayerStatus(value.playerStatus) ){
         allGood = false;
-      console.log('validated player:' + key)
-      console.log(value)
+      console.log('validated player:' + key);
+      console.log(value);   // TODO when does this get called
     }
   });
   return allGood;

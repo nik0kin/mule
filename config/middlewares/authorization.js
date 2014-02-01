@@ -1,3 +1,4 @@
+var winston = require('winston');
 
 /*
  *  Generic require login routing middleware
@@ -5,7 +6,8 @@
 
 exports.requiresLogin = function (req, res, next) {
   if (!req.isAuthenticated()) {
-    console.log("unauth: redirecting '"+req.originalUrl+"' to /login");
+    //TODO log this somewhere else
+    winston.error("unauth: redirecting '"+req.originalUrl+"' to /login");
     req.session.returnTo = req.originalUrl;
     return res.redirect('/login');
   }
