@@ -6,7 +6,7 @@ INSTALL:
 Node:
 
   Ubuntu:
-	```sudo apt-get update
+```	sudo apt-get update
 	sudo apt-get install -y python-software-properties python g++ make
 	sudo add-apt-repository ppa:chris-lea/node.js
 	sudo apt-get update
@@ -14,7 +14,7 @@ Node:
     
     
 Grunt, forever:
-    ```sudo install -g grunt-cli forever```
+```	sudo install -g grunt-cli forever```
 
 
 MongoDB:
@@ -24,15 +24,15 @@ MongoDB:
 - run 'monGO' to start mongodb
 
 Install ProjectMule
-	```npm install```
+```	npm install```
 
 ---------------------------------------------------------
 RUN:
 ---------------------------------------------------------
 
-	```npm start```
+```	npm start```
 or
-	```node server.js```
+```	node server.js```
 
 
 todo: learn github readme formatting
