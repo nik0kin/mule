@@ -26,7 +26,8 @@ var env = process.env.NODE_ENV || 'development',
     mongoose = require('mongoose');
 
 //Winston Config
-winston.add(winston.transports.File, { filename: 'mule' + dateUtils.getNiceDate()  + '.log' });
+fs.mkdirSync('logs', 755);
+winston.add(winston.transports.File, { filename: 'logs/mule' + dateUtils.getNiceDate()  + '.log' });
 winston.remove(winston.transports.Console);
 
 //Bootstrap db connection
