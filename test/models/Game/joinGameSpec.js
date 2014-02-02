@@ -12,9 +12,9 @@ var app = require('../../../server');
 
 var Game = require('../../../app/models/Game/index'),
   User = require('../../../app/models/User'),
-  dbHelper = require('../../dbHelper'),
+  dbHelper = require('../..//dbHelper'),
   testHelper = require('../../helper'),
-  validParams = require('../../validParams');
+  validParams = require('../../validParams/gameConfig');
 
 describe('Models: ', function () {
   describe('Game: ', function () {
@@ -23,7 +23,7 @@ describe('Models: ', function () {
 
     beforeEach(function (done) {
       var ourUserParams = {username : "joe", password : "blow"};
-      var ourGameParams = validParams.validGameParams;
+      var ourGameParams = validParams.validGameParams[0];
       ourGameParams.dontJoinCreator = true;
 
       //clear databases TODO this could be prettier

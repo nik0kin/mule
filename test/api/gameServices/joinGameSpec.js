@@ -3,13 +3,13 @@
  *   @nikpoklitar
  */
 
+var dbHelper = require('../../dbHelper');
+
 describe('API: ', function () {
   describe('Game Services: ', function () {
 
 
-    after(function () {
-      //clear dbs
-    });
+    after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
     describe('Join Game: ', function () {
       before(function () {
@@ -32,11 +32,9 @@ describe('API: ', function () {
         it('should reject if you are in the game' , function () {
 
         });
-
         it('should return if its full' , function () {
 
         });
-
         it('should return if its not a joinable game (inProgress or finished)' , function () {
 
         });

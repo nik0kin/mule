@@ -9,7 +9,7 @@
 var should = require('should')
 
 var dbHelper = require('../../dbHelper'),
-  validParams = require('../../validParams'),
+  validParams = require('../../validParams/gameConfig'),
   testHelper = require('../../helper');
       /*
 describe('Models: ', function () {

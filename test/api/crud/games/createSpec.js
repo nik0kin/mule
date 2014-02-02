@@ -13,7 +13,9 @@ var mongoose = require('mongoose'),
 var loginHelper = require('../../loginHelper')('http://localhost:3130'),
   dbHelper = require('../../../dbHelper'),
   User = require('../../../../app/models/User'),
-  Game = require('../../../../app/models/Game/index');
+  Game = require('../../../../app/models/Game/index'),
+  testHelper = require('../../../helper'),
+  testParams = require('./createParams');
 var app = require ('../../../../server.js');
 
 
@@ -26,77 +28,20 @@ describe('API', function () {
         .then(function (user) {
           loggedInUser = user;
           done();
-        }, function (err) {
-          done(err);
-        });
+        }, testHelper.mochaError(done));
     });
 
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
-    var validCreateGamesBody = {
-      gameConfig : {
-        "name": "fun game 3v3",
-        "numberOfPlayers" : '6',
-        "width" : 40,
-        "height" : '40',
-        "turnStyle" : "realtime"
-      }
-    };
+    var validCreateGamesBody = testParams.validCreateGamesBody;
+    var expectedCreatedGameBody = testParams.expectedCreatedGameBody;
 
-    var expectedCreatedGameBody = {
-      "name": "fun game 3v3",
-      "numberOfPlayers" : 6,
-      "width" : 40,
-      "height" : 40
-    };
+    var validCreateGamesBodyWithAlteredGameStatus = testParams.validCreateGamesBodyWithAlteredGameStatus;
 
-    var validCreateGamesBodyWithAlteredGameStatus = {
-      gameConfig : {
-        "name": "fun game 3v3",
-        "numberOfPlayers" : '6',
-        "width" : 40,
-        "height" : '40',
-        "turnStyle" : "realtime",
-        "gameStatus" : "}{}#$%#$^sh run OMG hax"
-      }
-    };
-
-    var invalidCreateGamesBody = {
-      gameConfig : {
-        "name": "fun game 3v3",
-        "numberOfPlayers" : '6',
-        "width" : 0,
-        "height" : -1,
-        "turnStyle" : "realtime"
-      }
-    };
-    var invalidCreateGamesBody2 = {
-      gameConfig : {
-        "name": "fun game 3v3",
-        "numberOfPlayers" : '6',
-        "width" : 50000,
-        "height" : 501,
-        "turnStyle" : "realtime"
-      }
-    };
-    var invalidCreateGamesBody3 = {
-      gameConfig : {
-        "name": "fun game 3v3",
-        "numberOfPlayers" : '11',
-        "width" : 5,
-        "height" : 5,
-        "turnStyle" : "realtime"
-      }
-    };
-    var invalidCreateGamesBody4 = {
-      gameConfig : {
-        "name": "fun game 3v3",
-        "numberOfPlayers" : '1',
-        "width" : 5,
-        "height" : 5,
-        "turnStyle" : "realtime"
-      }
-    };
+    var invalidCreateGamesBody = testParams.invalidCreateGamesBody;
+    var invalidCreateGamesBody2 = testParams.invalidCreateGamesBody2;
+    var invalidCreateGamesBody3 = testParams.invalidCreateGamesBody3;
+    var invalidCreateGamesBody4 = testParams.invalidCreateGamesBody4;
 
     describe('POST /games', function () {
       it('reject missing gameConfig', function (done) {
