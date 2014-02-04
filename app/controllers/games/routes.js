@@ -15,5 +15,5 @@ module.exports = function (app){
   app.put ('/games/:id', auth.requiresLogin, gameController.update);  //TODO change auth function
   app.del ('/games/:id', auth.requiresLogin, gameController.destroy); // ^^
 
-  app.post('/games/:gameID/join', auth.requiresLogin, gameServices.joinGame);
+  app.post('/games/:id/join', auth.requiresLogin, gameServices.joinGame);
 };

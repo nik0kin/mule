@@ -65,17 +65,19 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
     return Q.promise(function (resolve, reject) {
       //valid user?
       if (!player || !player._id){//TODO lazy, didnt check db
-        winston.error('invalid player')
+        winston.error('invalid player');
         return reject('invalid player');
       }
 
       //are we full?
       if (that.full){
+        winston.error('Game Full');
         return reject('Game Full');
       }
 
       //is the player in this Game already?
       if (that.getPlayerPosition(player._id) !== -1) {
+        winston.error('Player is already in Game');
         return reject('Player is already in Game');
       }
 
@@ -99,7 +101,7 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
       //update db
       that.saveQ()
         .then(function (result) {
-          winston.info('player[' + player.username + '] added to game: ' + result._id + ' [' + result.playersCount + '/' + result.numberOfPlayers + ']');
+          winston.info('player[' + player.username + '|' + player._id + '] added to game: ' + result._id + ' [' + result.playersCount + '/' + result.numberOfPlayers + ']');
           resolve(result);
         })
         .fail(reject)
@@ -118,7 +120,7 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
   getPlayerPosition : function (playerID) {
     var position = -1;
     _.each(this.players, function (value, key) {
-      if (value.playerID === playerID) {
+      if (_.isEqual(value.playerID, playerID)) { // === doesn't work, but idk what types they were ( _.isString said false) TODO figure it out and write a unit test for it
         position = key;
       }
     });

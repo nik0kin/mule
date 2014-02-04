@@ -12,12 +12,12 @@ var _ = require('underscore'),
 var utils = require('../../../utils/jsonUtils');
   Game = mongoose.model('Game');
 
-exports.index = function(parameters, callback){
+exports.index = function (parameters, callback) {
 
 
 };
 
-exports.createQ = function(params){
+exports.createQ = function (params) {
   var validatedParams = params.validatedParams;
   var creator = params.creator;//expecting a user
 
@@ -42,21 +42,19 @@ exports.createQ = function(params){
         }, reject);
 
     }
-
-
   });
 };
 
-exports.readQ = function(gameID){
+exports.readQ = function (gameID){
   return Game.findByIdQ(gameID);
 };
 
-exports.update = function(parameters, callback){
+exports.update = function (parameters, callback) {
 
 
 };
 
-exports.destroy = function(parameters, callback){
+exports.destroy = function (parameters, callback) {
 
 
 };

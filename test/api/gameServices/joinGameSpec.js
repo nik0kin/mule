@@ -3,7 +3,8 @@
  *   @nikpoklitar
  */
 
-var should = require('should');
+var should = require('should'),
+  _ = require('underscore');
 
 require('../../../server.js');
 
@@ -31,8 +32,8 @@ describe('API: ', function () {
             gameCreatorUserAgent = user1;
 
             loginHelper.registerAndLoginQ({username: 'NIKOLAS', password : 'poklitar'})
-              .done(function (user) {
-                ourUserAgent = user;
+              .done(function (user2) {
+                ourUserAgent = user2;
                 done();
               }, testHelper.mochaError(done));
           }, testHelper.mochaError(done))
@@ -52,24 +53,82 @@ describe('API: ', function () {
         restHelper.expectJson(done, ourUserAgent, '/games/' + createdGameID + '/join', {});
       });
 
-      it('basic should work' , function () {
-
+      it('basic should work' , function (done) {
+        gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID})
+          .done(function (result) {
+            should(result).ok;
+            should(result.status).eql(0);
+            gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+              .done(function (game) {
+                should(game).ok;
+                should(game.players).ok;
+                should(game.players['p2']).ok;
+                done();
+              }, testHelper.mochaError(done));
+          }, testHelper.mochaError(done));
       });
 
 
       describe('reject if' , function () {
-        it('should reject an invalid gameID' , function () {
-
+        it('should reject an invalid gameID' , function (done) {
+          gameHelper.joinGameQ({agent : ourUserAgent, gameID : 'THISWONTWORK', fail: true})
+            .done(function (result) {
+              should(result).ok;
+              should(result.status).eql(-1);
+              gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+                .done( function (result) {
+                  should(result.players).ok
+                  should(_.size(result.players)).eql(1);
+                  done();
+                }, testHelper.mochaError(done));
+            }, testHelper.mochaError(done));
         });
-        it('should reject if you are in the game' , function () {
-
+        it('should reject if you are already the game' , function (done) {
+          //just gonna use the 'gameCreatorUserAgent' here for less code
+          gameHelper.joinGameQ({agent : gameCreatorUserAgent, gameID : createdGameID, fail: true})
+            .done(function (result) {
+              should(result).ok;
+              should(result.status).eql(-1);
+              gameHelper.readGameQ({agent : gameCreatorUserAgent, gameID : createdGameID})
+                .done( function (result2) {
+                  should(result2.players).ok
+                  should(_.size(result2.players)).eql(1);
+                  done();
+                }, testHelper.mochaError(done));
+            }, testHelper.mochaError(done));
         });
-        it('should reject if its full' , function () {
-
+        it('should reject if its full' , function (done) {
+          loginHelper.registerAndLoginQ({username: 'anohterUser', password : 'poklitar'})
+            .done(function (newUserAgent) {
+              gameHelper.joinGameQ({agent : newUserAgent, gameID : createdGameID})
+                .done(function (result) {
+                  should(result).ok;
+                  should(result.status).eql(0);
+                  loginHelper.registerAndLoginQ({username: 'anohterUser2', password : 'wowzers13'})
+                    .done(function (newUserAgent2) {
+                      gameHelper.joinGameQ({agent : newUserAgent2, gameID : createdGameID})
+                        .done(function (result) {
+                          should(result).ok;
+                          should(result.status).eql(0);
+                          gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID, fail : true})
+                            .done(function (result) {
+                              should(result).ok;
+                              should(result.status).eql(-1);
+                              gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+                                .done( function (result2) {
+                                  should(result2.players).ok
+                                  should(_.size(result2.players)).eql(3);
+                                  done();
+                                }, testHelper.mochaError(done));
+                            }, testHelper.mochaError(done));
+                        }, testHelper.mochaError(done));
+                    }, testHelper.mochaError(done));
+                }, testHelper.mochaError(done));
+            }, testHelper.mochaError(done));
         });
-        it('should reject if its not a joinable game (inProgress or finished)' , function () {
-
-        });
+        /*it('should reject if its not a joinable game (inProgress or finished)' , function () {
+         //TODO once games can 'Start'
+         });*/
       });
 
     });

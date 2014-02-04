@@ -10,17 +10,18 @@ var request = require('supertest'),
 
 module.exports = function(serverIP){
   var fakeUserCredentials = {username: "nikolas", password: "poklitar"};
-  var ourUser = request.agent(serverIP);
 
   var that = {};
   that.registerAndLoginQ = function (credentials) {
+    var ourAgent = request.agent(serverIP);
     var loginCredentials = credentials || fakeUserCredentials;
+
     return Q.promise(function (resolve, reject) {
-      ourUser.post('/users').send(loginCredentials).expect(200).end(function(err, res){
+      ourAgent.post('/users').send(loginCredentials).expect(200).end(function(err, res){
         if (err)
           reject(err);
         else
-          resolve(ourUser);
+          resolve(ourAgent);
       });
     });
   };

@@ -19,3 +19,37 @@ exports.createGameQ = function (params) {
     });
   });
 };
+
+exports.readGameQ = function (params) {
+  var agent = params.agent;
+  var gameID = params.gameID;
+
+  return Q.promise(function (resolve, reject) {
+    agent.get('/games/' + gameID).send({}).expect(200).end(function(err, res){
+      if (err)
+        reject(err);
+      else
+        resolve(res.body);
+    });
+  });
+};
+
+exports.joinGameQ = function (params) {
+  var agent = params.agent;
+  var gameID = params.gameID;
+  var expectedStatusCode = params.fail ? 400 : 200;
+
+  return Q.promise(function (resolve, reject) {
+    var request = agent.post('/games/' + gameID + '/join').send({});
+
+    request.expect(expectedStatusCode);
+
+    request.end(function(err, res){
+      console.log(res.body)
+      if (err)
+        reject(err);
+      else
+        resolve(res.body);
+    });
+  });
+};

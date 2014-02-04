@@ -23,7 +23,7 @@ var errorResponse = function (res) {
   }
 };
 
-exports.index = function(req, res){
+exports.index = function (req, res) {
   winston.info('GET /users');
 
   Game.find().execQ()
@@ -44,7 +44,7 @@ attempt to do make the game
 
  */
 
-exports.create = function(req, res){
+exports.create = function (req, res) {
   winston.info('POST /games');
 
   var responseJSON = {
@@ -72,7 +72,7 @@ exports.create = function(req, res){
     });
 };
 
-exports.read = function (req, res){
+exports.read = function (req, res) {
   winston.info('GET /games/:id', req.params.id);
 
   gameHelper.readQ(req.params.id)
@@ -83,10 +83,10 @@ exports.read = function (req, res){
     .done();
 };
 
-exports.update = function (req, res){
+exports.update = function (req, res) {
   res.status(500).send("update");
 };
 
-exports.destroy = function (req, res){
+exports.destroy = function (req, res) {
   res.status(500).send("destroy");
 };
