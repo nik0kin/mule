@@ -1,5 +1,5 @@
 /**
- * controllers/games/helper.js
+ * controllers/games/crud/helper.js
  *
  * Created by niko on 1/22/14.
  */
@@ -9,7 +9,7 @@ var _ = require('underscore'),
   Q = require('q'),
   logger = require('winston');
 
-var utils = require('../../utils/jsonUtils');
+var utils = require('../../../utils/jsonUtils');
   Game = mongoose.model('Game');
 
 exports.index = function(parameters, callback){

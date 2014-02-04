@@ -24,7 +24,7 @@ var loggedInUser;
 describe('API', function () {
   describe('Games: ', function () {
     before(function (done){
-      loginHelper.registerAndLoginQ
+      loginHelper.registerAndLoginQ()
         .then(function (user) {
           loggedInUser = user;
           done();

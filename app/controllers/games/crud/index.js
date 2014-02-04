@@ -1,5 +1,5 @@
 /**
- * controllers/games/index.js
+ * controllers/games/crud/index.js
  *
  * Created by niko on 1/21/14.
  */
@@ -9,8 +9,8 @@ var fs = require('fs'),
   mongoose = require('mongoose'),
   winston = require('winston');
 
-var Game = require('../../models/Game/index'),
-  gameConfigUtils = require('../../utils/gameConfigUtils'),
+var Game = require('../../../models/Game/index'),
+  gameConfigUtils = require('../../../utils/gameConfigUtils'),
   gameHelper = require('./helper');
 
 var errorResponse = function (res) {

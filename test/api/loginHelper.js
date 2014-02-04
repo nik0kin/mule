@@ -13,14 +13,17 @@ module.exports = function(serverIP){
   var ourUser = request.agent(serverIP);
 
   var that = {};
-  that.registerAndLoginQ = Q.promise(function (resolve, reject) {
-    ourUser.post('/users').send(fakeUserCredentials).expect(200).end(function(err, res){
-      if (err)
-        reject(err);
-      else
-        resolve(ourUser);
+  that.registerAndLoginQ = function (credentials) {
+    var loginCredentials = credentials || fakeUserCredentials;
+    return Q.promise(function (resolve, reject) {
+      ourUser.post('/users').send(loginCredentials).expect(200).end(function(err, res){
+        if (err)
+          reject(err);
+        else
+          resolve(ourUser);
+      });
     });
-  });
+  };
 
   return that;
 };

@@ -9,7 +9,7 @@ var Q = require('q');
 var app = require ('../server.js');
 
 var Game = require('../app/models/Game/index'),
-  gamesHelper = require('../app/controllers/games/helper'),
+  gamesHelper = require('../app/controllers/games/crud/helper'),
   User = require('../app/models/User'),
   users = require('../app/controllers/users');
 
