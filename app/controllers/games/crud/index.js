@@ -84,9 +84,9 @@ exports.read = function (req, res) {
 };
 
 exports.update = function (req, res) {
-  res.status(500).send("update");
+  res.status(501).send("update");
 };
 
 exports.destroy = function (req, res) {
-  res.status(500).send("destroy");
+  res.status(501).send("destroy");
 };

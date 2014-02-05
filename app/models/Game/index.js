@@ -12,7 +12,7 @@ var mongoose = require('mongoose-q')(require('mongoose')),
 
 var validateHelp = require('./validateHelper'),
   instanceMethodsHelp = require('./instanceMethodsHelper'),
-  users = require('../../controllers/users'),
+  users = require('../../controllers/users/crud/index'),
   winston = require('winston');
 
 var GameSchema = new mongoose.Schema({
