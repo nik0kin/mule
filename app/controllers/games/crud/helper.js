@@ -12,9 +12,8 @@ var _ = require('underscore'),
 var utils = require('../../../utils/jsonUtils');
   Game = mongoose.model('Game');
 
-exports.index = function (parameters, callback) {
-
-
+exports.indexQ = function () {
+  return Game.find().execQ();
 };
 
 exports.createQ = function (params) {

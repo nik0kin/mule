@@ -7,4 +7,6 @@
 var Q = require('q'),
   _ = require('underscore');
 
-/*exports.addMethods */
+/*exports.addMethods = function(GameSchema, _this) {
+  GameSchema.methods = ...
+};*/

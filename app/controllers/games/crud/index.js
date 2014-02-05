@@ -26,7 +26,7 @@ var errorResponse = function (res) {
 exports.index = function (req, res) {
   winston.info('GET /users');
 
-  Game.find().execQ()
+  gameHelper.indexQ()
     .then(function (games) {
       res.send(games);
     })

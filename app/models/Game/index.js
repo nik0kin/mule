@@ -1,7 +1,7 @@
 /**
-* Models->Game-> index.js
-*
-*/
+ * Models->Game-> index.js
+ *
+ */
 
 var mongoose = require('mongoose-q')(require('mongoose')),
   Q = require('q'),
@@ -62,8 +62,7 @@ validateHelp.addValidators(GameSchema);
 /**
  * Methods
  */
-GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
-{
+GameSchema.methods = {
   joinGameQ : function (player) {
     var that = this;
     return Q.promise(function (resolve, reject) {
