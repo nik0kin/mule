@@ -5,8 +5,8 @@
 
 require('../../../server.js');
 
-var should = require('should')
-request = require('supertest');
+var should = require('should'),
+  request = require('supertest');
 
 var User = require('../../../app/models/User'),
   dbHelper = require('../../dbHelper');

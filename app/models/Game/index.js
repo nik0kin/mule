@@ -1,10 +1,7 @@
 /**
- * Created with IntelliJ IDEA.
- * User: npoklitar
- * Date: 1/13/14
- * Time: 9:18 AM
- * To change this template use File | Settings | File Templates.
- */
+* Models->Game-> index.js
+*
+*/
 
 var mongoose = require('mongoose-q')(require('mongoose')),
   Q = require('q'),

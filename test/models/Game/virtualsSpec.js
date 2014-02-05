@@ -1,12 +1,9 @@
 /**
- * Created with IntelliJ IDEA.
- * User: npoklitar
- * Date: 1/30/14
- * Time: 12:28 AM
- * To change this template use File | Settings | File Templates.
+ * Test->Models->Game-> virtualsSpec.js
+ *
  */
 
-var should = require('should')
+var should = require('should');
 
 var dbHelper = require('../../dbHelper'),
   validParams = require('../../validParams/gameConfig'),
