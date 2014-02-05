@@ -13,7 +13,7 @@ var app = require('../../../server');
 var Game = require('../../../app/models/Game/index'),
   User = require('../../../app/models/User'),
   dbHelper = require('../..//dbHelper'),
-  testHelper = require('../../helper'),
+  testHelper = require('../../mochaHelper'),
   validParams = require('../../validParams/gameConfig');
 
 describe('Models: ', function () {

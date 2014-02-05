@@ -11,7 +11,7 @@ require('../../../server.js');
 var params = require('./joinGameParams'),
   dbHelper = require('../../dbHelper'),
   restHelper = require('../restHelper'),
-  testHelper = require('../../helper'),
+  testHelper = require('../../mochaHelper'),
   loginHelper = require('../loginHelper')('http://localhost:3130'),
   gameHelper = require('../gameHelper');
 

@@ -5,7 +5,7 @@
 var should = require('should')
 
 var dbHelper = require('./dbHelper'),
-  testHelper = require('./helper');
+  testHelper = require('./mochaHelper');
 
 describe('dbHelper: ', function () {
   var validCreateGamesBody = {

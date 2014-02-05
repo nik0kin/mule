@@ -15,15 +15,16 @@ module.exports = function (app, passport) {
 
   ////////// ETC ////////////
 
-  // both login
+  // both login http://passportjs.org/guide/authenticate/
   app.post('/LoginAuth', passport.authenticate('local', {
-    failureRedirect: '/failure',
+  /*  successRedirect: '/success',
+    failureRedirect: '/failure', */
     failureFlash: 'Invalid email or password.'
   }), userServices.session);
 
-  app.post('/users/session',
+  /*app.post('/users/session', //TODO what is this used for
     passport.authenticate('local', {
       failureRedirect: '/failure',
       failureFlash: 'Invalid email or password.'
-    }), userServices.session);
+    }), userServices.session);*/
 };

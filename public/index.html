@@ -8,221 +8,67 @@
     </style>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 
-    <script src="jquery-1.9.1.min.js"></script>
+    <script src="lib/jquery-1.11.0.min.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <script src="kinetic-v4.4.3.min.js"></script>
+    <script src="lib/kinetic-v4.4.3.min.js"></script>
     <script src="lib/underscore-min.js"></script>
 
 
-    <script src="demo_lib.js"></script>
     <script src="Field.js"></script>
+
+    <script data-main="demo" src="lib/require.js"></script>
 </head>
 
 
 <body>
-<script type="text/javascript">
-    var contextPath = "../";//"http://localhost:9590/td/";
+    <script type="text/javascript">
+        $(function() {
+            $( "#tabs" ).tabs();
+        });
+    </script>
+
+    <h3>Login/Register</h3><br>
+    Username:
+    <input id="usernameText" type="text" name="username"> <br>
+    Password:
+    <input id="passwordText" type="text" name="password"> <br>
+    <input type="button" id="createUser"  value="Register">
+    <input type="button" id="loginUser" value="Login">
+    <br><br>
+
+    <h3>Start Game</h3><br>
+    GameName:
+    <input id="startG_name" type="text" name="gamename"><br>
+    Total Number of Players ( >1 ):
+    <input id="startG_num" type="text" name="maxPlayers"><br>
+    Width/Height:
+    <input id="startG_width" type="text" name="width">
+    <input id="startG_height" type="text" name="height"><br>
+    <input type="button" id="startGame" value="Start Game">
+    <br><br>
+
+    <h3>View Game Info</h3><br>
+
+    <div id="gameInfoArea"></div><br>
 
 
-    $(function() {
-        $( "#tabs" ).tabs();
-    });
-    function createUser(){
-        var username = $("#usernameText").val();
-        var password = $("#passwordText").val();
-        if(password == undefined) password = "pw";
-        $.ajax({
-            type: "POST",
-            url: contextPath+"users",
-            data: {
-                username: username,
-                password: password
-            }
-        }).done(function(data ) {
+    <div id="container"></div>
 
-                    console.log( "Data Recieved: " + data );
-
-                    //data = JSON.parse(data);
-
-                    if(data.status != 0){
-                        alert("createUser failed: "+data.statusMsg);
-                        return;
-                    }
-                    token = data.token;
-
-                    console.log("token: "+token);
-                    console.log(data);
-
-
-
-                }).fail(function(msg){
-                    alert("createUser Fail");
-                });
-    }
-
-    function tryLogin(){
-        var username = $("#usernameText").val();
-        var password = $("#passwordText").val();
-        $.ajax({
-            type: "POST",
-            url: contextPath+"LoginAuth",
-            data: {
-                username: username,
-                password: password
-            }
-        }).done(function(data ) {
-
-                    console.log( "Data Recieved: " + data );
-
-                }).fail(function(msg){
-                    alert("login Fail: " +msg.body);
-                });
-
-
-        $("#tabs-1").html("");
-        $("#tabs-2").html("");
-    }
-
-    function startGame(){
-        var gamename = $("#startG_name").val();
-        var maxPlayers = $("#startG_num").val();
-        var width = $("#startG_width").val();
-        var height = $("#startG_height").val();
-
-        var gameConfig = JSON.stringify({name: gamename, maxPlayers: maxPlayers, width: width, height: height});
-        var gameConfig = {name: gamename, maxPlayers: maxPlayers, width: width, height: height};
-
-        $.ajax({
-            type: "POST",
-            url: contextPath+"games",
-            data: {
-                gameConfig: gameConfig
-            }
-        }).done(function(data ) {
-
-                    console.log( "Data Recieved: " + data );
-
-                    if(data.status != 0){
-                        alert("login failed: "+data.statusMsg);
-                        return;
-                    }
-
-
-                }).fail(function(msg){
-                    alert("Fail " + msg.responseText);
-                });
-    }
-
-
-
-    function getGames(){
-        $.ajax({
-            type: "GET",
-            url: contextPath+"games"
-        }).done(function(data ) {
-
-                    console.log( "Data Recieved: " + data );
-
-                    if(!_.isArray(data)){
-                        alert("Get Games failed: "+JSON.stringify(data));
-                        return;
-                    }
-                    var games = data;
-                    var gamesSize = _.size(data);
-
-                    //populating the games list tabs
-                    $("#tabs-1").html("");
-                    if(gamesSize){
-                        _.each(games, function(value) {
-                            $("#tabs-1").append(getGameTable(value));
-                        });
-                    }
-
-                }).fail(function(msg){
-                    alert("getGames Fail");
-                });
-
-    };
-
-    var field;
-    function selectGame(gameID){
-        var selectedGameID = gameID
-
-        if (!selectedGameID) {
-            alert("Invalid gameID");
-            return;
-        }
-console.log('trying to get ' + selectedGameID)
-        $.ajax({
-            type: "GET",
-            url: contextPath+"games/" + selectedGameID,
-            data: {
-            }
-        }).done(function(data ){
-                    console.log("Data Recieved: ");
-                    console.log(data);
-
-                    /*if(data.width <= 0 || data.height <= 0){
-                        alert("Invalid Map Width/Height");
-                        return;
-                    }*/
-
-                    $("#gameInfoArea").html(getGameInfoTable(data));
-
-                    /*if(field)
-                        field.kill();
-
-                    field = new Field(data.width,data.height,data.map);*/
-                });
-
-    };
-
-
-
-</script>
-
-<h3>Login/Register</h3><br>
-Username:
-<input id="usernameText" type="text" name="username"> <br>
-Password:
-<input id="passwordText" type="text" name="password"> <br>
-<input type="button" onclick="createUser();" value="Register">
-<input type="button" onclick="tryLogin();" value="Login (BROKEN)">
-<br><br>
-<h3>Start Game</h3><br>
-GameName:
-<input id="startG_name" type="text" name="gamename"><br>
-Total Number of Players ( >1 ):
-<input id="startG_num" type="text" name="maxPlayers"><br>
-Width/Height:
-<input id="startG_width" type="text" name="width">
-<input id="startG_height" type="text" name="height"><br>
-<input type="button" onclick="startGame();" value="Start Game">
-<br><br>
-
-
-<h3>List Games</h3><br>
-<input type="button" onclick="getGames();" value="Get Games"><br>
-<div id="tabs">
-    <ul>
-        <li><a href="#tabs-1">Open Games</a></li>
-        <li><a href="#tabs-2">My Games</a></li>
-    </ul>
-    <div id="tabs-1">
-        <p>tab1</p>
+    <h3>List Games</h3><br>
+    <input type="button" id="getGames" value="Get Games"><br>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Open Games</a></li>
+            <li><a href="#tabs-2">My Games</a></li>
+        </ul>
+        <div id="tabs-1">
+            <p>tab1</p>
+        </div>
+        <div id="tabs-2">
+            <p>tab2</p>
+        </div>
     </div>
-    <div id="tabs-2">
-        <p>tab2</p>
-    </div>
-</div>
-<br><br>
-
-<h3>View Game Info</h3><br>
-
-<div id="gameInfoArea"></div><br>
-
-
-<div id="container"></div>
+    <br><br>
 
 
 </body>

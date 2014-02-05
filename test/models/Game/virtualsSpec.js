@@ -7,7 +7,7 @@ var should = require('should');
 
 var dbHelper = require('../../dbHelper'),
   validParams = require('../../validParams/gameConfig'),
-  testHelper = require('../../helper');
+  testHelper = require('../../mochaHelper');
       /*
 describe('Models: ', function () {
   describe('Game: ', function () {

@@ -24,7 +24,7 @@ module.exports = function (passport, config) {
       passwordField: 'password'
     },
     function(_username, password, done) {//later revert back to email?
-      logger.info("attempting to login: \nusername= "+_username+"\npassword= "+password);
+      winston.info("attempting to login: \nusername= "+_username+"\npassword= "+password);
       User.findOne({ username: _username }, function (err, user) {
         if (err) { return done(err); }
         if (!user) {

@@ -12,7 +12,7 @@ var should = require('should'),
 var User = require('../../app/models/User'),
   users = require('../../app/controllers/users/crud/helper'),
   dbHelper = require('../dbHelper'),
-  testHelper = require('../helper');
+  testHelper = require('../mochaHelper');
 
 describe('Controllers: ', function () {
   describe('Users (helper): ', function() {

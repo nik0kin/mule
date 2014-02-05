@@ -14,7 +14,7 @@ var loginHelper = require('../../loginHelper')('http://localhost:3130'),
   dbHelper = require('../../../dbHelper'),
   User = require('../../../../app/models/User'),
   Game = require('../../../../app/models/Game/index'),
-  testHelper = require('../../../helper'),
+  testHelper = require('../../../mochaHelper'),
   testParams = require('./createParams');
 var app = require ('../../../../server.js');
 

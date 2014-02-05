@@ -4,13 +4,17 @@
  * Created by niko on 2/4/14.
  */
 
+var winston = require('winston');
 
 var login = function (req, res) {
   var redirectTo = req.session.returnTo ? req.session.returnTo : '/success';
   delete req.session.returnTo;
 
-  res.status(200).send("Logged In");
-  logger.info(req.user.username + "login result: " + redirectTo);
+  res.status(200).send({
+    status : 0,
+    statusMsg : 'Logged in Successfully'
+  });
+  winston.info(req.user.username + "login result: " + redirectTo);
   //res.redirect(redirectTo);
 };
 
