@@ -3,28 +3,22 @@ var token = "";
 function tryJoinGame(gameID){
   $.ajax({
     type: "POST",
-    url: contextPath+"JoinGame",
+    url: contextPath+"games/" + gameID + '/join',
     data: {
-      token: token,
-      gameID: gameID
-      //no spot(first available)
     }
   }).done(function(data) {
 
-      console.log( "Data Recieved: " + data );
-
-      data = JSON.parse(data);
+      console.log( "Data Recieved: " + JSON.stringify(data) );
 
       if(data.status != 0){
-        alert("login failed: "+data.statusMsg);
+        alert("join game failed: "+data.statusMsg);
         return;
       }
 
-
-
+      alert('you joined gameID[' + data.gameID + ']')
 
     }).fail(function(msg){
-      alert("JoinGame Fail Response");
+      alert("JoinGame Fail Response:" + JSON.stringify(msg));
     });
 }
 
@@ -78,6 +72,12 @@ function getGameTable(gameData){
     playDisabled = "disabled";
   }
 
+  var getButton = function (func, parameter, buttonLabel) {
+    var funcString = func + "('"+parameter+"');";
+    var stringS =  "<td><input type=\"button\" onclick=\"" + funcString + "\" value=\"" + buttonLabel + "\" "+disabled+"></td>";
+    return stringS;
+  };
+
   var string = "<table border=\'1\'>";
   string += "<tr>";
   string += "<td>name: <h3>"+gameData.name+"</h3></td>";
@@ -86,15 +86,15 @@ function getGameTable(gameData){
   string += "</tr>";
   string += "<tr>";
   string += "<td>Turn: "+gameData.turnNumber+"</td>";
-  string += "<td><input type=\'button\' onclick=\'tryJoinGame("+gameData.id+");\' value=\'Join Game\' "+disabled+"></td>";
+  string += getButton("tryJoinGame", gameData._id, "Join Game");
   string += "</tr>";
   string += "<tr>";
   string += "<td>Players: "+gameData.numberOfPlayers+"</td>";
-  string += "<td><input type=\'button\' onclick=\'selectGame("+gameData.id+");\' value=\'View Game\'></td>";
+  string += getButton("selectGame", gameData._id, "View Game");
   string += "</tr>";
   string += "<tr>";
   string += "<td></td>";
-  string += "<td><input type=\'button\' onclick=\'playGame("+gameData.id+");\'' value=\'Play Game\' "+playDisabled+"></td>";
+  string += getButton("playGame", gameData._id, "Play Game");
   string += "</tr>";
   string += "</table>";
 
@@ -105,7 +105,7 @@ function getGameInfoTable(gameInfo){
 
   var color = "#000000";
   var statusMsg = "";
-  switch(gameInfo.gamestatus){
+  switch(gameInfo.gameStatus){
     case 0:
       color = "#00FF00";
       statusMsg = "Open";
@@ -126,20 +126,19 @@ function getGameInfoTable(gameInfo){
   var string = "<table border=\'1\'>";
   string += "<tr>";
   string += "<td>name: <h3>"+gameInfo.name+"</h3></td>";
-  string += "<td>ID: "+gameInfo.gameID+"<br><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></td>";
+  string += "<td>ID: "+gameInfo._id+"<br><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></td>";
   string += "</tr>";
   string += "<tr>";
-  string += "<td>Turn: "+gameInfo.turn+"<br>"+gameInfo.numberOfPlayers+" players</td>";
+  string += "<td>Turn: "+gameInfo.turnNumber+"<br>"+gameInfo.numberOfPlayers+" players</td>";
   string += "<td> "+gameInfo.width+"x"+gameInfo.height+" map</td>";
   string += "</tr>";
   string += "<tr>";
   string += "<td colspan='2'>";
   string += "<b>Players:</b><br>";
 
-  for(var d in gameInfo.players){
-    var p = gameInfo.players[d];
-    string += d+").      "+p.username+"["+p.playerID+"]  :  "+p.playerStatus+"<br>";
-  }
+  _.each(gameInfo.players, function (value, key) {
+    string += key+").      ["+value.playerID+"]  :  "+value.playerStatus+"<br>";
+  });
 
   string += "</td>";
   string += "</tr>";

@@ -148,38 +148,31 @@
     function selectGame(gameID){
         var selectedGameID = gameID
 
-        if(!selectedGameID || selectedGameID < 0){
+        if (!selectedGameID) {
             alert("Invalid gameID");
             return;
         }
-
+console.log('trying to get ' + selectedGameID)
         $.ajax({
-            type: "POST",
-            url: contextPath+"GetGameInfo",
+            type: "GET",
+            url: contextPath+"games/" + selectedGameID,
             data: {
-                token: token,
-                gameID: selectedGameID
             }
         }).done(function(data ){
-                    console.log("Data Recieved: "+data);
+                    console.log("Data Recieved: ");
+                    console.log(data);
 
-                    data = JSON.parse(data);
-
-                    if(data.status != 0){
-                        alert("Error Recieved [:"+data.status+"]: "+data.statusMsg);
-                        return;
-                    }
-                    if(data.width <= 0 || data.height <= 0){
+                    /*if(data.width <= 0 || data.height <= 0){
                         alert("Invalid Map Width/Height");
                         return;
-                    }
+                    }*/
 
                     $("#gameInfoArea").html(getGameInfoTable(data));
 
-                    if(field)
+                    /*if(field)
                         field.kill();
 
-                    field = new Field(data.width,data.height,data.map);
+                    field = new Field(data.width,data.height,data.map);*/
                 });
 
     };
