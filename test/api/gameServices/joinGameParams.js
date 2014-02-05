@@ -7,7 +7,7 @@
 
 exports.validGameConfig = {
   "name": "testing joinGame .game",
-  "numberOfPlayers" : '3',
+  "maxPlayers" : '3',
   "width" : 13,
   "height" : '31',
   "turnStyle" : "realtime"

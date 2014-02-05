@@ -10,7 +10,7 @@ var dbHelper = require('./dbHelper'),
 describe('dbHelper: ', function () {
   var validCreateGamesBody = {
     "name": "fun game 3v3",
-    "numberOfPlayers" : 6,
+    "maxPlayers" : 6,
     "width" : 40,
     "height" : 40,
     "fog" : 'false',

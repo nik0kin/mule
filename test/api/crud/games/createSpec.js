@@ -188,7 +188,7 @@ describe('API', function () {
             });
         });
 
-        it('valid parameter types, but numberOfPlayers needs to be 10 or less', function (done) {
+        it('valid parameter types, but maxPlayers needs to be 10 or less', function (done) {
           loggedInUser
             .post('/games')
             .send(invalidCreateGamesBody3)
@@ -201,11 +201,11 @@ describe('API', function () {
               should(body).ok;
               should(body.statusMsg).ok;
               should(body.statusMsg.errors).ok;
-              should(body.statusMsg.errors).have.property('numberOfPlayers');
+              should(body.statusMsg.errors).have.property('maxPlayers');
               done();
             });
         });
-        it('valid parameter types, but numberOfPlayers needs to be 2 or greater', function (done) {
+        it('valid parameter types, but maxPlayers needs to be 2 or greater', function (done) {
           loggedInUser
             .post('/games')
             .send(invalidCreateGamesBody4)
@@ -218,7 +218,7 @@ describe('API', function () {
               should(body).ok;
               should(body.statusMsg).ok;
               should(body.statusMsg.errors).ok;
-              should(body.statusMsg.errors).have.property('numberOfPlayers');
+              should(body.statusMsg.errors).have.property('maxPlayers');
               done();
             });
         });

@@ -14,7 +14,7 @@ describe('Utils', function() {
     describe('validate():', function() {
       var validGameConfig = {
         "name": "SILYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
-        "numberOfPlayers": 6333,
+        "maxPlayers": 6333,
         "width": 01,
         "height": 313,
         "fog": true,
@@ -22,7 +22,7 @@ describe('Utils', function() {
       };
       var validGameConfig2 = {
         "name": "fun game 3v3",
-        "numberOfPlayers": 6,
+        "maxPlayers": 6,
         "width": 40,
         "height": '40',
         "fog": 'false',
@@ -30,13 +30,13 @@ describe('Utils', function() {
       };
       var invalidGameConfig = {
         "name": "fun game 3v3",
-        "numberOfPlayers": 6,
+        "maxPlayers": 6,
         "fog": false,
         "turnStyle": "realtime"
       };
       var invalidGameConfig2 = {
         "name": "SILYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
-        "numberOfPlayers": "notanumber",
+        "maxPlayers": "notanumber",
         "width": 01,
         "height": 313,
         "fog": "notabloolean",

@@ -13,25 +13,32 @@ var validateHelp = require('./validateHelper'),
   winston = require('winston');
 
 var GameSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    index: true
-  },
+  //// IDENTIFICATION ////
+  id: { type: Number, index: true },
   name : {type: String, default: "Unnamed Game"},
 
-  width : {type: Number, default: 1},
-  height : {type: Number, default: 1},
-
-  fog : {type: String, default: 'default'},
-
+  //// HIGH LEVEL SETTINGS ////
+  // RuleBundle
+  // turn??? - round robin vs async..
   turnStyle : {type : String, default : 'default'},
+  maxPlayers : { type: Number, default: 0 },   //TODO rename this
 
-  numberOfPlayers : { type: Number, default: 0 },   //TODO rename this
-  players : {type : mongoose.Schema.Types.Mixed, default : {} },
-
+  //// GAME INFO ////
   gameStatus: {type: String, default: 'open'},
   turnNumber: {type: Number, default: 0},        //open, inprogress, finished
-//  map: {type: null },
+  players : {type : mongoose.Schema.Types.Mixed, default : {} },
+
+  //// MAP INFO ////
+  // dependant on RuleBundle (will be moved soon)
+  width : {type: Number, default: 1},
+  height : {type: Number, default: 1},
+  //map: {type: null },
+
+  //// SETTINGS ////
+  // etc settings dependant on rule bundle
+  fog : {type: String, default: 'default'},
+
+  //// ETC ////
   currentLocalIDCounter: {type: Number, default: 0} //counter for id's of all units of the game
 });
 
@@ -43,7 +50,7 @@ GameSchema.virtual('playersCount').get(function () {
   return _.values(this.players).length;
 });
 GameSchema.virtual('full').get(function () {
-  return this.playersCount === this.numberOfPlayers;
+  return this.playersCount === this.maxPlayers;
 });
 
 /**
@@ -98,7 +105,7 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
       //update db
       that.saveQ()
         .then(function (result) {
-          winston.info('player[' + player.username + '|' + player._id + '] added to game: ' + result._id + ' [' + result.playersCount + '/' + result.numberOfPlayers + ']');
+          winston.info('player[' + player.username + '|' + player._id + '] added to game: ' + result._id + ' [' + result.playersCount + '/' + result.maxPlayers + ']');
           resolve(result);
         })
         .fail(reject)
@@ -108,8 +115,8 @@ GameSchema.methods = //instanceMethodsHelp(GameSchema);//{
 
   //simple for now, but later it should adapt when people 'leave' a game before it starts
   getNextPlayerPosition : function () {
-    if (this.playersCount >= this.numberOfPlayers)
-      throw 'playerCount exceeds numberOfPlayers';
+    if (this.playersCount >= this.maxPlayers)
+      throw 'playerCount exceeds maxPlayers';
     return 'p' + (this.playersCount + 1);
   },
 

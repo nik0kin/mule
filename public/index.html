@@ -85,12 +85,12 @@
 
     function startGame(){
         var gamename = $("#startG_name").val();
-        var numberOfPlayers = $("#startG_num").val();
+        var maxPlayers = $("#startG_num").val();
         var width = $("#startG_width").val();
         var height = $("#startG_height").val();
 
-        var gameConfig = JSON.stringify({name: gamename, numberOfPlayers: numberOfPlayers, width: width, height: height});
-        var gameConfig = {name: gamename, numberOfPlayers: numberOfPlayers, width: width, height: height};
+        var gameConfig = JSON.stringify({name: gamename, maxPlayers: maxPlayers, width: width, height: height});
+        var gameConfig = {name: gamename, maxPlayers: maxPlayers, width: width, height: height};
 
         $.ajax({
             type: "POST",
@@ -193,7 +193,7 @@ Password:
 GameName:
 <input id="startG_name" type="text" name="gamename"><br>
 Total Number of Players ( >1 ):
-<input id="startG_num" type="text" name="numberOfPlayers"><br>
+<input id="startG_num" type="text" name="maxPlayers"><br>
 Width/Height:
 <input id="startG_width" type="text" name="width">
 <input id="startG_height" type="text" name="height"><br>

@@ -89,7 +89,7 @@ function getGameTable(gameData){
   string += getButton("tryJoinGame", gameData._id, "Join Game");
   string += "</tr>";
   string += "<tr>";
-  string += "<td>Players: "+gameData.numberOfPlayers+"</td>";
+  string += "<td>Players: "+gameData.maxPlayers+"</td>";
   string += getButton("selectGame", gameData._id, "View Game");
   string += "</tr>";
   string += "<tr>";
@@ -129,7 +129,7 @@ function getGameInfoTable(gameInfo){
   string += "<td>ID: "+gameInfo._id+"<br><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></td>";
   string += "</tr>";
   string += "<tr>";
-  string += "<td>Turn: "+gameInfo.turnNumber+"<br>"+gameInfo.numberOfPlayers+" players</td>";
+  string += "<td>Turn: "+gameInfo.turnNumber+"<br>"+gameInfo.maxPlayers+" players</td>";
   string += "<td> "+gameInfo.width+"x"+gameInfo.height+" map</td>";
   string += "</tr>";
   string += "<tr>";

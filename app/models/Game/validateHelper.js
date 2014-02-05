@@ -12,7 +12,7 @@ exports.addValidators = function (GameSchema) {
   GameSchema.path('width').validate(validateWidthAndHeight, 'width must be within the range: 1 - 500');
   GameSchema.path('height').validate(validateWidthAndHeight, 'height must be within the range: 1 - 500');
   GameSchema.path('gameStatus').validate(gameStatusUtils.validateGameStatus, 'gameStatus must equal one of the following: open, inProgress, or finished');
-  GameSchema.path('numberOfPlayers').validate(validateNumberOfPlayers, 'numberOfPlayers must be within the range: 2 - 10');
+  GameSchema.path('maxPlayers').validate(validateNumberOfPlayers, 'maxPlayers must be within the range: 2 - 10');
   GameSchema.path('players').validate(validateGamePlayersObject, 'game->players object became invalid..');
 };
 

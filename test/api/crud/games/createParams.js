@@ -6,7 +6,7 @@
 exports.validCreateGamesBody = {
   gameConfig : {
     "name": "fun game 3v3",
-    "numberOfPlayers" : '6',
+    "maxPlayers" : '6',
     "width" : 40,
     "height" : '40',
     "turnStyle" : "realtime"
@@ -15,7 +15,7 @@ exports.validCreateGamesBody = {
 
 exports.expectedCreatedGameBody = {
   "name": "fun game 3v3",
-  "numberOfPlayers" : 6,
+  "maxPlayers" : 6,
   "width" : 40,
   "height" : 40
 };
@@ -23,7 +23,7 @@ exports.expectedCreatedGameBody = {
 exports.validCreateGamesBodyWithAlteredGameStatus = {
   gameConfig : {
     "name": "fun game 3v3",
-    "numberOfPlayers" : '6',
+    "maxPlayers" : '6',
     "width" : 40,
     "height" : '40',
     "turnStyle" : "realtime",
@@ -34,7 +34,7 @@ exports.validCreateGamesBodyWithAlteredGameStatus = {
 exports.invalidCreateGamesBody = {
   gameConfig : {
     "name": "fun game 3v3",
-    "numberOfPlayers" : '6',
+    "maxPlayers" : '6',
     "width" : 0,
     "height" : -1,
     "turnStyle" : "realtime"
@@ -43,7 +43,7 @@ exports.invalidCreateGamesBody = {
 exports.invalidCreateGamesBody2 = {
   gameConfig : {
     "name": "fun game 3v3",
-    "numberOfPlayers" : '6',
+    "maxPlayers" : '6',
     "width" : 50000,
     "height" : 501,
     "turnStyle" : "realtime"
@@ -52,7 +52,7 @@ exports.invalidCreateGamesBody2 = {
 exports.invalidCreateGamesBody3 = {
   gameConfig : {
     "name": "fun game 3v3",
-    "numberOfPlayers" : '11',
+    "maxPlayers" : '11',
     "width" : 5,
     "height" : 5,
     "turnStyle" : "realtime"
@@ -61,7 +61,7 @@ exports.invalidCreateGamesBody3 = {
 exports.invalidCreateGamesBody4 = {
   gameConfig : {
     "name": "fun game 3v3",
-    "numberOfPlayers" : '1',
+    "maxPlayers" : '1',
     "width" : 5,
     "height" : 5,
     "turnStyle" : "realtime"

@@ -13,7 +13,7 @@ take in jsonBody = gameConfig, make sure it looks like the following:
  Example gameConfig
  {
  "name": "fun game 3v3",
- "numberOfPlayers": 6,
+ "maxPlayers": 6,
  "width": 40,
  "height": 40,
  "fog": false,
@@ -27,9 +27,9 @@ return err if not
 
 //return a promise
 exports.promiseToValidate = function(jsonBody) {
-  var gameConfigParamSpec = {  //TODO can this be mapped to model and validated there?
+  var gameConfigParamSpec = {
     name:         {required: true, type : 'string'},
-    numberOfPlayers: {required: true, type : 'number'},
+    maxPlayers: {required: true, type : 'number'},
     width:        {required: true, type : 'number'}, //might be tied to RuleBundle later
     height:       {required: true, type : 'number'}/*,
     fog:          {required: true, type : 'string'}, //tied to RuleBundle
