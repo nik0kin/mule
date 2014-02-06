@@ -11,17 +11,10 @@ var fs = require('fs'),
 
 var Game = require('../../../models/Game/index'),
   gameConfigUtils = require('../../../utils/gameConfigUtils'),
+  responseUtils = require('../../../utils/responseUtils'),
   gameHelper = require('./helper');
 
-var errorResponse = function (res) {
-  return function (_err) {
-    winston.error(_err);
-    res.status(400).send({
-      status: -1,
-      statusMsg: _err
-    });
-  }
-};
+
 
 exports.index = function (req, res) {
   winston.info('GET /users');
@@ -48,7 +41,6 @@ exports.create = function (req, res) {
   winston.info('POST /games');
 
   var responseJSON = {
-    originalURL : req.originalUrl,
     status: 0,
     statusMsg: "Success",
     gameID: ""
@@ -60,16 +52,8 @@ exports.create = function (req, res) {
         .done(function (value) {
           responseJSON.gameID = value._id;
           return res.status(200).send(responseJSON);
-        }, function (err) {
-          responseJSON.status = -1;
-          responseJSON.statusMsg = err;
-          return res.status(400).send(responseJSON);
-        });
-    }, function (err) {
-      responseJSON.status = -1;
-      responseJSON.statusMsg = err;
-      return res.status(400).send(responseJSON);
-    });
+        },  responseUtils.sendBadRequestCallback(res));
+    }, responseUtils.sendBadRequestCallback(res) );
 };
 
 exports.read = function (req, res) {
@@ -79,14 +63,14 @@ exports.read = function (req, res) {
     .then(function (game){
       res.send(game);
     })
-    .fail(errorResponse(res))
+    .fail(responseUtils.sendBadRequestCallback(res))
     .done();
 };
 
 exports.update = function (req, res) {
-  res.status(501).send("update");
+  responseUtils.sendNotYetImplemented(res, 'update');
 };
 
 exports.destroy = function (req, res) {
-  res.status(501).send("destroy");
+  responseUtils.sendNotYetImplemented(res, 'destroy');
 };

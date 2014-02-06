@@ -10,6 +10,7 @@ var _ = require('underscore'),
   winston = require('winston');
 
 var jsonUtils = require('../../../utils/jsonUtils'),
+  responseUtils = require('../../../utils/responseUtils'),
   User = mongoose.model('User'),
   helper = require('./helper');
 
@@ -18,9 +19,7 @@ exports.index = function (req, res){
   helper.indexQ()
     .done(function (users) {
       return res.status(200).send(users);
-    }, function (err) {
-      return res.status(500).send(err);
-    });
+    }, responseUtils.sendInternalServerErrorCallback(res));
 };
 
 var userParamSpec = {
@@ -29,12 +28,8 @@ var userParamSpec = {
 };
 
 exports.create = function (req, res){
-  var responseJSON = {
-    originalURL : req.originalUrl,
-    status: 0,
-    statusMsg: "Success",
-    "userID": ""
-  };
+  var responseJSON = responseUtils.getNewResponseJSON();
+  responseJSON.userID = "";
 
   jsonUtils.validateJSONBody(req.body, userParamSpec, function (validatedParams) {
     winston.log('info', "User attempting to register: params: ", validatedParams );
@@ -52,9 +47,7 @@ exports.create = function (req, res){
         return res.status(200).send(responseJSON);
       }, function (err) {
         winston.info('register failed');
-        responseJSON.status = -1;
-        responseJSON.statusMsg = err;
-        return res.status(400).send(responseJSON);
+        return responseUtils.sendInternalServerError(res, err);
       });
   }, function(missingKey) {
     responseJSON.status = -1;
@@ -67,18 +60,13 @@ exports.read = function (req, res){
   helper.readQ(req.params.id)
     .done(function (foundUser) {
       return res.status(200).send(foundUser);
-    }, function (err) {
-      return res.status(404).send(err);
-    });
+    }, responseUtils.sendNotFoundErrorCallback(res));
 };
 
 exports.update = function (req, res){
-  res.status(501).send("update");
+  responseUtils.sendNotYetImplemented(res, "update");
 };
 
 exports.destroy = function (req, res){
-  res.status(501).send("destroy");
+  responseUtils.sendNotYetImplemented(res, "destroy");
 };
-
-
-

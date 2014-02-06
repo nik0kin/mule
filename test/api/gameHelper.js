@@ -36,8 +36,8 @@ exports.readGameQ = function (params) {
 
 exports.joinGameQ = function (params) {
   var agent = params.agent;
-  var gameID = params.gameID;
-  var expectedStatusCode = params.fail ? 400 : 200;
+  var gameID = params.gameID;       //TODO i think we can refactor out params.fail
+  var expectedStatusCode = params.expectedStatusCode ? params.expectedStatusCode : (params.fail ? 400 : 200);
 
   return Q.promise(function (resolve, reject) {
     var request = agent.post('/games/' + gameID + '/join').send({});

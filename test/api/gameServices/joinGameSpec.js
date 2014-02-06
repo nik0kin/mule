@@ -71,7 +71,7 @@ describe('API: ', function () {
 
       describe('reject if' , function () {
         it('should reject an invalid gameID' , function (done) {
-          gameHelper.joinGameQ({agent : ourUserAgent, gameID : 'THISWONTWORK', fail: true})
+          gameHelper.joinGameQ({agent : ourUserAgent, gameID : 'THISWONTWORK', expectedStatusCode : 403})
             .done(function (result) {
               should(result).ok;
               should(result.status).eql(-1);
@@ -85,7 +85,7 @@ describe('API: ', function () {
         });
         it('should reject if you are already the game' , function (done) {
           //just gonna use the 'gameCreatorUserAgent' here for less code
-          gameHelper.joinGameQ({agent : gameCreatorUserAgent, gameID : createdGameID, fail: true})
+          gameHelper.joinGameQ({agent : gameCreatorUserAgent, gameID : createdGameID, expectedStatusCode : 403})
             .done(function (result) {
               should(result).ok;
               should(result.status).eql(-1);
@@ -110,7 +110,7 @@ describe('API: ', function () {
                         .done(function (result) {
                           should(result).ok;
                           should(result.status).eql(0);
-                          gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID, fail : true})
+                          gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID, expectedStatusCode : 403})
                             .done(function (result) {
                               should(result).ok;
                               should(result.status).eql(-1);

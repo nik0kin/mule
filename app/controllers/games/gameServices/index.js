@@ -6,7 +6,8 @@
 
 var winston = require('winston');
 
-var gameServicesHelper = require('./helper');
+var gameServicesHelper = require('./helper'),
+  responseUtils = require('../../../utils/responseUtils');
 
 exports.joinGame = function(req, res){
   winston.info('POST /games/:id/join', req.params.id);
@@ -22,8 +23,6 @@ exports.joinGame = function(req, res){
       return res.status(200).send(responseJSON);
     }, function (err) {
       winston.log('info', 'join failed', err); //TODO if joinQ has a undefined error, it will not  put err as statusMsg (change winston to logger in gameServicesHelper to jog your memory)
-      responseJSON.status = -1;
-      responseJSON.statusMsg = err;
-      return res.status(400).send(responseJSON);
+      return responseUtils.sendForbiddenError(res, err);
     });
 };
