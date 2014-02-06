@@ -9,14 +9,19 @@ var gameStatusUtils = require('../../utils/gameStatusUtils'),
   playerGameStatusUtils = require('../../utils/playerGameStatusUtils');
 
 exports.addValidators = function (GameSchema) {
-  GameSchema.path('width').validate(validateWidthAndHeight, 'width must be within the range: 1 - 500');
-  GameSchema.path('height').validate(validateWidthAndHeight, 'height must be within the range: 1 - 500');
+  GameSchema.path('name').validate(validateNameLength, '\'name\' length must be within the range 1 - 30')
+  GameSchema.path('width').validate(exports.validateWidthAndHeight, 'width must be within the range: 1 - 500');
+  GameSchema.path('height').validate(exports.validateWidthAndHeight, 'height must be within the range: 1 - 500');
   GameSchema.path('gameStatus').validate(gameStatusUtils.validateGameStatus, 'gameStatus must equal one of the following: open, inProgress, or finished');
   GameSchema.path('maxPlayers').validate(validateNumberOfPlayers, 'maxPlayers must be within the range: 2 - 10');
   GameSchema.path('players').validate(validateGamePlayersObject, 'game->players object became invalid..');
 };
 
-var validateWidthAndHeight = function (number) {
+var validateNameLength = function (nameStr) {
+  return _.isString(nameStr) && nameStr.length > 0 && nameStr.length <= 30;
+};
+
+exports.validateWidthAndHeight = function (number) {
   return _.isNumber(number) && number > 0 && number <= 500;
 };
 

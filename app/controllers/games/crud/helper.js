@@ -7,40 +7,45 @@
 var _ = require('underscore'),
   mongoose = require('mongoose'),
   Q = require('q'),
-  logger = require('winston');
+  winston = require('winston');
 
 var utils = require('../../../utils/jsonUtils');
-  Game = mongoose.model('Game');
+Game = mongoose.model('Game');
 
 exports.indexQ = function () {
   return Game.find().execQ();
 };
 
-exports.createQ = function (params) {
+exports.createQ = function (params) {    //TODO this is starting to look ugly
   var validatedParams = params.validatedParams;
   var creator = params.creator;//expecting a user
 
   return Q.promise( function (resolve, reject) {
-    logger.log('info', "User attempting to create new game: params: ", validatedParams );
+    winston.info("User attempting to create new game: params: ", validatedParams );
 
     validatedParams.gameStatus = 'open';
 
     var newGame = new Game(validatedParams);
 
-    if (!creator) {
-      logger.info('doing unit tests');
+    newGame.validate( function (err) {
+      if (err) {
+        winston.log('error', 'ValidationError for gameConfigs to Game document');
+        return reject(err);
+      }
 
-      newGame.saveQ()
-        .done(resolve, reject);
-    } else {
-      logger.log('log', 'creating game with creator: ', creator);
-      newGame.joinGameQ(creator)
-        .done(function () {
-          newGame.saveQ()
-            .done(resolve, reject);
-        }, reject);
-
-    }
+      if (!creator) {
+        winston.info('doing unit tests');
+        newGame.saveQ()
+          .done(resolve, reject);
+      } else {
+        winston.info('creating game with creator: ', creator._doc);
+        newGame.joinGameQ(creator)
+          .done(function () {
+            newGame.saveQ()
+              .done(resolve, reject);
+          }, reject);
+      }
+    });
   });
 };
 
@@ -50,10 +55,8 @@ exports.readQ = function (gameID){
 
 exports.update = function (parameters, callback) {
 
-
 };
 
 exports.destroy = function (parameters, callback) {
-
 
 };

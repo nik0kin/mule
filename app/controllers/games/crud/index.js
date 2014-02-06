@@ -52,8 +52,8 @@ exports.create = function (req, res) {
         .done(function (value) {
           responseJSON.gameID = value._id;
           return res.status(200).send(responseJSON);
-        },  responseUtils.sendBadRequestCallback(res));
-    }, responseUtils.sendBadRequestCallback(res) );
+        },  responseUtils.sendNotAcceptableErrorCallback(res));
+    }, responseUtils.sendNotAcceptableErrorCallback(res) );
 };
 
 exports.read = function (req, res) {

@@ -11,7 +11,7 @@ exports.getNewResponseJSON = function () {
     statusMsg : "Default Success"
   };
 };
-
+//TODO refactor these mofos
 exports.sendBadRequestCallback = function (res) {
   return function (_err) {
     winston.error(_err);
@@ -33,6 +33,15 @@ exports.sendForbiddenError = function (res, err) {
 exports.sendNotFoundErrorCallback = function (res) {
   return function (err) {
     return res.status(404).send(err);
+  };
+};
+
+exports.sendNotAcceptableErrorCallback = function (res) {
+  return function (err) {
+    return res.status(406).send({
+      status: -1,
+      statusMsg: err
+    });
   };
 };
 

@@ -67,3 +67,4 @@ exports.invalidCreateGamesBody4 = {
     "turnStyle" : "realtime"
   }
 };
+exports.invalidZerosGameConfig = {"name":"","maxPlayers":0,"width":0,"height":0};

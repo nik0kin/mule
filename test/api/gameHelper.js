@@ -6,12 +6,12 @@
 
 var Q = require('q');
 
-exports.createGameQ = function (params) {
+exports.createGameQ = function (params, expectedStatusCode) {
   var agent = params.agent;
   var gameConfig = params.gameConfig;
 
   return Q.promise(function (resolve, reject) {
-    agent.post('/games').send({"gameConfig" : gameConfig}).expect(200).end(function(err, res){
+    agent.post('/games').send({"gameConfig" : gameConfig}).expect(expectedStatusCode || 200).end(function(err, res){
       if (err)
         reject(err);
       else

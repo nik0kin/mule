@@ -68,19 +68,16 @@ GameSchema.methods = {
     return Q.promise(function (resolve, reject) {
       //valid user?
       if (!player || !player._id){//TODO lazy, didnt check db
-        winston.error('invalid player');
         return reject('invalid player');
       }
 
       //are we full?
       if (that.full){
-        winston.error('Game Full');
         return reject('Game Full');
       }
 
       //is the player in this Game already?
       if (that.getPlayerPosition(player._id) !== -1) {
-        winston.error('Player is already in Game');
         return reject('Player is already in Game');
       }
 

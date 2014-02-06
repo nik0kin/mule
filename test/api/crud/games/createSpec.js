@@ -5,6 +5,8 @@
  *
  * http://stackoverflow.com/questions/14001183/how-to-authenticate-supertest-requests-with-passport
  */
+require ('../../../../server.js');
+
 var mongoose = require('mongoose'),
   _ = require('underscore'),
   should = require('should'),
@@ -15,9 +17,8 @@ var loginHelper = require('../../loginHelper')('http://localhost:3130'),
   User = require('../../../../app/models/User'),
   Game = require('../../../../app/models/Game/index'),
   testHelper = require('../../../mochaHelper'),
-  testParams = require('./createParams');
-var app = require ('../../../../server.js');
-
+  testParams = require('./createParams'),
+  gameAPIHelper = require('../../gameHelper');
 
 var loggedInUser;
 
@@ -49,7 +50,7 @@ describe('API', function () {
           .post('/games')
           .send({'fart' : 'dumb'})
           .set('Accept', 'application/json')
-          .expect(400)
+          .expect(406)
           .end(function(err, res){
             if (err) return done(err);
             done()
@@ -156,7 +157,7 @@ describe('API', function () {
             .post('/games')
             .send(invalidCreateGamesBody)
             .set('Accept', 'application/json')
-            .expect(400)
+            .expect(406)
             .end(function(err, res){
               if (err) return done(err);
 
@@ -174,10 +175,9 @@ describe('API', function () {
             .post('/games')
             .send(invalidCreateGamesBody2)
             .set('Accept', 'application/json')
-            .expect(400)
+            .expect(406)
             .end(function(err, res){
               if (err) return done(err);
-
               var body = res.body;
               should(body).ok;
               should(body.statusMsg).ok;
@@ -193,7 +193,7 @@ describe('API', function () {
             .post('/games')
             .send(invalidCreateGamesBody3)
             .set('Accept', 'application/json')
-            .expect(400)
+            .expect(406)
             .end(function(err, res){
               if (err) return done(err);
 
@@ -210,7 +210,7 @@ describe('API', function () {
             .post('/games')
             .send(invalidCreateGamesBody4)
             .set('Accept', 'application/json')
-            .expect(400)
+            .expect(406)
             .end(function(err, res){
               if (err) return done(err);
 
@@ -221,6 +221,21 @@ describe('API', function () {
               should(body.statusMsg.errors).have.property('maxPlayers');
               done();
             });
+        });
+
+        it('no gameConfig in body', function (done) {
+          gameAPIHelper.createGameQ({agent : loggedInUser, gameConfig : {}}, 406)
+            .done(function (result) {
+              done();
+            }, testHelper.mochaError(done));
+        });
+
+        //not checking values when making the model
+        it('if it has zeros for all the numbers', function (done) {
+          gameAPIHelper.createGameQ({agent : loggedInUser, gameConfig : testParams.invalidZerosGameConfig}, 406)
+            .done(function (result) {
+              done();
+            }, testHelper.mochaError(done));
         });
       });
     });
