@@ -23,7 +23,7 @@ exports.index = function (req, res) {
     .then(function (games) {
       res.send(games);
     })
-    .fail(errorResponse(res))
+    .fail(responseUtils.sendBadRequestCallback(res))
     .done();
 };
 
