@@ -9,7 +9,7 @@ var fs = require('fs'),
   mongoose = require('mongoose'),
   winston = require('winston');
 
-var Game = require('../../../models/Game/index'),
+var Game = mongoose.model('Game'),
   gameConfigUtils = require('mule-utils/gameConfigUtils'),
   responseUtils = require('mule-utils/responseUtils'),
   gameHelper = require('./helper');

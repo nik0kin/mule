@@ -8,9 +8,9 @@ var Q = require('q');
 
 require ('../server.js');
 
-var Game = require('../app/models/Game/index'),
+var Game = require('mule-models').Game,
   gamesHelper = require('../app/controllers/games/crud/helper'),
-  User = require('../app/models/User'),
+  User = require('mule-models').User,
   users = require('../app/controllers/users/crud/helper');
 
 

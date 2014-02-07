@@ -8,7 +8,7 @@ require('../../../server.js');
 var should = require('should'),
   request = require('supertest');
 
-var User = require('../../../app/models/User'),
+var User = require('mule-models').User,
   dbHelper = require('../../dbHelper');
 
 describe('API', function () {

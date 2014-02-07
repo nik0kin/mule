@@ -9,7 +9,7 @@ var should = require('should'),
   Q = require('q'),
   _ = require('underscore');
 
-var User = require('../../app/models/User'),
+var User = require('mule-models').User,
   users = require('../../app/controllers/users/crud/helper'),
   dbHelper = require('../dbHelper'),
   testHelper = require('../mochaHelper');

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "mule-utils" : "git+https://github.com/nik0kin/mule-utils.git#master",
+    "mule-models" : "git+https://github.com/nik0kin/mule-models.git#master",
 
     "express": "3.x",
     "mongoose": "~3.8.0",

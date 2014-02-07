@@ -5,8 +5,7 @@ process.env.NODE_ENV = 'test';
 
 var mongoose = require('mongoose'),
     should = require('should'),
-    app = require('../server'),
-    User = require('../app/models/User');
+    app = require('../server');
 
 var request = require('supertest');
 

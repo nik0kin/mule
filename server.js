@@ -32,10 +32,11 @@ winston.remove(winston.transports.Console);
 //Bootstrap db connection
 mongoose.connect(config.db);
 
-var models_path = __dirname + '/app/models';
+/*var models_path = __dirname + '/node_modules/mule-models/models';
 fs.readdirSync(models_path).forEach(function (file) {
   if (~file.indexOf('.js')) require(models_path + '/' + file);
-});
+});*/
+require('mule-models');
 
 // bootstrap passport config
 require('./config/passport')(passport, config);

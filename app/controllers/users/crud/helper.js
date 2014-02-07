@@ -9,7 +9,7 @@ var _ = require('underscore'),
   Q = require('q'),
   winston = require('winston');
 
-var User = require('../../../models/User');
+var User = mongoose.model('User');
 
 exports.indexQ = function () {
   return User.find({}, 'username _id').execQ();

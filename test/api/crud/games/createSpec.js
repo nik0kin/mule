@@ -14,8 +14,7 @@ var mongoose = require('mongoose'),
 
 var loginHelper = require('../../loginHelper')('http://localhost:3130'),
   dbHelper = require('../../../dbHelper'),
-  User = require('../../../../app/models/User'),
-  Game = require('../../../../app/models/Game/index'),
+  User = require('mule-models').User,
   testHelper = require('../../../mochaHelper'),
   testParams = require('./createParams'),
   gameAPIHelper = require('../../gameHelper');
