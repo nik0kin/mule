@@ -4,9 +4,10 @@
  * Created by niko on 2/5/14.
  */
 
-define(function () {
+define(['./Users'], function (Users) {
   return function (contextPath) {
     var that = {};
+    Users = Users(contextPath);
 
     that.indexQ = function () {
       return $.ajax({
@@ -28,6 +29,17 @@ define(function () {
         type: "GET",
         url: contextPath+"games/" + gameID
       });
+    };
+
+    that.readUsersGamesQ = function (userID) {
+      return $.ajax({
+        type: "GET",
+        url: contextPath+"users/" + userID + '/games'
+      });
+    };
+
+    that.readMyGamesQ = function () {
+      return that.readUsersGamesQ(Users.getLoggedInUserID());
     };
 
     ////// GAME SERVICES //////

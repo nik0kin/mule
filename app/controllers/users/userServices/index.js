@@ -12,7 +12,8 @@ var login = function (req, res) {
 
   res.status(200).send({
     status : 0,
-    statusMsg : 'Logged in Successfully'
+    statusMsg : 'Logged in Successfully',
+    userID : req.user._id
   });
   winston.info(req.user.username + "login result: " + redirectTo);
   //res.redirect(redirectTo);

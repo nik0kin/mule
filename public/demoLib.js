@@ -96,13 +96,38 @@ define(["mule-js-sdk/sdk"], function (sdk) {
               .append('<br>');
           });
         }
-
       }).fail(function(msg){
         alert("getGames Fail");
       });
   };
 
-  var field;
+  that.tryGetMyGames = function () {
+    SDK.Games.readMyGamesQ()
+      .done(function(data) {
+        console.log( "Data Recieved: ");
+        console.log(data);
+
+        if(!_.isArray(data)){
+          alert("Get Games failed: "+JSON.stringify(data));
+          return;
+        }
+        var games = data;
+        var gamesSize = _.size(data);
+
+        //populating the games list tabs
+        $("#tabs-2").html("");
+        if(gamesSize){
+          _.each(games, function(value) {
+            $("#tabs-2")
+              .append(that.makeGameTable(value))
+              .append('<br>');
+          });
+        }
+      }).fail(function(msg){
+        alert("getMyGames Fail: " + JSON.stringify(msg));
+      });
+  };
+
   that.tryViewGame = function (gameID) {
     if (!gameID) {
       alert("Invalid gameID");
@@ -114,20 +139,8 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       .done(function(data ){
         console.log("Data Recieved: ");
         console.log(data);
-
-        /*if(data.width <= 0 || data.height <= 0){
-         alert("Invalid Map Width/Height");
-         return;
-         }*/
-
         $("#gameInfoArea").html(that.getGameInfoTable(data));
-
-        /*if(field)
-         field.kill();
-
-         field = new Field(data.width,data.height,data.map);*/
       });
-
   };
 
   that.tryJoinGame = function (gameID) {

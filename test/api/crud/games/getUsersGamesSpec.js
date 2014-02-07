@@ -16,7 +16,8 @@ var loginHelper = require('../../loginHelper')('http://localhost:3130'),
   restHelper = require('../../restHelper'),
   userAPIHelper = require('../../userHelper'),
   gameAPIHelper = require('../../gameHelper'),
-  validParams = require('../../../validParams/index');
+  validParams = require('../../../validParams/index'),
+  gameUtils = require('mule-utils/generalGameUtils');
 
 describe('API: ', function () {
   describe('Games: ', function () {
@@ -24,12 +25,18 @@ describe('API: ', function () {
       var ourUserAgent;
       var ourUserID;
 
+      var ourOtherUserAgent;
+
       beforeEach(function (done) {
         loginHelper.registerAndLoginQ()
           .then(function (agent) {
             ourUserAgent = agent;
             ourUserID = agent.userID;
-            done();
+            loginHelper.registerAndLoginQ()
+              .then(function (agent) {
+                ourOtherUserAgent = agent;
+                done();
+              }, testHelper.mochaError(done));
           }, testHelper.mochaError(done));
       });
 
@@ -77,18 +84,44 @@ describe('API: ', function () {
                 should(resultGame._id).eql(ourGameID);
 
                 //and that the player is in it
+                should(gameUtils.doesGameContainPlayerID(ourUserID, resultBody2[0])).ok;
 
                 done();
               }, testHelper.mochaError(done));
           },testHelper.mochaError(done));
       });
 
-      it('should return one game if the user is in (1/3) games', function (done) {
-        done();
-      });
+      it('should return one game if the user is in (1/2) games', function (done) {
+        //make three games
+        var randomGameConfig = validParams.getRandomNamedValidConfig(2);
+        var randomGameConfig2 = validParams.getRandomNamedValidConfig(2);
+        gameAPIHelper.createGameQ({agent: ourUserAgent, gameConfig : randomGameConfig, expectedStatusCode : 200})
+          .done(function (resultBody) {
+            should(resultBody).ok;
+            should(resultBody.gameID).ok
+            var ourGameID = resultBody.gameID;
 
-      it('should return three games if the user is in (3/5) games', function (done) {
-        done();
+            gameAPIHelper.createGameQ({agent: ourOtherUserAgent, gameConfig : randomGameConfig2, expectedStatusCode : 200})
+              .done(function (resultBody) {
+                should(resultBody).ok;
+                should(resultBody.gameID).ok;
+
+                gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userID : ourUserID, expectedStatusCode : 200})
+                  .done(function (resultBody2) {
+                    //check if its the same id
+                    should(resultBody2[0]).ok;
+                    var resultGame = resultBody2[0];
+                    should(resultGame._id).eql(ourGameID);
+
+                    should(resultBody2[1]).not.ok;
+
+                    //and that the player is in it
+                    should(gameUtils.doesGameContainPlayerID(ourUserID, resultBody2[0])).ok;
+
+                    done();
+                  }, testHelper.mochaError(done));
+              }, testHelper.mochaError(done));
+          },testHelper.mochaError(done));
       });
 
       it('should return 404 if invalid userID', function (done) {

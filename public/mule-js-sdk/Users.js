@@ -5,8 +5,14 @@
  */
 
 define(function () {
+  var userID;
+
   return function (contextPath) {
     var that = {};
+
+    that.getLoggedInUserID = function () {
+      return userID;
+    };
 
     that.indexQ = function () {
       return $.ajax({
@@ -20,7 +26,11 @@ define(function () {
         type: "POST",
         url: contextPath+"users",
         data: params
-      });
+      })
+        .then(function (result) {
+          userID = result.userID;
+          return result;
+        });
     };
 
     that.readQ = function (userID) {
@@ -37,7 +47,11 @@ define(function () {
         type: "POST",
         url: contextPath+"LoginAuth",
         data: params
-      });
+      })
+        .then(function (result) {
+          userID = result.userID;
+          return result;
+        });
     };
 
     return that;
