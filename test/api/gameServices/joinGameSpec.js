@@ -50,7 +50,7 @@ describe('API: ', function () {
       });
 
       it('should return json' , function (done) {
-        restHelper.expectJson(done, ourUserAgent, '/games/' + createdGameID + '/join', {});
+        restHelper.expectJson({ done: done, userAgent: ourUserAgent, endpoint: '/games/' + createdGameID + '/join', verb: 'post' });
       });
 
       it('basic should work' , function (done) {

@@ -19,14 +19,14 @@ var loginHelper = require('../../loginHelper')('http://localhost:3130'),
   testParams = require('./createParams'),
   gameAPIHelper = require('../../gameHelper');
 
-var loggedInUser;
+var loggedInAgent;
 
 describe('API', function () {
   describe('Games: ', function () {
-    before(function (done){
+    before(function (done) {
       loginHelper.registerAndLoginQ()
-        .then(function (user) {
-          loggedInUser = user;
+        .then(function (agent) {
+          loggedInAgent = agent;
           done();
         }, testHelper.mochaError(done));
     });
@@ -45,7 +45,7 @@ describe('API', function () {
 
     describe('POST /games', function () {
       it('reject missing gameConfig', function (done) {
-        loggedInUser //"http://localhost:3130")
+        loggedInAgent //"http://localhost:3130")
           .post('/games')
           .send({'fart' : 'dumb'})
           .set('Accept', 'application/json')
@@ -56,7 +56,7 @@ describe('API', function () {
           });
       });
       it('respond with json', function (done) {
-        loggedInUser //"http://localhost:3130")
+        loggedInAgent //"http://localhost:3130")
           .post('/games')
           .send(validCreateGamesBody)
           .set('Accept', 'application/json')
@@ -68,7 +68,7 @@ describe('API', function () {
       });
 
       it('take a correct gameConfig, save to DB, and user should exist in players object ', function (done) {
-        loggedInUser
+        loggedInAgent
           .post('/games')
           .send(validCreateGamesBody)
           .set('Accept', 'application/json')
@@ -79,7 +79,7 @@ describe('API', function () {
             var gameID = res.body.gameID;
             should(gameID).ok;
             //now check if we can GET it
-            loggedInUser
+            loggedInAgent
               .get('/games/'+gameID)
               .send()
               .set('Accept', 'application/json')
@@ -99,7 +99,7 @@ describe('API', function () {
       });
 
       it('take a correct gameConfig LACKING gameStatus, the system should set gameStatus to \'open\'', function (done) {
-        loggedInUser
+        loggedInAgent
           .post('/games')
           .send(validCreateGamesBody)
           .set('Accept', 'application/json')
@@ -109,7 +109,7 @@ describe('API', function () {
 
             var gameID = res.body.gameID;
             should(gameID).ok;
-            loggedInUser
+            loggedInAgent
               .get('/games/'+gameID)
               .send()
               .set('Accept', 'application/json')
@@ -125,7 +125,7 @@ describe('API', function () {
       });
 
       it('take a correct gameConfig WITH a invalid gameStatus value, the system should ignore it, and set gameStatus to \'open\'', function (done) {
-        loggedInUser
+        loggedInAgent
           .post('/games')
           .send(validCreateGamesBodyWithAlteredGameStatus)
           .set('Accept', 'application/json')
@@ -135,7 +135,7 @@ describe('API', function () {
 
             var gameID = res.body.gameID;
             should(gameID).ok;
-            loggedInUser
+            loggedInAgent
               .get('/games/'+gameID)
               .send()
               .set('Accept', 'application/json')
@@ -152,7 +152,7 @@ describe('API', function () {
 
       describe('reject an incorrect gameConfig: ', function () {
         it('valid parameter types, but height/width needs to be greater than 0', function (done) {
-          loggedInUser
+          loggedInAgent
             .post('/games')
             .send(invalidCreateGamesBody)
             .set('Accept', 'application/json')
@@ -170,7 +170,7 @@ describe('API', function () {
             });
         });
         it('valid parameter types, but height/width needs to be less or equal to 500', function (done) {
-          loggedInUser
+          loggedInAgent
             .post('/games')
             .send(invalidCreateGamesBody2)
             .set('Accept', 'application/json')
@@ -188,7 +188,7 @@ describe('API', function () {
         });
 
         it('valid parameter types, but maxPlayers needs to be 10 or less', function (done) {
-          loggedInUser
+          loggedInAgent
             .post('/games')
             .send(invalidCreateGamesBody3)
             .set('Accept', 'application/json')
@@ -205,7 +205,7 @@ describe('API', function () {
             });
         });
         it('valid parameter types, but maxPlayers needs to be 2 or greater', function (done) {
-          loggedInUser
+          loggedInAgent
             .post('/games')
             .send(invalidCreateGamesBody4)
             .set('Accept', 'application/json')
@@ -223,7 +223,7 @@ describe('API', function () {
         });
 
         it('no gameConfig in body', function (done) {
-          gameAPIHelper.createGameQ({agent : loggedInUser, gameConfig : {}}, 406)
+          gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : {}}, 406)
             .done(function (result) {
               done();
             }, testHelper.mochaError(done));
@@ -231,7 +231,7 @@ describe('API', function () {
 
         //not checking values when making the model
         it('if it has zeros for all the numbers', function (done) {
-          gameAPIHelper.createGameQ({agent : loggedInUser, gameConfig : testParams.invalidZerosGameConfig}, 406)
+          gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.invalidZerosGameConfig}, 406)
             .done(function (result) {
               done();
             }, testHelper.mochaError(done));

@@ -12,8 +12,8 @@ var fs = require('fs'),
 var Game = mongoose.model('Game'),
   gameConfigUtils = require('mule-utils/gameConfigUtils'),
   responseUtils = require('mule-utils/responseUtils'),
-  gameHelper = require('./helper');
-
+  gameHelper = require('./helper'),
+  getUsersGamesQ = require('./getUsersGames');
 
 
 exports.index = function (req, res) {
@@ -73,4 +73,18 @@ exports.update = function (req, res) {
 
 exports.destroy = function (req, res) {
   responseUtils.sendNotYetImplemented(res, 'destroy');
+};
+
+
+///////////////////////////////////////////////////////////////
+
+exports.readUsersGames = function (req, res) {
+  winston.info('GET /users/:id/games', req.params.id);
+
+  getUsersGamesQ(req.params.id)
+    .then(function (game){
+      res.send(game);
+    })
+    .fail(responseUtils.sendBadRequestCallback(res))
+    .done();
 };
