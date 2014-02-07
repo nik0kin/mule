@@ -9,8 +9,8 @@ var _ = require('underscore'),
   Q = require('q'),
   winston = require('winston');
 
-var jsonUtils = require('../../../utils/jsonUtils'),
-  responseUtils = require('../../../utils/responseUtils'),
+var jsonUtils = require('mule-utils/jsonUtils'),
+  responseUtils = require('mule-utils/responseUtils'),
   User = mongoose.model('User'),
   helper = require('./helper');
 

@@ -9,8 +9,8 @@ var _ = require('underscore'),
   Q = require('q'),
   winston = require('winston');
 
-var utils = require('../../../utils/jsonUtils');
-Game = mongoose.model('Game');
+var utils = require('mule-utils/jsonUtils'),
+  Game = mongoose.model('Game');
 
 exports.indexQ = function () {
   return Game.find().execQ();

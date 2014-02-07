@@ -10,8 +10,8 @@ var fs = require('fs'),
   winston = require('winston');
 
 var Game = require('../../../models/Game/index'),
-  gameConfigUtils = require('../../../utils/gameConfigUtils'),
-  responseUtils = require('../../../utils/responseUtils'),
+  gameConfigUtils = require('mule-utils/gameConfigUtils'),
+  responseUtils = require('mule-utils/responseUtils'),
   gameHelper = require('./helper');
 
 

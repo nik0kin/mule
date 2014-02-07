@@ -15,7 +15,7 @@ var express = require('express'),
     fs = require('fs'),
     passport = require('passport'),
     winston = require('winston'),
-    dateUtils = require(__dirname + '/app/utils/dateUtils');
+    dateUtils = require('mule-utils/dateUtils');
 
 /**
  * Configs

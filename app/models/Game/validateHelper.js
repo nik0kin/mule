@@ -5,8 +5,8 @@
  */
 var _ = require('underscore');
 
-var gameStatusUtils = require('../../utils/gameStatusUtils'),
-  playerGameStatusUtils = require('../../utils/playerGameStatusUtils');
+var gameStatusUtils = require('mule-utils/gameStatusUtils'),
+  playerGameStatusUtils = require('mule-utils/playerGameStatusUtils');
 
 exports.addValidators = function (GameSchema) {
   GameSchema.path('name').validate(validateNameLength, '\'name\' length must be within the range 1 - 30')

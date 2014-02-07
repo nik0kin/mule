@@ -14,6 +14,8 @@
     "debug": "node --debug port 5858 server.js"
   },
   "dependencies": {
+    "mule-utils" : "git+https://github.com/nik0kin/mule-utils.git#master",
+
     "express": "3.x",
     "mongoose": "~3.8.0",
     "q": "~0.9.7",

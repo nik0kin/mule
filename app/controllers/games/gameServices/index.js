@@ -7,7 +7,7 @@
 var winston = require('winston');
 
 var gameServicesHelper = require('./helper'),
-  responseUtils = require('../../../utils/responseUtils');
+  responseUtils = require('mule-utils/responseUtils');
 
 exports.joinGame = function(req, res){
   winston.info('POST /games/:id/join', req.params.id);
