@@ -10,7 +10,7 @@ var _ = require('underscore'),
   winston = require('winston');
 
 var utils = require('mule-utils/jsonUtils'),
-  Game = mongoose.model('Game');
+  Game = require('mule-models').Game;;
 
 exports.indexQ = function () {
   return Game.find().execQ();

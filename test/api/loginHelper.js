@@ -20,8 +20,10 @@ module.exports = function(serverIP){
       ourAgent.post('/users').send(loginCredentials).expect(200).end(function(err, res){
         if (err)
           reject(err);
-        else
+        else {
+          ourAgent.userID = res.body.userID;
           resolve(ourAgent);
+        }
       });
     });
   };

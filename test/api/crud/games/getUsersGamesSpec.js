@@ -14,7 +14,9 @@ var loginHelper = require('../../loginHelper')('http://localhost:3130'),
   dbHelper = require('../../../dbHelper'),
   testHelper = require('../../../mochaHelper'),
   restHelper = require('../../restHelper'),
-  gameAPIHelper = require('../../gameHelper');
+  userAPIHelper = require('../../userHelper'),
+  gameAPIHelper = require('../../gameHelper'),
+  validParams = require('../../../validParams/index');
 
 describe('API: ', function () {
   describe('Games: ', function () {
@@ -22,15 +24,16 @@ describe('API: ', function () {
       var ourUserAgent;
       var ourUserID;
 
-      before(function (done) {
+      beforeEach(function (done) {
         loginHelper.registerAndLoginQ()
           .then(function (agent) {
             ourUserAgent = agent;
+            ourUserID = agent.userID;
             done();
           }, testHelper.mochaError(done));
       });
 
-      after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
+      afterEach(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
       it('should return JSON', function (done) {
         restHelper.expectJson({
@@ -57,7 +60,27 @@ describe('API: ', function () {
 
       it('should return one game if the user is in (1/1) game', function (done) {
         //1 out of 1 total games
-        done();
+
+        //make a game
+        var randomGameConfig = validParams.getRandomNamedValidConfig(2);
+        gameAPIHelper.createGameQ({agent: ourUserAgent, gameConfig : randomGameConfig, expectedStatusCode : 200})
+          .done(function (resultBody) {
+            should(resultBody).ok;
+            should(resultBody.gameID).ok
+            var ourGameID = resultBody.gameID;
+
+            gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userID : ourUserID, expectedStatusCode : 200})
+              .done(function (resultBody2) {
+                //check if its the same id
+                should(resultBody2[0]).ok;
+                var resultGame = resultBody2[0];
+                should(resultGame._id).eql(ourGameID);
+
+                //and that the player is in it
+
+                done();
+              }, testHelper.mochaError(done));
+          },testHelper.mochaError(done));
       });
 
       it('should return one game if the user is in (1/3) games', function (done) {
@@ -69,7 +92,7 @@ describe('API: ', function () {
       });
 
       it('should return 404 if invalid userID', function (done) {
-        gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, gameID : "lolaodlasodl1998", expectedStatusCode : 404});
+        gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userID : "lolaodlasodl1998", expectedStatusCode : 404});
         done();
       });
     });

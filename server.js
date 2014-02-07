@@ -33,10 +33,11 @@ winston.remove(winston.transports.Console);
 mongoose.connect(config.db);
 
 /*var models_path = __dirname + '/node_modules/mule-models/models';
-fs.readdirSync(models_path).forEach(function (file) {
-  if (~file.indexOf('.js')) require(models_path + '/' + file);
-});*/
-require('mule-models');
+ fs.readdirSync(models_path).forEach(function (file) {
+ if (~file.indexOf('.js')) require(models_path + '/' + file);
+ });*/
+require('mule-models').User; //idk if this does anything..
+require('mule-models').Game;
 
 // bootstrap passport config
 require('./config/passport')(passport, config);

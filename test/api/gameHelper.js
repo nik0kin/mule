@@ -9,6 +9,7 @@ var Q = require('q');
 exports.createGameQ = function (params, expectedStatusCode) {
   var agent = params.agent;
   var gameConfig = params.gameConfig;
+  var expectedStatusCode = params.expectedStatusCode || expectedStatusCode; //TODO refactor second function param out
 
   return Q.promise(function (resolve, reject) {
     agent.post('/games').send({"gameConfig" : gameConfig}).expect(expectedStatusCode || 200).end(function(err, res){
@@ -58,10 +59,10 @@ exports.joinGameQ = function (params) {
 exports.readUsersGamesQ = function (params) {
   var agent = params.agent;
   var userID = params.userID;
-  var expectedStatusCode = params.expectedStatusCode;
+  var expectedStatusCode = params.expectedStatusCode || 200;
 
   return Q.promise(function (resolve, reject) {
-    var request = agent.post('/users/' + userID + '/games').send({});
+    var request = agent.get('/users/' + userID + '/games').send({});
 
     request.expect(expectedStatusCode);
 

@@ -35,7 +35,7 @@ exports.expectJson = function (params) {
     .expect(200)
     .end(function(err, res){
       if (err){
-        console.log(res.body)
+        console.log(err);
         return done(err);
       }
       should(res.body).be.an.instanceOf(Object);

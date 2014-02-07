@@ -39,7 +39,8 @@
     "grunt-simple-mocha": "~0.4.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-jshint": "~0.7.1",
-    "supertest": "0.8.2"
+    "supertest": "0.8.2",
+    "random-words" : "*"
   },
   "repository": {
     "type": "git",

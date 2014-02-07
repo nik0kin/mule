@@ -11,7 +11,7 @@ var _ = require('underscore'),
 
 var jsonUtils = require('mule-utils/jsonUtils'),
   responseUtils = require('mule-utils/responseUtils'),
-  User = mongoose.model('User'),
+  User = require('mule-models').User,
   helper = require('./helper');
 
 

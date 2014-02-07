@@ -1,6 +1,5 @@
 var mongoose = require('mongoose'),
-    async = require('async'),
-    User = mongoose.model('User');
+    async = require('async');
 
 /**
  * Clear database

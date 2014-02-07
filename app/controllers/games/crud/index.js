@@ -9,7 +9,7 @@ var fs = require('fs'),
   mongoose = require('mongoose'),
   winston = require('winston');
 
-var Game = mongoose.model('Game'),
+var Game = require('mule-models').Game,
   gameConfigUtils = require('mule-utils/gameConfigUtils'),
   responseUtils = require('mule-utils/responseUtils'),
   gameHelper = require('./helper'),
@@ -85,6 +85,6 @@ exports.readUsersGames = function (req, res) {
     .then(function (game){
       res.send(game);
     })
-    .fail(responseUtils.sendBadRequestCallback(res))
+    .fail(responseUtils.sendNotFoundErrorCallback(res))
     .done();
 };

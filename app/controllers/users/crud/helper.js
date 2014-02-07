@@ -9,7 +9,7 @@ var _ = require('underscore'),
   Q = require('q'),
   winston = require('winston');
 
-var User = mongoose.model('User');
+var User = require('mule-models').User;
 
 exports.indexQ = function () {
   return User.find({}, 'username _id').execQ();

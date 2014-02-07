@@ -48,11 +48,11 @@ describe('Controllers: ', function () {
                 should(results).ok;
                 should(results).be.instanceOf(Array);
                 _.each(results, function (value) {
-                  should(value).ok;
+                  console.log(JSON.stringify(value));
                   should(value).have.property('username');
                   should(value).have.property('_id');
-                  should(value).not.have.property('hashed_password');
-                  should(value).not.have.property('salt');
+                  should(value.salt).not.ok;
+                  should(value.hashed_password).not.ok;
                 });
                 done();
               }, testHelper.mochaError(done));

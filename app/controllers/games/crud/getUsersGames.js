@@ -12,10 +12,28 @@ var _ = require('underscore'),
   winston = require('winston');
 
 var utils = require('mule-utils/jsonUtils'),
-  Game = mongoose.model('Game');
+  GameCrud = require('./helper'),
+  User = require('mule-models').User,
+  gameUtils = require('mule-utils/generalGameUtils');
 
 module.exports = function getUsersGamesQ(userID) {
   return Q.promise(function (resolve, reject) {
-    resolve(['yay']);
+    User.findByIdQ(userID)
+      .done(function () {
+        //check every game
+        GameCrud.indexQ()
+          .done(function (games) {
+            //and make an array
+            var usersGamesArray = [];
+
+            _.each(games, function (value) {
+              if (gameUtils.doesGameContainPlayerID(userID,value)) {
+                usersGamesArray.push(value)
+              }
+            });
+
+            resolve(usersGamesArray);
+          },reject);
+      }, reject);
   });
 };
