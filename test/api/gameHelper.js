@@ -45,7 +45,27 @@ exports.joinGameQ = function (params) {
     request.expect(expectedStatusCode);
 
     request.end(function(err, res){
-      console.log(res.body)
+      if (err)
+        reject(err);
+      else
+        resolve(res.body);
+    });
+  });
+};
+
+///////////////////////////////////////////////////////////
+
+exports.readUsersGamesQ = function (params) {
+  var agent = params.agent;
+  var userID = params.userID;
+  var expectedStatusCode = params.expectedStatusCode;
+
+  return Q.promise(function (resolve, reject) {
+    var request = agent.post('/users/' + userID + '/games').send({});
+
+    request.expect(expectedStatusCode);
+
+    request.end(function(err, res){
       if (err)
         reject(err);
       else
