@@ -68,6 +68,28 @@ describe('API: ', function () {
           }, testHelper.mochaError(done));
       });
 
+      it('gameStatus should change if two more people join a three player game', function (done) {
+        loginHelper.registerAndLoginQ({username: 'anohterUser', password : 'poklitar'})
+          .done(function (newUserAgent) {
+            gameHelper.joinGameQ({agent : newUserAgent, gameID : createdGameID})
+              .done(function (result) {
+                should(result).ok;
+                should(result.status).eql(0);
+                gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID, expectedStatusCode : 200})
+                  .done(function (result) {
+                    should(result).ok;
+                    should(result.status).eql(0);
+                    gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+                      .done( function (result2) {
+                        should(result2.players).ok
+                        should(_.size(result2.players)).eql(3);
+                        should(result2.gameStatus).eql('inProgress');
+                        done();
+                      }, testHelper.mochaError(done));
+                  }, testHelper.mochaError(done));
+              }, testHelper.mochaError(done));
+          }, testHelper.mochaError(done));
+      });
 
       describe('reject if' , function () {
         it('should reject an invalid gameID' , function (done) {
