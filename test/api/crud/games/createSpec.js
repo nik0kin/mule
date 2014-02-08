@@ -12,12 +12,12 @@ var mongoose = require('mongoose'),
   should = require('should'),
   Q = require('q');
 
-var loginHelper = require('../../loginHelper')('http://localhost:3130'),
-  dbHelper = require('../../../dbHelper'),
+var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+  dbHelper = require('mule-models/test/dbHelper'),
   User = require('mule-models').User,
-  testHelper = require('../../../mochaHelper'),
+  testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   testParams = require('./createParams'),
-  gameAPIHelper = require('../../gameHelper');
+  gameAPIHelper = require('mule-utils/lib/testUtils/api/gameHelper');
 
 var loggedInAgent;
 

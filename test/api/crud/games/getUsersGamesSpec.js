@@ -10,12 +10,11 @@ var _ = require('underscore'),
   should = require('should'),
   Q = require('q');
 
-var loginHelper = require('../../loginHelper')('http://localhost:3130'),
-  dbHelper = require('../../../dbHelper'),
-  testHelper = require('../../../mochaHelper'),
-  restHelper = require('../../restHelper'),
-  userAPIHelper = require('../../userHelper'),
-  gameAPIHelper = require('../../gameHelper'),
+var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+  dbHelper = require('mule-models/test/dbHelper'),
+  testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
+  restHelper = require('mule-utils/lib/testUtils/api/restHelper'),
+  gameAPIHelper = require('mule-utils/lib/testUtils/api/gameHelper'),
   validParams = require('../../../validParams/index'),
   gameUtils = require('mule-utils/generalGameUtils');
 

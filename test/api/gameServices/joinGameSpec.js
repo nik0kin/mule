@@ -9,11 +9,11 @@ var should = require('should'),
 require('../../../server.js');
 
 var params = require('./joinGameParams'),
-  dbHelper = require('../../dbHelper'),
-  restHelper = require('../restHelper'),
-  testHelper = require('../../mochaHelper'),
-  loginHelper = require('../loginHelper')('http://localhost:3130'),
-  gameHelper = require('../gameHelper');
+  dbHelper = require('mule-models/test/dbHelper'),
+  restHelper = require('mule-utils/lib/testUtils/api/restHelper'),
+  testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
+  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+  gameHelper = require('mule-utils/lib/testUtils/api/gameHelper');
 
 describe('API: ', function () {
   describe('Game Services: ', function () {

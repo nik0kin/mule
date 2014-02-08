@@ -9,9 +9,9 @@ var app = require('../../../server');
 var should = require('should'),
   request = require('supertest');
 
-var testHelper = require('../../mochaHelper'),
-  dbHelper = require('../../dbHelper'),
-  loginHelper = require('../loginHelper')('http://localhost:3130');
+var testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
+  dbHelper = require('mule-models/test/dbHelper'),
+  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130');
 
 describe('API: ', function () {
   describe('User Services: ', function () {

@@ -11,8 +11,8 @@ var should = require('should'),
 
 var User = require('mule-models').User,
   users = require('../../app/controllers/users/crud/helper'),
-  dbHelper = require('../dbHelper'),
-  testHelper = require('../mochaHelper');
+  dbHelper = require('mule-models/test/dbHelper'),
+  testHelper = require('mule-utils/lib/testUtils/mochaHelper');
 
 describe('Controllers: ', function () {
   describe('Users (helper): ', function() {

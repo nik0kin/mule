@@ -9,7 +9,7 @@ var should = require('should'),
   request = require('supertest');
 
 var User = require('mule-models').User,
-  dbHelper = require('../../dbHelper');
+  dbHelper = require('mule-models/test/dbHelper');
 
 describe('API', function () {
   describe('Users: ', function() {
