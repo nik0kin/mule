@@ -206,7 +206,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       playDisabled = "disabled";
     }
 
-    var getButton = function (func, parameter, buttonLabel, idHelp) {
+    var getButton = function (func, parameter, buttonLabel, idHelp, disOnOff) {
       var makeCallback = function (_parameter) {
         return function () {
           func(_parameter);
@@ -214,7 +214,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       };
 
       var buttonID = idHelp + '' + parameter;
-      var newButton = $("<input type=\"button\" id=\"" + buttonID + "\" value=\"" + buttonLabel + "\" "+disabled+">");
+      var newButton = $("<input type=\"button\" id=\"" + buttonID + "\" value=\"" + buttonLabel + "\" "+disOnOff+">");
       newButton.click(makeCallback(parameter));
 
       return newButton;
@@ -231,19 +231,19 @@ define(["mule-js-sdk/sdk"], function (sdk) {
           .append($('<tr></tr>')
             .append("<td>Turn: "+gameData.turnNumber+"</td>")
             .append($('<td></td>')
-              .append(getButton(that.tryJoinGame, gameData._id, "Join Game", 'join'))
+              .append(getButton(that.tryJoinGame, gameData._id, "Join Game", 'join', disabled))
             )
           )
           .append($('<tr></tr>')
             .append("<td>Players: "+gameData.maxPlayers+"</td>")
             .append($('<td></td>')
-              .append(getButton(that.tryViewGame, gameData._id, "View Game", 'view'))
+              .append(getButton(that.tryViewGame, gameData._id, "View Game", 'view', ''))
             )
           )
           .append($('<tr></tr>')
             .append('<td></td>')
             .append($('<td></td>')
-              .append(getButton(that.playGame, gameData._id, "Play Game", 'play'))
+              .append(getButton(that.playGame, gameData._id, "Play Game", 'play', 'disabled'))
             )
           )
         )
