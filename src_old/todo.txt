@@ -1,4 +1,0 @@
-TODO:
-
--make a simple html page to test a few of the API calls
--implement basic settings XML

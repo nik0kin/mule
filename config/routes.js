@@ -23,4 +23,6 @@ module.exports = function (app, passport) {
   // games //
   require('../app/controllers/games/routes')(app);
 
+  // ruleBundles //
+  require('../app/controllers/ruleBundles/routes')(app);
 };

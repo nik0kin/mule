@@ -1,7 +1,7 @@
 {
   "name": "ProjectMule",
-  "version": "0.1.1",
-  "description": "(Abstract) Asyncronous Strategy (Game) Server",
+  "version": "0.1.7",
+  "description": "(Abstract) Asyncronous-play Turn-based Game Platform",
   "main": "server.js",
   "directories": {
     "doc": "docs",
