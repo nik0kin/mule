@@ -7,6 +7,14 @@ var _ = require('underscore'),
 
 var gameConfigs = require('./gameConfig');
 
+exports.generateRandomUserCredentials = function () {
+  return {
+    username : getRandomWordWithLengthEqualOrUnder(10) + _.random(10, 99) ,
+    password : getRandomWordWithLengthEqualOrUnder(10)
+  };
+};
+
+
 exports.getRandomGameConfig = function () {
   return gameConfigs[_.random(0, _.size(gameConfigs) - 1)];
 };
