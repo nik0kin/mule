@@ -1,0 +1,1 @@
+mongo mule_dev --eval "db.dropDatabase()"

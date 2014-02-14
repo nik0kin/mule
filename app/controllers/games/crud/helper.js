@@ -45,6 +45,9 @@ exports.createQ = function (params) {    //TODO this is starting to look ugly
             //valid maxPlayers
           } else
             return reject('playerMax not within RoleBundle min-max playerLimit')
+        } else if (_.isArray(foundRuleBundle.gameSettings.playerLimit)) {
+          if(!_.contains(foundRuleBundle.gameSettings.playerLimit, newGame.maxPlayers))
+            return reject('playerMax not in RoleBundle playerLimit array');
         } //else rulebundle maxPLayers not set
 
         newGame.validate( function (err) {
