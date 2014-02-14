@@ -5,11 +5,10 @@
  */
 
 var _ = require('underscore'),
-  mongoose = require('mongoose-q')(require('mongoose')),
   Q = require('q'),
   winston = require('winston');
 
-var User = require('mule-models').User;
+var User = require('mule-models').User.Model;
 
 exports.indexQ = function () {
   return User.find({}, 'username _id').execQ();

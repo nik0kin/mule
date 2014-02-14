@@ -9,9 +9,7 @@ var fs = require('fs'),
   mongoose = require('mongoose'),
   winston = require('winston');
 
-var Game = require('mule-models').Game,
-  gameConfigUtils = require('mule-utils/gameConfigUtils'),
-  responseUtils = require('mule-utils/responseUtils'),
+var responseUtils = require('mule-utils/responseUtils'),
   gameHelper = require('./helper'),
   getUsersGamesQ = require('./getUsersGames');
 
@@ -46,14 +44,14 @@ exports.create = function (req, res) {
     gameID: ""
   };
 
-  gameConfigUtils.promiseToValidate(req.body.gameConfig)
-    .done(function (result) {
-      gameHelper.createQ({validatedParams: result, creator : req.user})
+  //gameConfigUtils.promiseToValidate(req.body.gameConfig)
+  //  .done(function (result) {
+      gameHelper.createQ({validatedParams: req.body.gameConfig, creator : req.user})
         .done(function (value) {
           responseJSON.gameID = value._id;
           return res.status(200).send(responseJSON);
         },  responseUtils.sendNotAcceptableErrorCallback(res));
-    }, responseUtils.sendNotAcceptableErrorCallback(res) );
+  //  }, responseUtils.sendNotAcceptableErrorCallback(res) );
 };
 
 exports.read = function (req, res) {

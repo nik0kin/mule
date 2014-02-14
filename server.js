@@ -29,15 +29,9 @@ var env = process.env.NODE_ENV || 'development',
 winston.add(winston.transports.File, { filename: 'logs/mule' + dateUtils.getNiceDate()  + '.log' });
 winston.remove(winston.transports.Console);
 
-//Bootstrap db connection
-mongoose.connect(config.db);
-
-/*var models_path = __dirname + '/node_modules/mule-models/models';
- fs.readdirSync(models_path).forEach(function (file) {
- if (~file.indexOf('.js')) require(models_path + '/' + file);
- });*/
-require('mule-models').User; //idk if this does anything..
-require('mule-models').Game;
+//Bootstrapb connection
+//require('mule-utils/mongooseUtils');
+require('mule-models');
 
 // bootstrap passport config
 require('./config/passport')(passport, config);

@@ -4,12 +4,11 @@
  */
 
 var _ = require('underscore'),
-  mongoose = require('mongoose'),
   Q = require('q'),
   winston = require('winston');
 
 var utils = require('mule-utils/jsonUtils'),
-  RuleBundle = require('mule-models').RuleBundle;
+  RuleBundle = require('mule-models').RuleBundle.Model;
 
 exports.indexQ = function () {
   return RuleBundle.find().execQ();

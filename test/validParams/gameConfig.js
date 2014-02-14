@@ -1,12 +1,17 @@
 var gameConfigArray = [];
 
 exports.validGameConfig = {
-  "name": "fun game 3v3",
-  "maxPlayers" : 2,
-  "width" : 40,
-  "height" : 40,
-  "fog" : 'false',
-  "turnStyle" : "realtime"
+  name : "niks checkers game",
+  ruleBundle : {
+    name : 'Checkers'
+  },
+  //don't need max players when playing checkers
+
+  ruleBundleGameSettings : {
+    customBoardSettings : {
+      size : 8
+    }
+  }
 };
 
 gameConfigArray.push(exports.validGameConfig);

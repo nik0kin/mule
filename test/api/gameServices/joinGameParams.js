@@ -6,9 +6,17 @@
 
 
 exports.validGameConfig = {
-  "name": "testing joinGame .game",
-  "maxPlayers" : '3',
-  "width" : 13,
-  "height" : '31',
-  "turnStyle" : "realtime"
+  name : "niks vikings game",
+  ruleBundle : {
+    name : 'Vikings'
+  },
+  //don't need max players when playing checkers
+
+  maxPlayers : 3,
+  ruleBundleGameSettings : {
+    customBoardSettings : {
+      width : 80,
+      height : 20
+    }
+  }
 };

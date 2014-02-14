@@ -13,7 +13,7 @@ var _ = require('underscore'),
 
 var utils = require('mule-utils/jsonUtils'),
   GameCrud = require('./helper'),
-  User = require('mule-models').User,
+  User = require('mule-models').User.Model,
   gameUtils = require('mule-utils/generalGameUtils');
 
 module.exports = function getUsersGamesQ(userID) {
@@ -33,7 +33,7 @@ module.exports = function getUsersGamesQ(userID) {
             });
 
             resolve(usersGamesArray);
-          },reject);
+          }, reject);
       }, reject);
   });
 };

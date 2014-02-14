@@ -7,8 +7,7 @@
  */
 require ('../../../../server.js');
 
-var mongoose = require('mongoose'),
-  _ = require('underscore'),
+var _ = require('underscore'),
   should = require('should'),
   Q = require('q');
 
@@ -37,11 +36,6 @@ describe('API', function () {
     var expectedCreatedGameBody = testParams.expectedCreatedGameBody;
 
     var validCreateGamesBodyWithAlteredGameStatus = testParams.validCreateGamesBodyWithAlteredGameStatus;
-
-    var invalidCreateGamesBody = testParams.invalidCreateGamesBody;
-    var invalidCreateGamesBody2 = testParams.invalidCreateGamesBody2;
-    var invalidCreateGamesBody3 = testParams.invalidCreateGamesBody3;
-    var invalidCreateGamesBody4 = testParams.invalidCreateGamesBody4;
 
     describe('POST /games', function () {
       it('reject missing gameConfig', function (done) {
@@ -92,33 +86,9 @@ describe('API', function () {
                   should(body[key]).equal(value);
                 });
 
+                should(body.ruleBundleGameSettings.customBoardSettings.size).eql(8);
+
                 should(_.size(body.players)).eql(1);
-                done();
-              });
-          });
-      });
-
-      it('take a correct gameConfig LACKING gameStatus, the system should set gameStatus to \'open\'', function (done) {
-        loggedInAgent
-          .post('/games')
-          .send(validCreateGamesBody)
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function(err, res){
-            if (err) return done(err);
-
-            var gameID = res.body.gameID;
-            should(gameID).ok;
-            loggedInAgent
-              .get('/games/'+gameID)
-              .send()
-              .set('Accept', 'application/json')
-              .expect(200)
-              .end(function(err, res){
-                if (err) return done(err);
-
-                should(res.body).have.property('gameStatus', 'open');
-
                 done();
               });
           });
@@ -150,77 +120,19 @@ describe('API', function () {
           });
       });
 
+      it('should accept a maxPlayer value thats within vikings range', function (done) {
+        loggedInAgent
+          .post('/games')
+          .send(testParams.validVikingGameConfigBody)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end(function(err, res){
+            if (err) return done(err);
+            done();
+          });
+      });
+
       describe('reject an incorrect gameConfig: ', function () {
-        it('valid parameter types, but height/width needs to be greater than 0', function (done) {
-          loggedInAgent
-            .post('/games')
-            .send(invalidCreateGamesBody)
-            .set('Accept', 'application/json')
-            .expect(406)
-            .end(function(err, res){
-              if (err) return done(err);
-
-              var body = res.body;
-              should(body).ok;
-              should(body.statusMsg).ok;
-              should(body.statusMsg.errors).ok;
-              should(body.statusMsg.errors).have.property('height');
-              should(body.statusMsg.errors).have.property('width');
-              done();
-            });
-        });
-        it('valid parameter types, but height/width needs to be less or equal to 500', function (done) {
-          loggedInAgent
-            .post('/games')
-            .send(invalidCreateGamesBody2)
-            .set('Accept', 'application/json')
-            .expect(406)
-            .end(function(err, res){
-              if (err) return done(err);
-              var body = res.body;
-              should(body).ok;
-              should(body.statusMsg).ok;
-              should(body.statusMsg.errors).ok;
-              should(body.statusMsg.errors).have.property('height');
-              should(body.statusMsg.errors).have.property('width');
-              done();
-            });
-        });
-
-        it('valid parameter types, but maxPlayers needs to be 10 or less', function (done) {
-          loggedInAgent
-            .post('/games')
-            .send(invalidCreateGamesBody3)
-            .set('Accept', 'application/json')
-            .expect(406)
-            .end(function(err, res){
-              if (err) return done(err);
-
-              var body = res.body;
-              should(body).ok;
-              should(body.statusMsg).ok;
-              should(body.statusMsg.errors).ok;
-              should(body.statusMsg.errors).have.property('maxPlayers');
-              done();
-            });
-        });
-        it('valid parameter types, but maxPlayers needs to be 2 or greater', function (done) {
-          loggedInAgent
-            .post('/games')
-            .send(invalidCreateGamesBody4)
-            .set('Accept', 'application/json')
-            .expect(406)
-            .end(function(err, res){
-              if (err) return done(err);
-
-              var body = res.body;
-              should(body).ok;
-              should(body.statusMsg).ok;
-              should(body.statusMsg.errors).ok;
-              should(body.statusMsg.errors).have.property('maxPlayers');
-              done();
-            });
-        });
 
         it('no gameConfig in body', function (done) {
           gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : {}}, 406)
