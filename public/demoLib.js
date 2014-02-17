@@ -58,7 +58,12 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     var width = $("#startG_width").val();
     var height = $("#startG_height").val();
 
-    var gameConfig = {name: gamename, ruleBundle: {id: that.selectedRuleBundle }, maxPlayers: maxPlayers};
+    var gameConfig = {
+      name: gamename,
+      ruleBundle: {id: that.selectedRuleBundle },
+      maxPlayers: maxPlayers,
+      customBoardSettings: {}
+    };
 
     SDK.Games.createQ({ gameConfig: gameConfig })
       .done(function(data) {
@@ -347,7 +352,8 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     that.selectedRuleBundle = ruleBundleObject._id;
 
     $('#startG_ruleBundle_dropper_label').text(ruleBundleObject.name);
-    that.generateMaxPlayersDiv(ruleBundleObject.gameSettings.playerLimit)
+    that.generateMaxPlayersDiv(ruleBundleObject.gameSettings.playerLimit);
+    that.generateCustomBoardSettingsDiv(ruleBundleObject.gameSettings.customBoardSettings);
   };
 
   that.generateMaxPlayersDiv = function (playerLimit) {
@@ -363,9 +369,21 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     } else {
       console.log('wut: ' + JSON.stringify(playerLimit));
     }
+  };
 
-    //$('#maxPlayersDiv').append
-    //console.log(p.gameSettings.playerLimit);
+  that.generateCustomBoardSettingsDiv = function (playerLimit) {
+    $('#customBoardSettingsDiv').html('');
+    /*if (!playerLimit) {
+      console.log('invalid playerLimit')
+    } else if (_.isNumber(playerLimit) && playerLimit % 1 === 0) {
+      $('#maxPlayersDiv').html('Static Max Players: ');
+      $('#maxPlayersDiv').append("<input id=\"startG_num\" type=\"text\" name=\"maxPlayers\" value=\"" + playerLimit + "\" disabled ><br>");
+    } else if (_.isNumber(playerLimit.min) && _.isNumber(playerLimit.max)) {
+      $('#maxPlayersDiv').html('Max Players (' + playerLimit.min + ' - ' + playerLimit.max + ') :');
+      $('#maxPlayersDiv').append("<input id=\"startG_num\" type=\"text\" name=\"maxPlayers\"><br>");
+    } else {
+      console.log('wut: ' + JSON.stringify(playerLimit));
+    }*/
   };
 
   return that;
