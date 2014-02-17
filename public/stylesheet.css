@@ -24,6 +24,12 @@ td {
     text-align:left;
 }
 
+.ruleBundleChooser{
+    cellSpacing:2;
+    border:2;
+    width:50%;
+}
+
 .menu ul { display: none; } /* Hide before plugin loads */
 .menu ul.dropit-submenu {
     background-color: #fff;

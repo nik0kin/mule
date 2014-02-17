@@ -139,7 +139,9 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       .done(function(data ){
         console.log("Data Recieved: ");
         console.log(data);
-        $("#gameInfoArea").html(that.getGameInfoTable(data));
+
+        $('#gameInfoArea').html('');
+        $("#gameInfoArea").append(that.makeGameInfoTable(data));
       });
   };
 
@@ -252,7 +254,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     return tableElement;
   };
 
-  that.getGameInfoTable = function (gameInfo) {
+  that.makeGameInfoTable = function (gameInfo) {
     if(!gameInfo) return "null";
 
     var color = "#000000";
@@ -275,28 +277,39 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       //error
     }
 
-    var string = "<table border=\'1\'>"; //TODO refactor into jquery
-    string += "<tr>";
-    string += "<td>name: <h3>"+gameInfo.name+"</h3></td>";
-    string += "<td>ID: "+gameInfo._id+"<br><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></td>";
-    string += "</tr>";
-    string += "<tr>";
-    string += "<td>Turn: "+gameInfo.turnNumber+"<br>"+gameInfo.maxPlayers+" players</td>";
-    string += "<td> "+JSON.stringify(gameInfo.ruleBundleGameSettings) +"</td>";
-    string += "</tr>";
-    string += "<tr>";
-    string += "<td colspan='2'>";
-    string += "<b>Players:</b><br>";
+    //loop for players list
+    var playerListDOM = $("<td colspan='2'></td>");
 
-    _.each(gameInfo.players, function (value, key) {
-      string += key+").      ["+value.playerID+"]  :  "+value.playerStatus+"<br>";
+    _.each(gameInfo.players, function (value, key) { // readCacheQ
+      var updateFunct = function (result) {
+        console.log('read chace?')
+        console.log(result)
+        playerListDOM.append(key+").     " + result.username + " ["+result._id+"]  :  "+value.playerStatus+"<br>");
+      };
+
+      SDK.Users.readCacheQ(value.playerID)
+        .then(updateFunct, updateFunct);
     });
 
-    string += "</td>";
-    string += "</tr>";
-    string += "</table>";
+    var tableElement = $('<div></div>')
+        .append($('<table></table>')
+          .attr({ cellSpacing : 2, border : 2 })
+          .addClass("text")
+          .append($('<tr></tr>')
+            .append("<td>name: <h3>"+gameInfo.name+"</h3></td>")
+            .append("<td>ID: "+gameInfo._id+"<br><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></td>")
+          )
+          .append($('<tr></tr>')
+            .append("<td>Turn: "+gameInfo.turnNumber+"<br>"+gameInfo.maxPlayers+" players</td>")
+            .append("<td> "+JSON.stringify(gameInfo.ruleBundleGameSettings) +"</td>")
+          )
+          .append($('<tr></tr>')
+            .append(playerListDOM)
+          )
+        )
+      ;
 
-    return string;
+    return tableElement;
   };
 
   that.initRuleBundleDropdown = function () {

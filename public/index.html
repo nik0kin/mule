@@ -20,79 +20,86 @@
 
 
 <body>
-    <script type="text/javascript">
-        $(function() {
-            $("#tabs").tabs();
-            $('.menu').dropit();
-        });
-    </script>
+<script type="text/javascript">
+    $(function() {
+        $("#tabs").tabs();
+        $('.menu').dropit();
+    });
+</script>
 
-    <div>
-        <h3>Register/Login</h3>
-        Username:
-        <input id="usernameText" type="text" name="username"> <br>
-        Password:
-        <input id="passwordText" type="text" name="password"> <br>
-        <input type="button" id="createUser"  value="Register">
-        <input type="button" id="loginUser" value="Login">
-        <br><br>
-    </div><br>
+<div>
+    <h3>Register/Login</h3>
+    Username:
+    <input id="usernameText" type="text" name="username"> <br>
+    Password:
+    <input id="passwordText" type="text" name="password"> <br>
+    <input type="button" id="createUser"  value="Register">
+    <input type="button" id="loginUser" value="Login">
+    <br><br>
+</div><br>
 
-    <div>
-        <h3>Create Game</h3>
-        Game Name :
-        <input id="startG_name" type="text" name="gamename"><br>
+<div>
+    <h3>Create Game</h3>
+    Game Name :
+    <input id="startG_name" type="text" name="gamename"><br>
 
-        RuleBundle (Which Game Type?) :
-        <ul class="menu">
-            <li>
-                <a id="startG_ruleBundle_dropper_label" href="#">Chooser Dropdown</a>
-                <ul id="startG_ruleBundle_dropper">
+    <table class="ruleBundleChooser">
+        <tr>
+            <td>RuleBundle (Which Game Type?) :</td>
+
+            <td>
+                <ul class="menu">
+                    <li>
+                        <a id="startG_ruleBundle_dropper_label" href="#">Chooser Dropdown</a>
+                        <ul id="startG_ruleBundle_dropper">
+                        </ul>
+                    </li>
                 </ul>
-            </li>
+            </td>
+        </tr>
+    </table>
+    <br>
+
+    <div id="maxPlayersDiv">
+
+    </div><br>
+
+    <div id="customBoardSettingsDiv">
+        Width/Height:
+        <input id="startG_width" type="text" name="width">
+        <input id="startG_height" type="text" name="height"><br>
+    </div><br>
+    <input type="button" id="startGame" value="Start Game">
+    <br><br>
+</div><br>
+
+<div>
+    <h3>View Game Info</h3><br>
+
+    <div id="gameInfoArea"></div><br>
+
+
+    <div id="container"></div>
+</div><br>
+
+<div>
+    <h3>List Games</h3><br>
+    <input type="button" id="getGames" value="Get Games"><br>
+    <input type="button" id="getMyGames" value="Get My Games"><br>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Open Games</a></li>
+            <li><a href="#tabs-2">My Games</a></li>
         </ul>
-        <br>
-
-        <div id="maxPlayersDiv">
-
-        </div><br>
-
-        <div id="customBoardSettingsDiv">
-            Width/Height:
-            <input id="startG_width" type="text" name="width">
-            <input id="startG_height" type="text" name="height"><br>
-        </div><br>
-        <input type="button" id="startGame" value="Start Game">
-        <br><br>
-    </div><br>
-
-    <div>
-        <h3>View Game Info</h3><br>
-
-        <div id="gameInfoArea"></div><br>
-
-
-        <div id="container"></div>
-    </div><br>
-
-    <div>
-        <h3>List Games</h3><br>
-        <input type="button" id="getGames" value="Get Games"><br>
-        <input type="button" id="getMyGames" value="Get My Games"><br>
-        <div id="tabs">
-            <ul>
-                <li><a href="#tabs-1">Open Games</a></li>
-                <li><a href="#tabs-2">My Games</a></li>
-            </ul>
-            <div id="tabs-1">
-                <p>tab1</p>
-            </div>
-            <div id="tabs-2">
-                <p>tab2</p>
-            </div>
+        <div id="tabs-1">
+            <p>tab1</p>
         </div>
-        <br><br>
-    </div><br>
+        <div id="tabs-2">
+            <p>tab2</p>
+        </div>
+    </div>
+    <br><br>
+</div><br>
 
 
 </body>
