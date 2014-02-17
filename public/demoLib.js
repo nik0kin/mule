@@ -167,6 +167,20 @@ define(["mule-js-sdk/sdk"], function (sdk) {
 
   ////////////////// OTHER STUFF //////////////////////
 
+  var getButton = function (func, parameter, buttonLabel, idHelp, disOnOff) {
+    var makeCallback = function (_parameter) {
+      return function () {
+        func(_parameter);
+      };
+    };
+
+    var buttonID = idHelp + '' + parameter;
+    var newButton = $("<input type=\"button\" id=\"" + buttonID + "\" value=\"" + buttonLabel + "\" "+disOnOff+">");
+    newButton.click(makeCallback(parameter));
+
+    return newButton;
+  };
+
   //change status color dependeding on open,inprogress,ended
   // return a string? of a table
   // should return an table element
@@ -205,20 +219,6 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       joinedMsg = "";
       playDisabled = "disabled";
     }
-
-    var getButton = function (func, parameter, buttonLabel, idHelp, disOnOff) {
-      var makeCallback = function (_parameter) {
-        return function () {
-          func(_parameter);
-        };
-      };
-
-      var buttonID = idHelp + '' + parameter;
-      var newButton = $("<input type=\"button\" id=\"" + buttonID + "\" value=\"" + buttonLabel + "\" "+disOnOff+">");
-      newButton.click(makeCallback(parameter));
-
-      return newButton;
-    };
 
     var tableElement = $('<div></div>')
         .append($('<table></table>')
@@ -297,6 +297,40 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     string += "</table>";
 
     return string;
+  };
+
+  that.testFunct = function (p) {
+    $('#startG_ruleBundle_dropper_label').text(p.name);
+    console.log('Choose: ' + p.name);
+  };
+
+  that.initRuleBundleDropdown = function () {
+    //get RuleBundles
+    SDK.RuleBundles.indexQ()
+      .done(function(data ) {
+        console.log( "ruleBundle.index: ");
+        console.log(data);
+
+        if(!_.isArray(data)){
+          alert("Get Games failed: "+JSON.stringify(data));
+          return;
+        }
+
+        //set RuleBundles to dropdown
+        that.setRuleBundleDropdownOptions(data);
+      }).fail(function(msg){
+        alert("ruleBundle.index Fail");
+      });
+
+  };
+
+  that.setRuleBundleDropdownOptions = function (object) {
+    _.each(object, function (value, key) {
+      $('#startG_ruleBundle_dropper')
+        .append($('<li></li>')
+          .append(getButton(that.testFunct, value, value.name, 'dd' + key, ''))
+        );
+    });
   };
 
   return that;

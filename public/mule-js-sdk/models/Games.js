@@ -1,5 +1,5 @@
 /**
- * js-sdk/Games.js
+ * js-sdk/models/Games.js
  *
  * Created by niko on 2/5/14.
  */

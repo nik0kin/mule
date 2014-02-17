@@ -1,5 +1,5 @@
 /**
- * js-sdk/Users.js
+ * js-sdk/models/Users.js
  *
  * Created by niko on 2/5/14.
  */

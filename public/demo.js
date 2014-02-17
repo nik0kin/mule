@@ -9,4 +9,10 @@ define(["demoLib"], function (demoLib) {
   $('#startGame').click(demoLib.tryCreateGame);
   $('#getGames').click(demoLib.tryGetGames);
   $('#getMyGames').click(demoLib.tryGetMyGames);
+
+  $(document).ready(function () {
+    $('.menu').dropit();
+
+    demoLib.initRuleBundleDropdown();
+  });
 });

@@ -36,6 +36,8 @@ module.exports = function (app, config, passport) {
       next();
     });
 
+    app.use(express.favicon(__dirname + '/../public/favicon.ico', {maxAge: 86400000}));
+
     // cookieParser should be above session
     app.use(express.cookieParser());
 

@@ -1,15 +1,14 @@
 <html>
 <head>
-    <style>
-        body {
-            margin: 0px;
-            padding: 0px;
-        }
-    </style>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="./stylesheet.css" />
 
     <script src="lib/jquery-1.11.0.min.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <script src="lib/Dropit/dropit.js"></script>
+    <link rel="stylesheet" href="lib/Dropit/dropit.css" type="text/css" />
+
     <script src="lib/kinetic-v4.4.3.min.js"></script>
     <script src="lib/underscore-min.js"></script>
 
@@ -27,49 +26,73 @@
         });
     </script>
 
-    <h3>Login/Register</h3><br>
-    Username:
-    <input id="usernameText" type="text" name="username"> <br>
-    Password:
-    <input id="passwordText" type="text" name="password"> <br>
-    <input type="button" id="createUser"  value="Register">
-    <input type="button" id="loginUser" value="Login">
-    <br><br>
+    <div>
+        <h3>Register/Login</h3>
+        Username:
+        <input id="usernameText" type="text" name="username"> <br>
+        Password:
+        <input id="passwordText" type="text" name="password"> <br>
+        <input type="button" id="createUser"  value="Register">
+        <input type="button" id="loginUser" value="Login">
+        <br><br>
+    </div><br>
 
-    <h3>Start Game</h3><br>
-    GameName:
-    <input id="startG_name" type="text" name="gamename"><br>
-    Total Number of Players ( >1 ):
-    <input id="startG_num" type="text" name="maxPlayers"><br>
-    Width/Height:
-    <input id="startG_width" type="text" name="width">
-    <input id="startG_height" type="text" name="height"><br>
-    <input type="button" id="startGame" value="Start Game">
-    <br><br>
+    <div>
+        <h3>Create Game</h3>
+        Game Name :
+        <input id="startG_name" type="text" name="gamename"><br>
 
-    <h3>View Game Info</h3><br>
-
-    <div id="gameInfoArea"></div><br>
-
-
-    <div id="container"></div>
-
-    <h3>List Games</h3><br>
-    <input type="button" id="getGames" value="Get Games"><br>
-    <input type="button" id="getMyGames" value="Get My Games"><br>
-    <div id="tabs">
-        <ul>
-            <li><a href="#tabs-1">Open Games</a></li>
-            <li><a href="#tabs-2">My Games</a></li>
+        RuleBundle (Which Game Type?) :
+        <ul class="menu">
+            <li>
+                <a id="startG_ruleBundle_dropper_label" href="#">Chooser Dropdown</a>
+                <ul id="startG_ruleBundle_dropper">
+                </ul>
+            </li>
         </ul>
-        <div id="tabs-1">
-            <p>tab1</p>
+        <br>
+
+        <div id="maxPlayersDiv">
+            Max Players (dependant on RuleBundle):
+            <input id="startG_num" type="text" name="maxPlayers"><br>
+        </div><br>
+
+        <div id="customBoardSettingsDiv">
+            Width/Height:
+            <input id="startG_width" type="text" name="width">
+            <input id="startG_height" type="text" name="height"><br>
+        </div><br>
+        <input type="button" id="startGame" value="Start Game">
+        <br><br>
+    </div><br>
+
+    <div>
+        <h3>View Game Info</h3><br>
+
+        <div id="gameInfoArea"></div><br>
+
+
+        <div id="container"></div>
+    </div><br>
+
+    <div>
+        <h3>List Games</h3><br>
+        <input type="button" id="getGames" value="Get Games"><br>
+        <input type="button" id="getMyGames" value="Get My Games"><br>
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">Open Games</a></li>
+                <li><a href="#tabs-2">My Games</a></li>
+            </ul>
+            <div id="tabs-1">
+                <p>tab1</p>
+            </div>
+            <div id="tabs-2">
+                <p>tab2</p>
+            </div>
         </div>
-        <div id="tabs-2">
-            <p>tab2</p>
-        </div>
-    </div>
-    <br><br>
+        <br><br>
+    </div><br>
 
 
 </body>
