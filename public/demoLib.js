@@ -58,7 +58,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     var width = $("#startG_width").val();
     var height = $("#startG_height").val();
 
-    var gameConfig = {name: gamename, maxPlayers: maxPlayers, width: width, height: height};
+    var gameConfig = {name: gamename, ruleBundle: {id: that.selectedRuleBundle }, maxPlayers: maxPlayers};
 
     SDK.Games.createQ({ gameConfig: gameConfig })
       .done(function(data) {
@@ -282,7 +282,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     string += "</tr>";
     string += "<tr>";
     string += "<td>Turn: "+gameInfo.turnNumber+"<br>"+gameInfo.maxPlayers+" players</td>";
-    string += "<td> "+gameInfo.width+"x"+gameInfo.height+" map</td>";
+    string += "<td> "+JSON.stringify(gameInfo.ruleBundleGameSettings) +"</td>";
     string += "</tr>";
     string += "<tr>";
     string += "<td colspan='2'>";
@@ -299,11 +299,6 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     return string;
   };
 
-  that.testFunct = function (p) {
-    $('#startG_ruleBundle_dropper_label').text(p.name);
-    console.log('Choose: ' + p.name);
-  };
-
   that.initRuleBundleDropdown = function () {
     //get RuleBundles
     SDK.RuleBundles.indexQ()
@@ -312,7 +307,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
         console.log(data);
 
         if(!_.isArray(data)){
-          alert("Get Games failed: "+JSON.stringify(data));
+          alert("ruleBundle.index not an Array: "+JSON.stringify(data));
           return;
         }
 
@@ -328,9 +323,36 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     _.each(object, function (value, key) {
       $('#startG_ruleBundle_dropper')
         .append($('<li></li>')
-          .append(getButton(that.testFunct, value, value.name, 'dd' + key, ''))
+          .append(getButton(that.generateStartGameDOM, value, value.name, 'dd' + key, ''))
         );
     });
+  };
+
+  that.selectedRuleBundle = '';
+
+  that.generateStartGameDOM = function (ruleBundleObject) {
+    that.selectedRuleBundle = ruleBundleObject._id;
+
+    $('#startG_ruleBundle_dropper_label').text(ruleBundleObject.name);
+    that.generateMaxPlayersDiv(ruleBundleObject.gameSettings.playerLimit)
+  };
+
+  that.generateMaxPlayersDiv = function (playerLimit) {
+    $('#maxPlayersDiv').html('');
+    if (!playerLimit) {
+      console.log('invalid playerLimit')
+    } else if (_.isNumber(playerLimit) && playerLimit % 1 === 0) {
+      $('#maxPlayersDiv').html('Static Max Players: ');
+      $('#maxPlayersDiv').append("<input id=\"startG_num\" type=\"text\" name=\"maxPlayers\" value=\"" + playerLimit + "\" disabled ><br>");
+    } else if (_.isNumber(playerLimit.min) && _.isNumber(playerLimit.max)) {
+      $('#maxPlayersDiv').html('Max Players (' + playerLimit.min + ' - ' + playerLimit.max + ') :');
+      $('#maxPlayersDiv').append("<input id=\"startG_num\" type=\"text\" name=\"maxPlayers\"><br>");
+    } else {
+      console.log('wut: ' + JSON.stringify(playerLimit));
+    }
+
+    //$('#maxPlayersDiv').append
+    //console.log(p.gameSettings.playerLimit);
   };
 
   return that;

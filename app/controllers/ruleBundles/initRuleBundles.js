@@ -13,6 +13,7 @@ exports.loadOnce = function () {
       if (_.isEqual([], result)) {
         winston.log('Loading RuleBundles')
         ruleBundleHelper.createQ(require('mule-models/bundles/checkers'));
+        ruleBundleHelper.createQ(require('mule-models/bundles/backgammon'));
         ruleBundleHelper.createQ(require('mule-models/bundles/vikings'));
       }
 

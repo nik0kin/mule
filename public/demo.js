@@ -10,9 +10,5 @@ define(["demoLib"], function (demoLib) {
   $('#getGames').click(demoLib.tryGetGames);
   $('#getMyGames').click(demoLib.tryGetMyGames);
 
-  $(document).ready(function () {
-    $('.menu').dropit();
-
-    demoLib.initRuleBundleDropdown();
-  });
+  demoLib.initRuleBundleDropdown();
 });
