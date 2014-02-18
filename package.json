@@ -18,9 +18,7 @@
     "mule-models" : "git+https://github.com/nik0kin/mule-models.git#master",
 
     "express": "3.x",
-    "mongoose": "~3.8.0",
     "q": "~0.9.7",
-    "mongoose-q": "0.0.4",
     "async": "~0.2.9",
     "notifier": "~0.1.1",
     "passport": "latest",

@@ -22,16 +22,15 @@ var express = require('express'),
  */
 
 var env = process.env.NODE_ENV || 'development',
-    config = require('./config/config')[env],
-    mongoose = require('mongoose');
+    config = require('./config/config')[env];
 
 //Winston Config
 winston.add(winston.transports.File, { filename: 'logs/mule' + dateUtils.getNiceDate()  + '.log' });
 winston.remove(winston.transports.Console);
 
-//Bootstrapb connection
-//require('mule-utils/mongooseUtils');
+//Bootstrap connection
 require('mule-models');
+mongoose = global.getMongoose();
 
 // bootstrap passport config
 require('./config/passport')(passport, config);

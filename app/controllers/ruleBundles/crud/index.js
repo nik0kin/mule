@@ -5,7 +5,7 @@
 
 var fs = require('fs'),
   _ = require('underscore'),
-  mongoose = require('mongoose'),
+  mongoose = global.getMongoose(),
   winston = require('winston');
 
 var RuleBundle = require('mule-models').RuleBundle,
@@ -44,8 +44,11 @@ exports.read = function (req, res) {
   winston.info('GET /ruleBundles/:id', req.params.id);
 
   ruleBundleHelper.readQ(req.params.id)
-    .then(function (ruleBundles){
-      res.send(ruleBundles);
+    .then(function (ruleBundle){
+      if (!ruleBundle) {
+        responseUtils.sendNotFoundError(res, 'Not Found');
+      } else
+        res.send(ruleBundle);
     })
     .fail(responseUtils.sendBadRequestCallback(res))
     .done();

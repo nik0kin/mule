@@ -1,10 +1,4 @@
-/**
- * utilsSpec.js
- *
- * Created by niko on 1/25/14.
- *
- * http://stackoverflow.com/questions/14001183/how-to-authenticate-supertest-requests-with-passport
- */
+
 require ('../../../../server.js');
 
 var _ = require('underscore'),

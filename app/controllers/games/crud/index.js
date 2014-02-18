@@ -6,7 +6,7 @@
 
 var fs = require('fs'),
   _ = require('underscore'),
-  mongoose = require('mongoose'),
+  mongoose = global.getMongoose(),
   winston = require('winston');
 
 var responseUtils = require('mule-utils/responseUtils'),
@@ -59,7 +59,10 @@ exports.read = function (req, res) {
 
   gameHelper.readQ(req.params.id)
     .then(function (game){
-      res.send(game);
+      if (!game) {
+        responseUtils.sendNotFoundError(res, 'Not Found');
+      } else
+        res.send(game);
     })
     .fail(responseUtils.sendBadRequestCallback(res))
     .done();

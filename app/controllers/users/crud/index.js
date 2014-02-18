@@ -5,7 +5,7 @@
  */
 
 var _ = require('underscore'),
-  mongoose = require('mongoose-q')(require('mongoose')),
+  mongoose = global.getMongoose(),
   Q = require('q'),
   winston = require('winston');
 
@@ -59,7 +59,10 @@ exports.create = function (req, res){
 exports.read = function (req, res){
   helper.readQ(req.params.id)
     .done(function (foundUser) {
-      return res.status(200).send(foundUser);
+      if (!foundUser) {
+        responseUtils.sendNotFoundError(res, 'Not Found');
+      } else
+        return res.status(200).send(foundUser);
     }, responseUtils.sendNotFoundErrorCallback(res));
 };
 

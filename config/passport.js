@@ -1,4 +1,4 @@
-var mongoose = require('mongoose'),
+var mongoose = global.getMongoose(),
   LocalStrategy = require('passport-local').Strategy,
   User = require('mule-models').User.Model,
   winston = require('winston');

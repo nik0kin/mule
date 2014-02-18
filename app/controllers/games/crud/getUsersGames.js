@@ -7,7 +7,7 @@
  */
 
 var _ = require('underscore'),
-  mongoose = require('mongoose'),
+  mongoose = global.getMongoose(),
   Q = require('q'),
   winston = require('winston');
 
