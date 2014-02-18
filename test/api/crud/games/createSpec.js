@@ -132,6 +132,14 @@ describe('API', function () {
           });
       });
 
+      it('should accept sending a correct size (8) for a checkers gameConfig', function (done) {
+        gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validCheckersGameConfig}, 200)
+          .done(function (result) {
+            console.log(result)
+            done();
+          }, testHelper.mochaError(done));
+      });
+
       it('should ignore (extra, non-rulebundle) customBoardSettings, backgammon with a width parameter', function (done) {
         gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validBackgammonWithExtras}, 200)
           .done(function (result) {

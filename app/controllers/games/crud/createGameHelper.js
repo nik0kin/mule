@@ -87,7 +87,7 @@ var parseCustomBoardSettingsQ = function (foundRuleBundle, newGame) {
 
     if (foundRuleBundle.gameSettings && foundRuleBundle.gameSettings.customBoardSettings) {
       _.each(foundRuleBundle.gameSettings.customBoardSettings, function (value, key) {
-        var paramToValidate = newGame.ruleBundleGameSettings.customBoardSettings[key]; // needs better names
+        var paramToValidate = parseInt(newGame.ruleBundleGameSettings.customBoardSettings[key]); // needs better names
 
         winston.log('verbose', key + ' ' + JSON.stringify(value) + ' ? ' + paramToValidate);
         if (integerUtils.validateIntegerInArrayOrMinMax(value, paramToValidate)) {

@@ -61,6 +61,20 @@ exports.validVikingGameConfigBody = {
   }
 };
 
+exports.validCheckersGameConfig = {
+  name : "niks valid checkers game :)",
+  ruleBundle : {
+    name : 'Checkers'
+  },
+  maxPlayers: 2,
+
+  ruleBundleGameSettings : {
+    customBoardSettings : {
+      size : 8 //TODO size : "8"
+    }
+  }
+};
+
 exports.validBackgammonWithExtras = {
   name : "niks valid backgammon game w/ extras",
   ruleBundle : {

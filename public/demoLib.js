@@ -55,19 +55,23 @@ define(["mule-js-sdk/sdk"], function (sdk) {
   that.tryCreateGame = function () {
     var gamename = $("#startG_name").val();
     var maxPlayers = $("#startG_num").val();
-    var width = $("#startG_width").val();
-    var height = $("#startG_height").val();
 
     var gameConfig = {
       name: gamename,
       ruleBundle: {id: that.selectedRuleBundle },
       maxPlayers: maxPlayers,
-      customBoardSettings: {}
+      ruleBundleGameSettings: {
+        customBoardSettings: {}
+      }
     };
+
+    _.each(that.getCurrentCustomBoardSettings() , function (value, key) {
+      gameConfig.ruleBundleGameSettings.customBoardSettings[key] = parseInt($("#startG_custom_"+key).val());
+    });
 
     SDK.Games.createQ({ gameConfig: gameConfig })
       .done(function(data) {
-        console.log( "Data Recieved: " + JSON.stringify(data) );
+        console.log( "Data Received: " + JSON.stringify(data) );
 
         if(data.status != 0){
           alert("login failed: "+data.statusMsg);
@@ -82,7 +86,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
   that.tryGetGames = function () {
     SDK.Games.indexQ()
       .done(function(data ) {
-        console.log( "Data Recieved: ");
+        console.log( "Data Received: ");
         console.log(data);
 
         if(!_.isArray(data)){
@@ -371,19 +375,29 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     }
   };
 
-  that.generateCustomBoardSettingsDiv = function (playerLimit) {
+  var currentCustomBoardSettings = {};
+  that.getCurrentCustomBoardSettings = function () { return currentCustomBoardSettings; };
+
+  that.generateCustomBoardSettingsDiv = function (customBoardSettings) {
     $('#customBoardSettingsDiv').html('');
-    /*if (!playerLimit) {
-      console.log('invalid playerLimit')
-    } else if (_.isNumber(playerLimit) && playerLimit % 1 === 0) {
-      $('#maxPlayersDiv').html('Static Max Players: ');
-      $('#maxPlayersDiv').append("<input id=\"startG_num\" type=\"text\" name=\"maxPlayers\" value=\"" + playerLimit + "\" disabled ><br>");
-    } else if (_.isNumber(playerLimit.min) && _.isNumber(playerLimit.max)) {
-      $('#maxPlayersDiv').html('Max Players (' + playerLimit.min + ' - ' + playerLimit.max + ') :');
-      $('#maxPlayersDiv').append("<input id=\"startG_num\" type=\"text\" name=\"maxPlayers\"><br>");
-    } else {
-      console.log('wut: ' + JSON.stringify(playerLimit));
-    }*/
+
+    currentCustomBoardSettings = customBoardSettings;
+    _.each(customBoardSettings, function (value, key) {
+      $('#customBoardSettingsDiv').append(key + ' - ');
+
+      if (_.isArray(value) ) {
+        //TODO dropdown?
+        $('#customBoardSettingsDiv').append(JSON.stringify(value) + ': ');
+      } else if (_.isNumber(value.min) && _.isNumber(value.max)) {
+        $('#customBoardSettingsDiv').append('(' + value.min + ' - ' + value.max + ') :');
+      } else {
+        console.log('wut2: ' + JSON.stringify(value));
+      }
+
+      var inputID = 'startG_custom_' + key;
+      $('#customBoardSettingsDiv').append("<input id=\"" + inputID + "\" type=\"text\" name=\"" + key + "\"><br>");
+    });
+
   };
 
   return that;
