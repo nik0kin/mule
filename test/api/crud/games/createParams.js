@@ -50,7 +50,6 @@ exports.validVikingGameConfigBody = {
     ruleBundle : {
       name : 'Vikings'
     },
-    //don't need max players when playing checkers
 
     maxPlayers : 3,
     ruleBundleGameSettings : {
@@ -58,6 +57,47 @@ exports.validVikingGameConfigBody = {
         width : 80,
         height : 20
       }
+    }
+  }
+};
+
+exports.validBackgammonWithExtras = {
+  name : "niks valid backgammon game w/ extras",
+  ruleBundle : {
+    name : 'Backgammon'
+  },
+
+  ruleBundleGameSettings : {
+    customBoardSettings : {
+      size : 12,
+      dice: 13
+    }
+  }
+};
+
+exports.invalidCheckersGameConfig = {
+  name : "niks invalid checkers game",
+  ruleBundle : {
+    name : 'Checkers'
+  },
+  maxPlayers: 2,
+
+  ruleBundleGameSettings : {
+    customBoardSettings : {
+      size : 13
+    }
+  }
+};
+
+exports.invalidVikingsGameConfig = {
+  name : "niks invalid vikings game",
+  ruleBundle : {
+    name : 'Vikings'
+  },
+
+  maxPlayers : 8,
+  ruleBundleGameSettings : {
+    customBoardSettings : {
     }
   }
 };

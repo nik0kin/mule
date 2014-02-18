@@ -132,6 +132,17 @@ describe('API', function () {
           });
       });
 
+      it('should ignore (extra, non-rulebundle) customBoardSettings, backgammon with a width parameter', function (done) {
+        gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validBackgammonWithExtras}, 200)
+          .done(function (result) {
+            gameAPIHelper.readGameQ({gameID: result.gameID, agent: loggedInAgent})
+              .done(function (gameResult) {
+                should(gameResult.ruleBundleGameSettings).not.ok;
+                done();
+              }, testHelper.mochaError(done));
+          }, testHelper.mochaError(done));
+      });
+
       describe('reject an incorrect gameConfig: ', function () {
 
         it('no gameConfig in body', function (done) {
@@ -145,6 +156,23 @@ describe('API', function () {
         it('if it has zeros for all the numbers', function (done) {
           gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.invalidZerosGameConfig}, 406)
             .done(function (result) {
+              done();
+            }, testHelper.mochaError(done));
+        });
+
+        it('if sending an incorrect size (13) for a checkers gameConfig', function (done) {
+          gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.invalidCheckersGameConfig}, 406)
+            .done(function (result) {
+              should(result.statusMsg).have.property('size');
+              done();
+            }, testHelper.mochaError(done));
+        });
+
+        it('if sending not including width and height for a vikings gameConfig', function (done) {
+          gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.invalidVikingsGameConfig}, 406)
+            .done(function (result) {
+              should(result.statusMsg).have.property('width');
+              should(result.statusMsg).have.property('height');
               done();
             }, testHelper.mochaError(done));
         });
