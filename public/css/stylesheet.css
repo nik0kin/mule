@@ -1,5 +1,5 @@
 
-div {
+div .border{
     border:4px solid;
     border-radius:25px;
     background: #FFFFFF;
@@ -54,4 +54,27 @@ td {
     background: #248fc1;
     color: #fff;
     text-decoration: none;
+}
+
+#loginHeader {
+    text-align: right;
+}
+
+#create {
+    text-align: center;
+}
+
+#gamesButtons {
+    text-align: center;
+}
+
+#gamesList {
+    overflow-y: scroll;
+    height:400px;
+}
+
+#gameInfo {
+    text-align: center;
+    display: table-cell;
+    float: none;
 }

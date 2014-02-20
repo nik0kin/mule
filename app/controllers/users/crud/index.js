@@ -51,7 +51,7 @@ exports.create = function (req, res){
       });
   }, function(missingKey) {
     responseJSON.status = -1;
-    responseJSON.statusMsg = "Missing: " + missingKey + " parameter";
+    responseJSON.statusMsg = "Missing: " + JSON.stringify(missingKey) + " parameter";
     return res.status(406).send(responseJSON);
   });
 };

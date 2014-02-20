@@ -9,6 +9,28 @@ define(["mule-js-sdk/sdk"], function (sdk) {
 
   var that = {};
 
+  that.initPage = function () {
+    //get RuleBundles
+    SDK.RuleBundles.indexQ()
+      .done(function(data ) {
+        console.log( "ruleBundle.index: ");
+        console.log(data);
+
+        if(!_.isArray(data)){
+          alert("ruleBundle.index not an Array: "+JSON.stringify(data));
+          return;
+        }
+
+        //set RuleBundles to dropdown
+        that.setRuleBundleDropdownOptions(data);
+
+        //load games
+        $('#getGames').click();
+      }).fail(function(msg){
+        alert("ruleBundle.index Fail");
+      });
+  };
+
   ///////////////////// USER STUFF /////////////////////
 
   that.tryCreateUser = function () {
@@ -26,7 +48,9 @@ define(["mule-js-sdk/sdk"], function (sdk) {
           alert("createUser failed: "+data.statusMsg);
           return;
         }
+        that.registerSuccessAlert();
       }).fail(function(res){
+        that.registerFailAlert();
         alert("createUser Fail: " + JSON.stringify(res.responseJSON.statusMsg));
       });
   };
@@ -41,9 +65,11 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     })
       .done(function(data ) {
         console.log( "Data Recieved: " + JSON.stringify(data) );
+        that.loginSuccessAlert();
       }).fail(function(res){
         console.log(res);
-        alert("login Fail: " +res.responseText);
+        that.loginFailAlert();
+        alert("login Fail: " +JSON.stringify(res.responseText));
       });
 
     $("#tabs-1").html("");
@@ -111,6 +137,11 @@ define(["mule-js-sdk/sdk"], function (sdk) {
   };
 
   that.tryGetMyGames = function () {
+    if (!SDK.Users.getLoggedInUserID()) {
+      alert('You are not logged in!')
+      return;
+    }
+
     SDK.Games.readMyGamesQ()
       .done(function(data) {
         console.log( "Data Recieved: ");
@@ -156,7 +187,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
 
   that.tryJoinGame = function (gameID) {
     SDK.Games.joinGameQ(gameID)
-    .done(function(data) {
+      .done(function(data) {
         console.log( "Data Recieved: " + JSON.stringify(data) );
 
         if(data.status != 0){
@@ -321,26 +352,6 @@ define(["mule-js-sdk/sdk"], function (sdk) {
     return tableElement;
   };
 
-  that.initRuleBundleDropdown = function () {
-    //get RuleBundles
-    SDK.RuleBundles.indexQ()
-      .done(function(data ) {
-        console.log( "ruleBundle.index: ");
-        console.log(data);
-
-        if(!_.isArray(data)){
-          alert("ruleBundle.index not an Array: "+JSON.stringify(data));
-          return;
-        }
-
-        //set RuleBundles to dropdown
-        that.setRuleBundleDropdownOptions(data);
-      }).fail(function(msg){
-        alert("ruleBundle.index Fail");
-      });
-
-  };
-
   that.setRuleBundleDropdownOptions = function (object) {
     _.each(object, function (value, key) {
       $('#startG_ruleBundle_dropper')
@@ -398,6 +409,33 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       $('#customBoardSettingsDiv').append("<input id=\"" + inputID + "\" type=\"text\" name=\"" + key + "\"><br>");
     });
 
+  };
+
+  that.alertHelper = function (type, words) {
+    var alertsDOM = $('#alerts');
+    alertsDOM.html('');
+
+    var newAlert = $('<div class="alert ' + type + ' alert-dismissable"></div>')
+      .append($('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'))
+      .append('<strong>' + words + '</strong>');
+
+    alertsDOM.append(newAlert);
+  };
+
+  that.loginSuccessAlert = function () {
+    that.alertHelper('alert-success', 'Login Successful');
+  };
+
+  that.loginFailAlert = function () {
+    that.alertHelper('alert-danger', 'Login Successful');
+  };
+
+  that.registerSuccessAlert = function () {
+    that.alertHelper('alert-success', 'Register Successful');
+  };
+
+  that.registerFailAlert = function () {
+    that.alertHelper('alert-danger', 'Register Successful');
   };
 
   return that;

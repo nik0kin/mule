@@ -1,11 +1,16 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Project Mule API Test Page</title>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    <link rel="stylesheet" href="./css/stylesheet.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" href="css/stylesheet.css">
 
     <script src="lib/jquery-1.11.0.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
 
     <script src="lib/Dropit/dropit.js"></script>
     <link rel="stylesheet" href="lib/Dropit/dropit.css" type="text/css" />
@@ -16,86 +21,81 @@
 
 
 <body>
+
 <script type="text/javascript">
     $(function() {
-        $("#tabs").tabs();
         $('.menu').dropit();
     });
 </script>
 
-<div>
-    <h3>Register/Login</h3>
-    Username:
-    <input id="usernameText" type="text" name="username"> <br>
-    Password:
-    <input id="passwordText" type="text" name="password"> <br>
-    <input type="button" id="createUser"  value="Register">
-    <input type="button" id="loginUser" value="Login">
-    <br><br>
-</div><br>
+<div class="container">
+    <div class="row border" id="loginHeader">
+        <input id="usernameText" type="text" name="username" placeholder="username">
+        <input id="passwordText" type="text" name="password" placeholder="password">
+        <input type="button" id="createUser"  value="Register">
+        <input type="button" id="loginUser" value="Login">
 
-<div>
-    <h3>Create Game</h3>
-    Game Name :
-    <input id="startG_name" type="text" name="gamename"><br>
+        <div id="alerts"></div>
+    </div>
 
-    <table class="ruleBundleChooser">
-        <tr>
-            <td>RuleBundle (Which Game Type?) :</td>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row border" id="create">
+                <h3>Create Game</h3>
+                <input id="startG_name" type="text" name="gamename" placeholder="game name"><br>
 
-            <td>
-                <ul class="menu">
-                    <li>
-                        <a id="startG_ruleBundle_dropper_label" href="#">Chooser Dropdown</a>
-                        <ul id="startG_ruleBundle_dropper">
-                        </ul>
-                    </li>
+                <table class="ruleBundleChooser">
+                    <tr>
+                        <td>RuleBundle:</td>
+
+                        <td>
+                            <ul class="menu">
+                                <li>
+                                    <a id="startG_ruleBundle_dropper_label" href="#">Chooser Dropdown</a>
+                                    <ul id="startG_ruleBundle_dropper">
+                                    </ul>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+
+                <div class="border" id="maxPlayersDiv">
+
+                </div><br>
+
+                <div class="border" id="customBoardSettingsDiv">
+
+                </div><br>
+
+                <input type="button" id="startGame" value="Start Game">
+            </div>
+            <div class="row border" id="gamesButtons">
+                <ul class="nav nav-tabs">
+                    <!-- Nav tabs -->
+                    <li class="active"><a href="#tabs-1" data-toggle="tab" id="getGames">All Games</a></li>
+                    <li><a href="#tabs-2" data-toggle="tab" id="getMyGames">My Games</a></li>
                 </ul>
-            </td>
-        </tr>
-    </table>
-    <br>
-
-    <div id="maxPlayersDiv">
-
-    </div><br>
-
-    <div id="customBoardSettingsDiv">
-
-    </div><br>
-
-    <input type="button" id="startGame" value="Start Game">
-    <br><br>
-</div><br>
-
-<div>
-    <h3>View Game Info</h3><br>
-
-    <div id="gameInfoArea"></div><br>
-
-
-    <div id="container"></div>
-</div><br>
-
-<div>
-    <h3>List Games</h3><br>
-    <input type="button" id="getGames" value="Get Games"><br>
-    <input type="button" id="getMyGames" value="Get My Games"><br>
-    <div id="tabs">
-        <ul>
-            <li><a href="#tabs-1">Open Games</a></li>
-            <li><a href="#tabs-2">My Games</a></li>
-        </ul>
-        <div id="tabs-1">
-            <p>tab1</p>
+            </div>
+            <div class="row border" id="gamesList">
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tabs-1">tab1</div>
+                    <div class="tab-pane" id="tabs-2">tab2</div>
+                </div>
+            </div>
         </div>
-        <div id="tabs-2">
-            <p>tab2</p>
+        <div class="col-md-4 border" id="gameInfo">
+            <h3>View Game Info</h3><br>
+
+            <div id="gameInfoArea"></div><br>
+
+
+            <div id="container"></div>
         </div>
     </div>
-    <br><br>
-</div><br>
-
+</div>
 
 </body>
 </html>
