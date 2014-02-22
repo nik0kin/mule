@@ -5,7 +5,8 @@ var _ = require('underscore'),
 var utils = require('mule-utils/jsonUtils'),
   Game = require('mule-models').Game.Model,
   RuleBundleUtils = require('mule-models/models/RuleBundle/util'),
-  integerUtils = require('mule-utils/integerUtils');
+  integerUtils = require('mule-utils/integerUtils'),
+  gameBoardHelper = require('../../gameBoards/crud/helper');
 
 module.exports = function (params) {    //TODO this is starting to look ugly
   var validatedParams = params.validatedParams;
@@ -31,27 +32,33 @@ module.exports = function (params) {    //TODO this is starting to look ugly
           .then(function (newGameR) {
             parseCustomBoardSettingsQ(foundRuleBundle, newGameR)
               .then(function (newGameRR) {
-                newGameR.validate( function (err) {
-                  if (err) {
-                    winston.log('error', 'ValidationError for gameConfigs to Game document');
-                    return reject(err);
-                  }
+                gameBoardHelper.createQ({ruleBundle: newGame.ruleBundle})
+                  .done(function (gameBoard) {
+                    winston.info('gameBoard Saved', gameBoard);
+                    newGameRR.gameBoard = gameBoard._id;
 
-                  if (!creator) {
-                    winston.info('doing unit tests');
-                    newGameRR.saveQ()
-                      .done(resolve, reject);
-                  } else {
-                    winston.info('creating game with creator: ', creator._doc);
-                    newGameRR.joinGameQ(creator)
-                      .done(function () {
+                    newGameRR.validate( function (err) {
+                      if (err) {
+                        winston.log('error', 'ValidationError for gameConfigs to Game document');
+                        return reject(err);
+                      }
+
+                      if (!creator) {
+                        winston.info('doing unit tests');
                         newGameRR.saveQ()
                           .done(resolve, reject);
-                      }, reject);
-                  }
-                });
-              })
-              .fail(reject);
+                      } else {
+                        winston.info('creating game with creator: ', creator._doc);
+                        newGameRR.joinGameQ(creator)
+                          .done(function () {
+                            newGameRR.saveQ()
+                              .done(resolve, reject);
+                          }, reject);
+                      }
+                    });
+                  })
+                  .fail(reject);
+                  }, reject);
           })
           .fail(reject);
       }, function (err) {

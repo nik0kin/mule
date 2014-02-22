@@ -40,7 +40,7 @@ app = express();
 require('./config/express')(app, config, passport);
 
 // Bootstrap routes
-require('./config/routes')(app, passport);
+require('./app/routes')(app, passport);
 
 // Load RuleBundles
 require('./app/controllers/ruleBundles/initRuleBundles').loadOnce();
