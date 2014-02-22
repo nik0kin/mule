@@ -4,7 +4,7 @@
  * Created by niko on 2/5/14.
  */
 
-define(["mule-js-sdk/sdk"], function (sdk) {
+define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLib) {
   var SDK = sdk('../');
 
   var that = {};
@@ -168,6 +168,7 @@ define(["mule-js-sdk/sdk"], function (sdk) {
       });
   };
 
+  // 'View Game Info'
   that.tryViewGame = function (gameID) {
     if (!gameID) {
       alert("Invalid gameID");
@@ -176,12 +177,14 @@ define(["mule-js-sdk/sdk"], function (sdk) {
 
     console.log('trying to get ' + gameID)
     SDK.Games.readQ(gameID)
-      .done(function(data ){
+      .done(function(game ){
         console.log("Data Recieved: ");
-        console.log(data);
+        console.log(game);
 
         $('#gameInfoArea').html('');
-        $("#gameInfoArea").append(that.makeGameInfoTable(data));
+        $("#gameInfoArea").append(that.makeGameInfoTable(game));
+
+        that.renderGameBoard(gameID);
       });
   };
 
@@ -436,6 +439,17 @@ define(["mule-js-sdk/sdk"], function (sdk) {
 
   that.registerFailAlert = function () {
     that.alertHelper('alert-danger', 'Register Successful');
+  };
+
+  that.renderGameBoard = function (gameID) {
+    SDK.GameBoards.readGamesBoardQ(gameID)
+      .done(function(gameBoard) {
+        if (!gameBoard.board) {
+          alert('no valid gameBoard.board');
+        } else {
+          myArborLib.renderGameBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
+        }
+      });
   };
 
   return that;

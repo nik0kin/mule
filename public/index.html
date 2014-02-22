@@ -14,6 +14,10 @@
 
     <script src="lib/Dropit/dropit.js"></script>
     <link rel="stylesheet" href="lib/Dropit/dropit.css" type="text/css" />
+
+    <script src="lib/arbor.js"></script>
+    <script src="lib/arbor-tween.js"></script>
+
     <script src="lib/underscore-min.js"></script>
 
     <script data-main="demo" src="lib/require.js"></script>
@@ -92,7 +96,9 @@
             <div id="gameInfoArea"></div><br>
 
 
-            <div id="container"></div>
+            <div class="border">
+                <canvas id="gameInfoViewPort" width="500" height="500"></canvas>
+            </div>
         </div>
     </div>
 </div>

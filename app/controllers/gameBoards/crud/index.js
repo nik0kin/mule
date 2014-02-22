@@ -61,14 +61,18 @@ exports.readGamesBoard = function (req, res) {
 
   gameHelper.readQ(req.params.id)
     .done(function (foundGame) {
-      gameBoardHelper.readQ(foundGame.gameBoard)
-        .then(function (gameBoard){
-          if (!gameBoard) {
-            responseUtils.sendNotFoundError(res, 'Game->GameBoard: Not Found');
-          } else
-            res.send(gameBoard);
-        })
-        .fail(responseUtils.sendBadRequestCallback(res))
-        .done();
+      if (!foundGame) {
+        responseUtils.sendNotFoundError(res, 'Game: Not Found');
+      } else {
+        gameBoardHelper.readQ(foundGame.gameBoard)
+          .then(function (gameBoard){
+            if (!gameBoard) {
+              responseUtils.sendNotFoundError(res, 'Game->GameBoard: Not Found');
+            } else
+              res.send(gameBoard);
+          })
+          .fail(responseUtils.sendBadRequestCallback(res))
+          .done();
+      }
     }, responseUtils.sendNotFoundErrorCallback(res))
 };
