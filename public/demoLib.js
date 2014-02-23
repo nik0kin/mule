@@ -461,8 +461,9 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
 
   that.loadGameIdURL = function () {
     var gameId = window.location.href.split('?gameID=')[1];
-    console.log('Viewing: ' + gameId)
-    that.tryViewGame(gameId)
+    console.log('Viewing: ' + gameId);
+    if (gameId)
+      that.tryViewGame(gameId);
   };
 
   that.addGameIdURL = function (gameId) {
