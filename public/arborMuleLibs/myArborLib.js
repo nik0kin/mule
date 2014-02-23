@@ -1,14 +1,15 @@
 
-define(['./arborRenderer', './myCheckersBoardNodeRenderer'], function (arborRenderer, myCheckersBoardNodeRenderer) {
+define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoardNodeRenderer'],
+  function (arborRenderer, myCheckersBoardNodeRenderer, myBackgammonBoardNodeRenderer) {
   var that = {};
 
   that.gameBoardToRender = function (sys, board) {
 
     _.each(board, function (space) {
-      sys.addNode(space.id, space.attributes)
+      sys.addNode(space.id, space)
 
       _.each(space.edges, function (edge) {
-        sys.addEdge(space.id, edge.id, edge.direction);
+        sys.addEdge(space.id, edge.id, edge);
       });
     });
   };
@@ -33,6 +34,8 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer'], function (arborRend
         ruleBundleBoardRenderer = myCheckersBoardNodeRenderer;
         break;
       case 'Backgammon':
+        ruleBundleBoardRenderer = myBackgammonBoardNodeRenderer;
+        break;
       case 'Vikings':
         alert('no renderer right now');
         return;

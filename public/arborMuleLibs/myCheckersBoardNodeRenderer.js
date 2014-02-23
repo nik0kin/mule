@@ -10,25 +10,27 @@ define(function () {
       var w = 10
 
       var c = 'gray';
-      switch (node.data.kingme) {
-        case undefined:
-        case 'null':
-        default :
-          break;
+      if (node.data.attributes) {
+        switch (node.data.attributes.kingme) {
+          case undefined:
+          case 'null':
+          default :
+            break;
 
-        case 'player1':
-          c = 'black';
-          break;
-        case 'player2':
-          c = 'red';
-          break;
-      };
+          case 'player1':
+            c = 'black';
+            break;
+          case 'player2':
+            c = 'red';
+            break;
+        };
+      }
 
       ctx.fillStyle = c;
       ctx.fillRect(pt.x-w/2, pt.y-w/2, w,w);
 
       if (node.selected) {
-        _.each(node.data, function (value, key) {
+        _.each(node.data.attributes, function (value, key) {
           ctx.fillStyle = 'orange';
           ctx.font="14px Georgia";
           ctx.fillText(key + ': ' + value, pt.x + 5,pt.y - 5);
