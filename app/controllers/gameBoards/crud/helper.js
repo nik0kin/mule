@@ -40,7 +40,8 @@ exports.readQ = function (gameBoardID){
         //if (gameBoard.boardType == static)
         ruleBundleHelper.readQ(gameBoard.ruleBundle.id)
           .done(function (foundRuleBundle) {
-            gameBoard.board = foundRuleBundle.rules.board;
+            //TODO temporary, RuleBundle.rules should always exist
+            gameBoard.board = foundRuleBundle.rules ? foundRuleBundle.rules.board : undefined;
 
             resolve(gameBoard);
           }, reject);

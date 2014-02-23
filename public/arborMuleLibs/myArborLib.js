@@ -14,11 +14,20 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer'], function (arborRend
   };
 
   var renderSystem;
+  var w;
+
+  that.resetGameBoardRender = function () {
+    console.log('lolz')
+
+    var canvas = document.getElementById('gameInfoViewPort');
+
+    w = canvas.width;// a dumb hacky way of resetting the board
+    canvas.width = 0;
+  };
   that.renderGameBoardHelper = function (ruleBundleName, board) {
-    if (renderSystem) {
-      renderSystem.stop();
-      delete renderSystem;
-    }
+    var canvas = document.getElementById('gameInfoViewPort');
+    canvas.width = w || canvas.width;
+    console.log(w  + ' ' + canvas.width);
 
     var ruleBundleBoardRenderer;
     switch (ruleBundleName) {

@@ -446,6 +446,7 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
       .done(function(gameBoard) {
         if (!gameBoard.board) {
           alert('no valid gameBoard.board');
+          myArborLib.resetGameBoardRender();
         } else {
           myArborLib.renderGameBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
         }
