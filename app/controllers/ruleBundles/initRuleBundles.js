@@ -12,9 +12,9 @@ exports.loadOnce = function () {
     .done(function (result) {
       if (_.isEqual([], result)) {
         winston.log('Loading RuleBundles')
-        ruleBundleHelper.createQ(require('mule-models/bundles/checkers'));
-        ruleBundleHelper.createQ(require('mule-models/bundles/backgammon'));
-        ruleBundleHelper.createQ(require('mule-models/bundles/vikings'));
+        ruleBundleHelper.createQ(require('mule-rules').getRuleBundleJSON('checkers'));
+        ruleBundleHelper.createQ(require('mule-rules').getRuleBundleJSON('backgammon'));
+        ruleBundleHelper.createQ(require('mule-rules').getRuleBundleJSON('vikings'));
       }
 
     }, function (err) {

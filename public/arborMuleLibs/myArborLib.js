@@ -17,8 +17,6 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer'], function (arborRend
   var w;
 
   that.resetGameBoardRender = function () {
-    console.log('lolz')
-
     var canvas = document.getElementById('gameInfoViewPort');
 
     w = canvas.width;// a dumb hacky way of resetting the board
