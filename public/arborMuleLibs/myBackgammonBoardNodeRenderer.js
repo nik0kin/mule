@@ -42,7 +42,7 @@ define(function () {
         ctx.fillStyle = 'orange';
         ctx.font="16px Georgia";
 
-        ctx.fillText(node.data.class + ': ', pt.x + 5,pt.y - 15);
+        ctx.fillText(node.data.class + ': ', pt.x + 5,pt.y - 20);
 
         ctx.font="14px Georgia";
         var i = 0;

@@ -26,6 +26,7 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
 
         //load games
         $('#getGames').click();
+        that.loadGameIdURL();
       }).fail(function(msg){
         alert("ruleBundle.index Fail");
       });
@@ -104,6 +105,7 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
           return;
         }
 
+        $('#getGames').click();
       }).fail(function(res){
         alert("Fail " + res.responseText);
       });
@@ -185,6 +187,8 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
         $("#gameInfoArea").append(that.makeGameInfoTable(game));
 
         that.renderGameBoard(gameID);
+
+        that.addGameIdURL(gameID);
       });
   };
 
@@ -451,6 +455,20 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
           myArborLib.renderGameBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
         }
       });
+  };
+
+  ///// URL STUFF /////
+
+  that.loadGameIdURL = function () {
+    var gameId = window.location.href.split('?gameID=')[1];
+    console.log('Viewing: ' + gameId)
+    that.tryViewGame(gameId)
+  };
+
+  that.addGameIdURL = function (gameId) {
+    console.log('hey')
+
+    window.history.pushState("object or string", "Title", '?gameID=' + gameId);
   };
 
   return that;
