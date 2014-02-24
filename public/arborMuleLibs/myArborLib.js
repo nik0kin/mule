@@ -41,7 +41,7 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoard
     }
 
     renderSystem =  arbor.ParticleSystem(1000, 600, 0.5) // create the system with sensible repulsion/stiffness/friction
-    renderSystem.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
+    renderSystem.parameters({gravity:true, fps: 1}) // use center-gravity to make the graph settle nicely (ymmv)
 
     renderSystem.renderer = arborRenderer("#gameInfoViewPort", ruleBundleBoardRenderer);
     // our newly created renderer will have its .init() method called shortly by sys...
