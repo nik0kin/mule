@@ -1,6 +1,6 @@
 
-define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoardNodeRenderer'],
-  function (arborRenderer, myCheckersBoardNodeRenderer, myBackgammonBoardNodeRenderer) {
+define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoardNodeRenderer', './myVikingBoardNodeRenderer'],
+  function (arborRenderer, myCheckersBoardNodeRenderer, myBackgammonBoardNodeRenderer, myVikingBoardNodeRenderer) {
   var that = {};
 
   that.gameBoardToRender = function (sys, board) {
@@ -37,8 +37,7 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoard
         ruleBundleBoardRenderer = myBackgammonBoardNodeRenderer;
         break;
       case 'Vikings':
-        alert('no renderer right now');
-        return;
+        ruleBundleBoardRenderer = myVikingBoardNodeRenderer;
     }
 
     renderSystem =  arbor.ParticleSystem(1000, 600, 0.5) // create the system with sensible repulsion/stiffness/friction
