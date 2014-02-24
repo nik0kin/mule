@@ -40,9 +40,7 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoard
       case 'Backgammon':
         ruleBundleBoardRenderer = myBackgammonBoardNodeRenderer;
         break;
-      case 'Vikings':
-        //ruleBundleBoardRenderer = myVikingsBoardNodeRenderer;
-        newRenderer.main(board, colors.vikingsColor);
+      default:
         return;
     }
 

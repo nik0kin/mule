@@ -44,9 +44,9 @@ define([], function () {
   };
   var _svg;
 
-  that.main = function (board, colorRenderer) {
-    var width = 600,
-      height = 600;
+  that.main = function (board, size, colorRenderer) {
+    var width = size.width,
+      height = size.height;
 
     var color = d3.scale.category20();
 

@@ -4,7 +4,7 @@
  * Created by niko on 2/5/14.
  */
 
-define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLib) {
+define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Lib'], function (sdk, myArborLib, myD3Lib) {
   var SDK = sdk('../');
 
   var that = {};
@@ -455,7 +455,9 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
   that.renderGameBoard = function (gameID) {
     SDK.GameBoards.readGamesBoardQ(gameID)
       .done(function(gameBoard) {
-        if (!gameBoard.board) {
+        if (gameBoard.ruleBundle.name == 'Vikings'){
+          myD3Lib.renderSmallBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
+        } else if (!gameBoard.board) {
           alert('no valid gameBoard.board');
           myArborLib.resetGameBoardRender();
         } else {
