@@ -1,6 +1,6 @@
 
-define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoardNodeRenderer', './myVikingBoardNodeRenderer'],
-  function (arborRenderer, myCheckersBoardNodeRenderer, myBackgammonBoardNodeRenderer, myVikingBoardNodeRenderer) {
+define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoardNodeRenderer', './myVikingsBoardNodeRenderer','./d3Renderer', './colors'],
+  function (arborRenderer, myCheckersBoardNodeRenderer, myBackgammonBoardNodeRenderer, myVikingsBoardNodeRenderer, newRenderer, colors) {
   var that = {};
 
   that.gameBoardToRender = function (sys, board) {
@@ -22,11 +22,15 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoard
 
     w = canvas.width;// a dumb hacky way of resetting the board
     canvas.width = 0;
+
+    $('#d3RenderBox').attr('visible', false)
   };
   that.renderGameBoardHelper = function (ruleBundleName, board) {
     var canvas = document.getElementById('gameInfoViewPort');
     canvas.width = w || canvas.width;
     console.log(w  + ' ' + canvas.width);
+
+    newRenderer.removeAll();
 
     var ruleBundleBoardRenderer;
     switch (ruleBundleName) {
@@ -37,7 +41,9 @@ define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoard
         ruleBundleBoardRenderer = myBackgammonBoardNodeRenderer;
         break;
       case 'Vikings':
-        ruleBundleBoardRenderer = myVikingBoardNodeRenderer;
+        //ruleBundleBoardRenderer = myVikingsBoardNodeRenderer;
+        newRenderer.main(board, colors.vikingsColor);
+        return;
     }
 
     renderSystem =  arbor.ParticleSystem(1000, 600, 0.5) // create the system with sensible repulsion/stiffness/friction
