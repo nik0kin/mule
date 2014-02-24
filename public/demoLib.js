@@ -230,6 +230,8 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
     return newButton;
   };
 
+
+  // for games list
   //change status color dependeding on open,inprogress,ended
   // return a string? of a table
   // should return an table element
@@ -269,6 +271,8 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
       playDisabled = "disabled";
     }
 
+    var playersString = _.size(gameData.players) + '/' + gameData.maxPlayers;
+
     var tableElement = $('<div></div>')
         .append($('<table></table>')
           .attr({ cellSpacing : 2, border : 2 })
@@ -278,19 +282,19 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
             .append("<td>Status: <FONT COLOR=\'"+color+"\'><b>"+statusMsg+"</b></FONT><br>" + joinedMsg+"</td>")
           )
           .append($('<tr></tr>')
-            .append("<td>Turn: "+gameData.turnNumber+"</td>")
+            .append('<td>RuleBundle: <b>' + gameData.ruleBundle.name + '</b></td>')
             .append($('<td></td>')
               .append(getButton(that.tryJoinGame, gameData._id, "Join Game", 'join', disabled))
             )
           )
           .append($('<tr></tr>')
-            .append("<td>Players: "+gameData.maxPlayers+"</td>")
+            .append("<td>Turn: "+gameData.turnNumber+"</td>")
             .append($('<td></td>')
               .append(getButton(that.tryViewGame, gameData._id, "View Game", 'view', ''))
             )
           )
           .append($('<tr></tr>')
-            .append('<td></td>')
+            .append("<td>Players: "+playersString+"</td>")
             .append($('<td></td>')
               .append(getButton(that.playGame, gameData._id, "Play Game", 'play', 'disabled'))
             )
@@ -301,21 +305,22 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
     return tableElement;
   };
 
+  // for 'View Game Info'
   that.makeGameInfoTable = function (gameInfo) {
     if(!gameInfo) return "null";
 
     var color = "#000000";
     var statusMsg = "";
     switch(gameInfo.gameStatus){
-      case 0:
+      case 'open':
         color = "#00FF00";
         statusMsg = "Open";
         break;
-      case 1:
+      case 'inProgress':
         color = "#0000FF";
         statusMsg = "In Progress";
         break;
-      case 2:
+      case 'finished':
         color = "#FF0000";
         statusMsg = "Ended";
         break;
@@ -338,16 +343,18 @@ define(["mule-js-sdk/sdk", 'arborMuleLibs/myArborLib'], function (sdk, myArborLi
         .then(updateFunct, updateFunct);
     });
 
+    var playersString = _.size(gameInfo.players) + '/' + gameInfo.maxPlayers + ' players</td>';
+
     var tableElement = $('<div></div>')
         .append($('<table></table>')
           .attr({ cellSpacing : 2, border : 2 })
           .addClass("text")
           .append($('<tr></tr>')
             .append("<td>name: <h3>"+gameInfo.name+"</h3></td>")
-            .append("<td>ID: "+gameInfo._id+"<br><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></td>")
+            .append("<td>ID: "+gameInfo._id+"<br>RuleBundle: "+gameInfo.ruleBundle.name+"<br> Status: <b><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></b></td>")
           )
           .append($('<tr></tr>')
-            .append("<td>Turn: "+gameInfo.turnNumber+"<br>"+gameInfo.maxPlayers+" players</td>")
+            .append("<td>Turn: "+gameInfo.turnNumber+"<br>"+playersString)
             .append("<td> "+JSON.stringify(gameInfo.ruleBundleGameSettings) +"</td>")
           )
           .append($('<tr></tr>')
