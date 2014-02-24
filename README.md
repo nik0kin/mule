@@ -1,7 +1,16 @@
 **(Abstract) Asyncronous Strategy (Multiplayer Game) Server**
 
+0.1.0 - Users/Games
+0.1.5 - Refactor Week
+0.1.6 - Standardized http response codes
+0.1.7 - Concept of RuleBundles added
+0.1.8 - GameBoard (Spaces' and Pieces) <--CURRENT
+0.1.9 - Cleanup
+0.2.0 - Turns and Moves / Checkers?
+0.2.1 - Refactor Week
+
 Latest commit on master hosted at (CI staging):
-http://mc.thegamingproject.org:3130/public/
+- http://mc.thegamingproject.org:3130/public/
 
 INSTALL:
 =======

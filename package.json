@@ -28,7 +28,9 @@
     "connect-flash": "latest",
     "winston": "latest",
     "forever": "*",
-    "underscore": "*"
+    "underscore": "*",
+
+    "weighted" : "*"
   },
   "devDependencies": {
     "mocha": "*",

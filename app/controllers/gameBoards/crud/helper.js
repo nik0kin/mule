@@ -9,7 +9,8 @@ var _ = require('underscore'),
 
 var utils = require('mule-utils/jsonUtils'),
   GameBoard = require('mule-models').GameBoard.Model,
-  ruleBundleHelper = require('../../ruleBundles/crud/helper');
+  ruleBundleHelper = require('../../ruleBundles/crud/helper'),
+  vikingBoardGen = require('../../../boardGenerator');
 
 exports.indexQ = function () {
   return GameBoard.find().execQ();
@@ -20,15 +21,20 @@ exports.createQ = function (params) {
   return Q.promise( function (resolve, reject) {
     winston.info("User attempting to create new GameBoard: params: ", params );
 
-    var newGameBoard = new GameBoard({});
+    if (params.ruleBundle.name.toLowerCase() == 'vikings') { //hacky for right now
+      console.log('vikings gameboard!!')
+      vikingBoardGen.saveVikingsGameBoardQ({customBoardSettings : params.customBoardSettings, ruleBundle: params.ruleBundle, rules: params.rules})
+        .done(resolve, reject);
+    } else {
+      var newGameBoard = new GameBoard({});
 
-    newGameBoard.ruleBundle = params.ruleBundle;
+      newGameBoard.ruleBundle = params.ruleBundle;
 
-    newGameBoard.boardType = 'static';
+      newGameBoard.boardType = 'static';
 
-    newGameBoard.saveQ()
-      .done(resolve, reject);
-
+      newGameBoard.saveQ()
+        .done(resolve, reject);
+    }
   });
 };
 
@@ -37,14 +43,20 @@ exports.readQ = function (gameBoardID){
     GameBoard.findByIdQ(gameBoardID)
       .done(function (gameBoard) {
 
-        //if (gameBoard.boardType == static)
-        ruleBundleHelper.readQ(gameBoard.ruleBundle.id)
-          .done(function (foundRuleBundle) {
-            //TODO temporary, RuleBundle.rules should always exist
-            gameBoard.board = foundRuleBundle.rules ? foundRuleBundle.rules.board : undefined;
+        if (gameBoard.boardType == 'static') {
+          ruleBundleHelper.readQ(gameBoard.ruleBundle.id)
+            .done(function (foundRuleBundle) {
+              //TODO temporary if?: , RuleBundle.rules should always exist
+              gameBoard.board = foundRuleBundle.rules ? foundRuleBundle.rules.board : undefined;
 
-            resolve(gameBoard);
-          }, reject);
+              resolve(gameBoard);
+            }, reject);
+        } else if (gameBoard.boardType == 'built') {
+          console.log('YOU ARE A VIKING')
+          resolve(gameBoard);
+        } else {
+          reject('wtf boardType:' + gameBoard.boardType)
+        }
       }, reject);
   });
 };

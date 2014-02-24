@@ -32,7 +32,7 @@ module.exports = function (params) {    //TODO this is starting to look ugly
           .then(function (newGameR) {
             parseCustomBoardSettingsQ(foundRuleBundle, newGameR)
               .then(function (newGameRR) {
-                gameBoardHelper.createQ({ruleBundle: newGame.ruleBundle})
+                gameBoardHelper.createQ({ruleBundle: newGame.ruleBundle, rules: foundRuleBundle.rules, customBoardSettings: newGame.ruleBundleGameSettings.customBoardSettings})
                   .done(function (gameBoard) {
                     winston.info('gameBoard Saved', gameBoard);
                     newGameRR.gameBoard = gameBoard._id;
