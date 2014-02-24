@@ -1,6 +1,6 @@
 
-define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoardNodeRenderer', './myVikingsBoardNodeRenderer','./d3Renderer', './colors'],
-  function (arborRenderer, myCheckersBoardNodeRenderer, myBackgammonBoardNodeRenderer, myVikingsBoardNodeRenderer, newRenderer, colors) {
+define(['./arborRenderer', './myCheckersBoardNodeRenderer', './myBackgammonBoardNodeRenderer', './myVikingsBoardNodeRenderer','../d3/d3Renderer'],
+  function (arborRenderer, myCheckersBoardNodeRenderer, myBackgammonBoardNodeRenderer, myVikingsBoardNodeRenderer, newRenderer) {
   var that = {};
 
   that.gameBoardToRender = function (sys, board) {

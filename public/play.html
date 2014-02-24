@@ -1,165 +1,46 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      body {
-        margin: 0px;
-        padding: 0px;
-      }
-    </style>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-  
-    <script src="jquery-1.9.1.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <script src="kinetic-v4.4.3.min.js"></script>'
-    
-    
-    <script src="demo_lib.js"></script>
-    <script src="Field.js"></script>
-  </head>
+<head>
+    <title>Project Mule Board View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" href="css/stylesheet.css">
+
+    <link rel="stylesheet" href="css/d3Style.css">
+
+    <script src="lib/jquery-1.11.0.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
 
 
-  <body>
-	<script type="text/javascript">
-      var contextPath = "";//"http://localhost:9590/td/";
+    <script src="http://d3js.org/d3.v3.min.js"></script>
 
-      var token = "";
-      var gameID = -1;
+    <script src="lib/underscore-min.js"></script>
 
-      var gameName = "";
-      var currentTurn = -1;
+    <script data-main="boardView" src="lib/require.js"></script>
+</head>
 
-      var selectedTileX = -1;
-      var selectedTileY = -1;
+<body>
+<div class="container">
+    <div class="row border" id="loginHeader">
+        <input id="usernameText" type="text" name="username" placeholder="username">
+        <input id="passwordText" type="text" name="password" placeholder="password">
+        <input type="button" id="loginUser" value="Login">
 
-      var selectedUnitID = -1;
+        <div id="alerts"></div>
+    </div>
 
-      //on load
-      $(function() {
-       //do stuff with token and gameID
-     });
-
-
-      ///////GAME UI BUTTONS or stuff////////
-
-      //calls GetGameInfo and checks if the turn is higher than currentTurn
-      //  called from refresh button
-      function tryRefreshGame(){
-
-      }
-
-      //if you have submitted any turns
-      //  this calls SubmitTurn and adds a "endturn" Turn
-      //  called from end game button
-      function tryEndGame(){
-
-      }
-
-      //call GetTurnInfo then
-      //remake info table cells
-      // re-put units on gameboard
-      function refreshGame(){
-
-      }
-
-      //move currently Selected unit
-      //  called by unitinfo cell
-      function moveUnit(){
-
-      }
-      // changes tileinfo as well
-      //  can be called via tileunits cell or units cell
-      function selectUnit(id){
-
-      }
-
-      //called by clicking on a tile on the gamefield
-      function selectTile(x,y){
-
-      }
-
-      //////DOM UPDATE FUNCTIONS  /????????
-
-      function updateGameInfoCell(){
-
-      }
-
-      //updates tileinfo and tileunits cells, with correct data about currently selected tile
-      function updateTileInfoCells(){
-
-      }
-
-      function updateUnitInfoCell(){
-
-      }
-
-      function updateMoveindicatorCell(){
-
-      }
-
-      //updates the left column (Turns and Units lists)
-      function updateTurnsAndUnitsCells(){
-
-      }
-
-
-
-      
-   </script>
-   
-   <h3>Play Game</h3><br>
-
-   <table border="1">
-      <tr>
-         <td id="gamename">Name: <b>name</b> Turn: <b>11</b></td>
-         <td><input type="button" onclick="tryRefreshGame();" value="Refresh"></td>
-         <td><input type="button" onclick="tryEndGame();" value="End Turn"></td>
-      </tr>
-      <tr>
-         <td colspan="3">
-            <table border="1">
-               <tbody>
-               <tr>
-                  <td id="prevturns">
-                     <b>Previous Turns</b><br>1.<br>2.<br>3.
-                  </td>
-                  <td colspan="3" rowspan="3">
-                     <h1>gamefield<br><div id="container"></div></h1>
-                  </td>
-
-               </tr>
-               <tr>
-                  <td id="currturns">
-                     <b>Current Turns</b><br>1.<br>2.<br>3.
-                  </td>
-               </tr>
-               <tr>
-                  <td id="units">
-                     <b>Units</b><br>1.<br>2.<br>3.
-                  </td>
-               </tr>
-               <tr>
-                  <td id="moveindicator">NOTSELECTING</td>
-                  <td id="tileinfo">(x,y)<br>terrainType</td>
-                  <td id="tileunits">
-                     <input type="button" onclick="" value="unit #1"><br>
-                     <input type="button" onclick="" value="unit #2"><br>
-                  </td>
-                  <td id="unitinfo">
-                     typeID=3<br>
-                     HP: 1/2<br>
-                     <input type="button" onclick="" value="Move"><br>
-                  </td>
-               </tr>
-               </tbody>
-            </table>
-         </td>
-      </tr>
-
-   </table>
-
-
-
-    
-    
-  </body>
+    <div class="row">
+        <div class="col-md-2">
+            <div id="spacesList" class="row border yScrolls">1</div>
+            <div id="piecesList" class="row border yScrolls">2</div>
+        </div>
+        <div class="col-md-2">
+            <div id="d3RenderBox"></div>
+        </div>
+    </div>
+</div>
+</body>
 </html>

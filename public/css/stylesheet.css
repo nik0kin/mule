@@ -78,3 +78,9 @@ td {
     display: table-cell;
     float: none;
 }
+
+.yScrolls {
+    overflow-y: scroll;
+    height:300px;
+    width: 250px;
+}

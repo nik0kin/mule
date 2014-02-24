@@ -4,7 +4,7 @@
  * Created by niko on 2/5/14.
  */
 
-define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Lib'], function (sdk, myArborLib, myD3Lib) {
+define(["mule-js-sdk/sdk", 'boardRenderLibs/arbor/myArborLib', 'boardRenderLibs/d3/myD3Lib'], function (sdk, myArborLib, myD3Lib) {
   var SDK = sdk('../');
 
   var that = {};
@@ -26,7 +26,9 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Li
 
         //load games
         $('#getGames').click();
-        that.loadGameIdURL();
+        that.loadGameIdURL(function (gameId) {
+          that.tryViewGame(gameId);
+        });
       }).fail(function(msg){
         alert("ruleBundle.index Fail");
       });
@@ -211,7 +213,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Li
 
 
   that.playGame = function (gameID) {
-    window.open("play.html?token="+token+"&gameID="+gameID)
+    window.open("play.html?gameID="+gameID)
   };
 
   ////////////////// OTHER STUFF //////////////////////
@@ -296,7 +298,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Li
           .append($('<tr></tr>')
             .append("<td>Players: "+playersString+"</td>")
             .append($('<td></td>')
-              .append(getButton(that.playGame, gameData._id, "Play Game", 'play', 'disabled'))
+              .append(getButton(that.playGame, gameData._id, "Play Game", 'play', ''))
             )
           )
         )
@@ -441,7 +443,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Li
   };
 
   that.loginFailAlert = function () {
-    that.alertHelper('alert-danger', 'Login Successful');
+    that.alertHelper('alert-danger', 'Login Failed');
   };
 
   that.registerSuccessAlert = function () {
@@ -449,7 +451,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Li
   };
 
   that.registerFailAlert = function () {
-    that.alertHelper('alert-danger', 'Register Successful');
+    that.alertHelper('alert-danger', 'Register Failed');
   };
 
   that.renderGameBoard = function (gameID) {
@@ -468,16 +470,14 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/myArborLib', 'boardRenderLibs/myD3Li
 
   ///// URL STUFF /////
 
-  that.loadGameIdURL = function () {
+  that.loadGameIdURL = function (callback) {
     var gameId = window.location.href.split('?gameID=')[1];
     console.log('Viewing: ' + gameId);
     if (gameId)
-      that.tryViewGame(gameId);
+      callback(gameId);
   };
 
   that.addGameIdURL = function (gameId) {
-    console.log('hey')
-
     window.history.pushState("object or string", "Title", '?gameID=' + gameId);
   };
 

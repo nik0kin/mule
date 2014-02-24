@@ -7,7 +7,9 @@
 define(['./Users'], function (Users) {
   return function (contextPath) {
     var that = {};
-    Users = Users(contextPath);
+
+    if (typeof Users != 'object')
+      Users = Users(contextPath);
 
     that.indexQ = function () {
       return $.ajax({
