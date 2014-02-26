@@ -54,8 +54,8 @@ exports.validVikingGameConfigBody = {
     maxPlayers : 3,
     ruleBundleGameSettings : {
       customBoardSettings : {
-        width : 80,
-        height : 20
+        width : 15,
+        height : 25
       }
     }
   }

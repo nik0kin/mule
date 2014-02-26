@@ -1,19 +1,25 @@
 
 define(['./d3Renderer', './colors'], function (d3Renderer, colors) {
-  var supportedGames = ['Vikings', 'Backgammon', 'Checkers'];
+  var supportedGames = ['Vikings', 'Backgammon', 'Checkers', 'TicTacToe'];
   var that = {};
 
   that.renderSmallBoardHelper = function (ruleBundleName, board) {
     if (_.contains(supportedGames, ruleBundleName))
-      d3Renderer.main(board, {width: 600, height: 600}, getBoardColors(ruleBundleName));
+      d3Renderer.main(board, {width: 600, height: 600},
+        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName));
+    else
+      console.log('Unsupported RuleBundle: ' + ruleBundleName);
   };
 
   that.renderLargeBoardHelper = function (ruleBundleName, board) {
     if (_.contains(supportedGames, ruleBundleName))
-      d3Renderer.main(board, {width: 1200, height: 1000}, getBoardColors(ruleBundleName));
+      d3Renderer.main(board, {width: 1200, height: 1000},
+        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName));
+    else
+      console.log('Unsupported RuleBundle: ' + ruleBundleName);
   };
 
-  var getBoardColors = function (ruleBundleName) {
+  var getBoardNodeColors = function (ruleBundleName) {
     switch (ruleBundleName) {
       case 'Vikings':
         return colors.vikingsColor;
@@ -21,6 +27,17 @@ define(['./d3Renderer', './colors'], function (d3Renderer, colors) {
         return colors.backgammonColor;
       case 'Checkers':
         return colors.checkersColor;
+      case 'TicTacToe':
+        return colors.grayColor;
+    }
+  };
+
+  var getBoardLinkColors = function (ruleBundleName) {
+    switch (ruleBundleName) {
+      case 'TicTacToe':
+        return colors.ticTacToeLinkColor;
+      default:
+        return colors.grayColor;
     }
   };
 

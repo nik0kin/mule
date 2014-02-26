@@ -15,7 +15,7 @@ exports.validGameConfig = {
   maxPlayers : 3,
   ruleBundleGameSettings : {
     customBoardSettings : {
-      width : 80,
+      width : 30,
       height : 20
     }
   }

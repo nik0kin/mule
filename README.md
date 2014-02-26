@@ -1,5 +1,7 @@
 **(Abstract) Asyncronous Strategy (Multiplayer Game) Server**
 
+Asyncronous Turn-based Game Platform?
+
 Roadmap:
 - 0.1.0 - Users/Games
 - 0.1.5 - Refactor Week

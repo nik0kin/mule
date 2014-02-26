@@ -43,7 +43,7 @@ require('./config/express')(app, config, passport);
 require('./app/routes')(app, passport);
 
 // Load RuleBundles
-require('./app/controllers/ruleBundles/initRuleBundles').loadOnce();
+require('mule-rules/lib/initRuleBundles').loadOnce(require('./app/controllers/ruleBundles/crud/helper'));
 
 //Start the app by listening on <port>
 var port = process.env.PORT || 3130;

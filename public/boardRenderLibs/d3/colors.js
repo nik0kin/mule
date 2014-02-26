@@ -76,5 +76,30 @@ define([], function () {
     return c;
   };
 
+  that.grayColor = function (d) {
+    return 'gray';
+  }
+
+  that.ticTacToeLinkColor = function (d) {
+    var c = 'gray';
+
+    switch (d.value.lineAngle) {
+      case '/':
+        c = 'orange';
+        break;
+      case '-':
+        c = 'green';
+        break;
+      case '\\':
+        c = 'purple';
+        break;
+      case '|':
+        c = 'red';
+        break;
+    }
+
+    return c;
+  }
+
   return that;
 });
