@@ -8,6 +8,7 @@ var should = require('should'),
   _ = require('underscore');
 
 var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+  testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   dbHelper = require('mule-models/test/dbHelper');
 
 var loggedInAgent;

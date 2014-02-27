@@ -8,7 +8,10 @@ var should = require('should'),
   _ = require('underscore');
 
 var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
-  dbHelper = require('mule-models/test/dbHelper');
+  testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
+  testParams = require('../games/createParams'),
+  dbHelper = require('mule-models/test/dbHelper'),
+  gameAPIHelper = require('mule-utils/lib/testUtils/api/gameHelper');
 
 var loggedInAgent;
 
@@ -24,9 +27,23 @@ describe('API: ', function () {
 
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
+    describe('GET /gameboards', function () {
+      it('should return an array', function (done) {
+        gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validCheckersGameConfig}, 200)
+          .done(function (result) {
+            loggedInAgent
+              .get('/gameboards')
+              .send({})
+              .set('Accept', 'application/json')
+              .expect(200)
+              .end(function(err, res){
+                if (err) return done(err);
+                should(res.body).be.an.Array;
+                done();
+              });
 
-    describe('', function () {
-
+          }, testHelper.mochaError(done));
+      });
     });
   });
 });
