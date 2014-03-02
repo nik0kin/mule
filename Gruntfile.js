@@ -2,6 +2,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-simple-mocha');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-shell');
 
   require('time-grunt')(grunt);
 
@@ -27,10 +28,23 @@ module.exports = function (grunt) {
       options: {
         reporter: 'spec'
       }
+    },
+    shell: {
+      mule_update: {
+        options: {                      // Options
+          stdout: true
+        },
+        command: 'rm node_modules/mule* -rf && npm install'
+      },
+      clear_logs : {
+        command: 'rm logs/mule*.log'
+      }
     }
   });
 
   grunt.registerTask('start', ['watch']);
   grunt.registerTask('test', ['simplemocha']);
   grunt.registerTask('default', ['test']);
+  grunt.registerTask('updateMule', ['shell:mule_update']);
+  grunt.registerTask('clearLogs', ['shell:clear_logs'])
 };

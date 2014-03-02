@@ -15,35 +15,82 @@ var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://lo
 
 var loggedInAgent;
 
+var createdGameID;
+
 describe('API: ', function () {
   describe('Games ', function () {
     before(function (done) {
       loginHelper.registerAndLoginQ()
         .then(function (agent) {
           loggedInAgent = agent;
-          done();
+          gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validCheckersGameConfig}, 200)
+            .done(function (result) {
+              should(result.gameID).is.ok;
+              createdGameID = result.gameID;
+              done();
+            }, testHelper.mochaError(done));
         }, testHelper.mochaError(done));
     });
 
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
-    describe('GET /gameboards', function () {
+    describe('GET /gameBoards', function () {
       it('should return an array', function (done) {
-        gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validCheckersGameConfig}, 200)
-          .done(function (result) {
-            loggedInAgent
-              .get('/gameboards')
-              .send({})
-              .set('Accept', 'application/json')
-              .expect(200)
-              .end(function(err, res){
-                if (err) return done(err);
-                should(res.body).be.an.Array;
-                done();
-              });
-
-          }, testHelper.mochaError(done));
+        loggedInAgent
+          .get('/gameBoards')
+          .send({})
+          .set('Accept', 'application/json')
+          .expect(200)
+          .end(function(err, res){
+            if (err) return done(err);
+            should(res.body).be.an.Array;
+            done();
+          });
       });
+    });
+
+    describe('GET /gameBoards/:id', function () {
+      it('should work', function (done) {
+        gameAPIHelper.sendRestRequest({
+          agent : loggedInAgent,
+          verb: 'get',
+          endpoint: '/games/' + createdGameID,
+          expectedStatusCode: 200
+        })
+          .done(function (result) {
+            var boardID = result.gameBoard;
+
+            gameAPIHelper.sendRestRequest({
+              agent : loggedInAgent,
+              verb: 'get',
+              endpoint: '/gameBoards/' + boardID,
+              expectedStatusCode: 200
+            })
+              .done(function (result) {
+                //result.board should be checkerslike
+                should(result.boardType).eql('static');
+                should(_.size(result.board)).eql(32);
+                done();
+              }, testHelper.mochaError(done));
+          });
+      });
+    });
+
+    describe('GET /games/:id/board', function () {
+      it('should work', function (done) {
+        gameAPIHelper.sendRestRequest({
+          agent : loggedInAgent,
+          verb: 'get',
+          endpoint: '/games/' + createdGameID + '/board',
+          expectedStatusCode: 200
+        })
+          .done(function (result) {
+            //result.board should be checkerslike
+            should(result.boardType).eql('static');
+            should(_.size(result.board)).eql(32);
+            done();
+          }, testHelper.mochaError(done));
+      })
     });
   });
 });
