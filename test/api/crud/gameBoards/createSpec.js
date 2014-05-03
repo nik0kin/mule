@@ -26,8 +26,14 @@ describe('API: ', function () {
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
 
-    describe('', function () {
+    describe('create Game -> creates GameBoard ', function () {
+      it('boardType: built, should ..', function () {
 
+      });
+
+      it('boardType: static, should ..', function () {
+
+      });
     });
   });
 });
