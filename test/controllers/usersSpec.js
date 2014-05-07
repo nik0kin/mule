@@ -10,7 +10,7 @@ var should = require('should'),
   _ = require('underscore');
 
 var User = require('mule-models').User,
-  users = require('../../app/controllers/users/crud/helper'),
+  users = require('../../app/routes/users/crud/helper'),
   dbHelper = require('mule-models/test/dbHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper');
 

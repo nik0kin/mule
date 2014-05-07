@@ -18,14 +18,17 @@ module.exports = function (app, passport) {
 
   ////////// DATA MODELS //////////
   // users //
-  require('./controllers/users/routes')(app, passport);
+  require('./users/routes')(app, passport);
 
   // games //
-  require('./controllers/games/routes')(app);
+  require('./games/routes')(app);
 
   // gameBoards //
-  require('./controllers/gameBoards/routes')(app);
+  require('./gameBoards/routes')(app);
 
   // ruleBundles //
-  require('./controllers/ruleBundles/routes')(app);
+  require('./ruleBundles/routes')(app);
+
+  /////////// STUFF ////////
+  require('./playTurn/routes')(app);
 };

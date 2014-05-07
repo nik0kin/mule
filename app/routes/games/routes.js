@@ -1,5 +1,5 @@
 /**
- * app/controllers/routes.js
+ * app/routes/routes.js
  *
  * Created by niko on 1/22/14.
  */
@@ -9,7 +9,7 @@ var auth = require('../../../config/middlewares/authorization'),//TODO hmmmmmmmm
   gameServices = require('./gameServices/index');
 
 module.exports = function (app){
-  app.get ('/games', gameController.index)
+  app.get ('/games', gameController.index);
   app.post('/games', auth.requiresLogin, gameController.create);
   app.get ('/games/:id', gameController.read);
   app.put ('/games/:id', auth.requiresLogin, gameController.update);  //TODO change auth function to the game owner

@@ -14,10 +14,6 @@
     "debug": "node --debug port 5858 server.js"
   },
   "dependencies": {
-    "mule-utils" : "git+https://github.com/nik0kin/mule-utils.git#master",
-    "mule-models" : "git+https://github.com/nik0kin/mule-models.git#master",
-    "mule-rules" : "git+https://github.com/nik0kin/mule-rules.git#master",
-
     "express": "3.x",
     "q": "~0.9.7",
     "async": "~0.2.9",
