@@ -2,7 +2,7 @@
  * index
  * - @nikpoklitar
  */
-var _ = require('underscore'),
+var _ = require('lodash'),
   randomWords = require('random-words');
 
 var gameConfigs = require('./gameConfig');

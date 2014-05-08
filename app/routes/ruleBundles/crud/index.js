@@ -4,7 +4,7 @@
  */
 
 var fs = require('fs'),
-  _ = require('underscore'),
+  _ = require('lodash'),
   mongoose = global.getMongoose(),
   winston = require('winston');
 

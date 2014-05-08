@@ -4,7 +4,7 @@
  * Created by niko on 2/4/14.
  */
 
-var _ = require('underscore'),
+var _ = require('lodash'),
   Q = require('q'),
   winston = require('winston');
 

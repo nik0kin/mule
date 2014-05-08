@@ -6,7 +6,7 @@
  * Created by niko on 2/6/14.
  */
 
-var _ = require('underscore'),
+var _ = require('lodash'),
   mongoose = global.getMongoose(),
   Q = require('q'),
   winston = require('winston');

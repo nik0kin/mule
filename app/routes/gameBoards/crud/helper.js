@@ -3,7 +3,7 @@
  *
  */
 
-var _ = require('underscore'),
+var _ = require('lodash'),
   Q = require('q'),
   winston = require('winston');
 
@@ -41,6 +41,9 @@ exports.createQ = function (params) {
 exports.readQ = function (gameBoardID){
   return Q.promise(function (resolve, reject) {
     GameBoard.findByIdQ(gameBoardID)
+      .then(function (gameBoard) {
+        return gameBoard.populateQ('spaces');
+      })
       .done(function (gameBoard) {
 
         if (gameBoard.boardType == 'static') {

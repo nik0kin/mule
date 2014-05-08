@@ -1,6 +1,6 @@
 require ('../../../../server.js');
 
-var _ = require('underscore'),
+var _ = require('lodash'),
   should = require('should'),
   Q = require('q');
 

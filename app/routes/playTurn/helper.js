@@ -17,7 +17,7 @@ var sillz = false;
   GameBoard.findByIdQ(gameBoardId)
     .then(function (gameBoard) {
 
-      if (gameBoard.pieces[whichPieceId] && gameBoard.spaces[whereId]) {
+      if (gameBoard.pieces[whichPieceId] && gameBoard.spaces[whereId]) { //TODO needs to be updated to propely search thru board spaces
         gameBoard.pieces[whichPieceId].location = whereId;
         gameBoard.markModified('pieces');
       } else {

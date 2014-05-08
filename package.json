@@ -23,7 +23,7 @@
     "connect-mongo": "latest",
     "connect-flash": "latest",
     "winston": "latest",
-    "underscore": "*",
+    "lodash": "*",
 
     "weighted" : "*"
   },

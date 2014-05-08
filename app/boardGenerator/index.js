@@ -4,7 +4,7 @@
 
 var Q = require('q'),
   weighted = require('weighted'),
-  _ = require('underscore')
+  _ = require('lodash')
 
 var GameBoard = require('mule-models').GameBoard.Model;
 

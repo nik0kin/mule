@@ -7,7 +7,7 @@ require('../../server.js');
 
 var should = require('should'),
   Q = require('q'),
-  _ = require('underscore');
+  _ = require('lodash');
 
 var User = require('mule-models').User,
   users = require('../../app/routes/users/crud/helper'),

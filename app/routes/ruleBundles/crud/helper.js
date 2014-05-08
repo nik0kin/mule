@@ -3,7 +3,7 @@
  *
  */
 
-var _ = require('underscore'),
+var _ = require('lodash'),
   Q = require('q'),
   winston = require('winston');
 

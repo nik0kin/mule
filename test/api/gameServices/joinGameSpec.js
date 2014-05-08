@@ -4,7 +4,7 @@
  */
 
 var should = require('should'),
-  _ = require('underscore');
+  _ = require('lodash');
 
 require('../../../server.js');
 
