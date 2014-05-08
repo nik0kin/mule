@@ -21,15 +21,15 @@ exports.createQ = function (params) {
   return Q.promise( function (resolve, reject) {
     winston.info("User attempting to create new GameBoard: params: ", params );
 
+    var newGameBoard = new GameBoard({});
+
+    newGameBoard.ruleBundle = params.ruleBundle;
+
     if (params.ruleBundle.name.toLowerCase() == 'vikings') { //hacky for right now
       console.log('vikings gameboard!!')
-      vikingBoardGen.saveVikingsGameBoardQ({customBoardSettings : params.customBoardSettings, ruleBundle: params.ruleBundle, rules: params.rules})
+      vikingBoardGen.saveVikingsGameBoardQ(newGameBoard, {customBoardSettings : params.customBoardSettings, rules: params.rules})
         .done(resolve, reject);
     } else {
-      var newGameBoard = new GameBoard({});
-
-      newGameBoard.ruleBundle = params.ruleBundle;
-
       newGameBoard.boardType = 'static';
 
       newGameBoard.saveQ()

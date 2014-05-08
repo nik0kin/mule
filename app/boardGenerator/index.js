@@ -8,12 +8,9 @@ var Q = require('q'),
 
 var GameBoard = require('mule-models').GameBoard.Model;
 
-exports.saveVikingsGameBoardQ = function (params) {
+exports.saveVikingsGameBoardQ = function (newGameBoard, params) {
   return Q.promise(function (resolve, reject) {
     var ruleBundleRules = params.rules;
-
-    var newGameBoard = new GameBoard({});
-    newGameBoard.ruleBundle = params.ruleBundle;
 
     newGameBoard.boardType = 'built';
 
