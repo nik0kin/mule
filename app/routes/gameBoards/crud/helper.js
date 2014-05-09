@@ -44,6 +44,9 @@ exports.readQ = function (gameBoardID){
       .then(function (gameBoard) {
         return gameBoard.populateQ('spaces');
       })
+      .then(function (gameBoard) {
+        return gameBoard.populateQ('pieces');
+      })
       .done(function (gameBoard) {
 
         if (gameBoard.boardType == 'static') {
