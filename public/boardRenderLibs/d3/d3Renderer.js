@@ -15,7 +15,7 @@ define([], function () {
     //adding node loop
     var i = 0;
     _.each(board, function (space) {
-      json.nodes.push(space);
+      json.nodes.push(_.clone(space));
       positionCache[space.id] = i;
       i++;
     });
