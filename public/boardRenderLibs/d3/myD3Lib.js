@@ -3,18 +3,18 @@ define(['./d3Renderer', './colors'], function (d3Renderer, colors) {
   var supportedGames = ['Vikings', 'Backgammon', 'Checkers', 'TicTacToe'];
   var that = {};
 
-  that.renderSmallBoardHelper = function (ruleBundleName, board) {
+  that.renderSmallBoardHelper = function (ruleBundleName, board, onClickFunction) {
     if (_.contains(supportedGames, ruleBundleName))
-      d3Renderer.main(board, {width: 600, height: 600},
-        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName));
+      d3Renderer.main(board, {width: 500, height: 500},
+        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName), onClickFunction);
     else
       console.log('Unsupported RuleBundle: ' + ruleBundleName);
   };
 
-  that.renderLargeBoardHelper = function (ruleBundleName, board) {
+  that.renderLargeBoardHelper = function (ruleBundleName, board, onClickFunction) {
     if (_.contains(supportedGames, ruleBundleName))
-      d3Renderer.main(board, {width: 1200, height: 1000},
-        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName));
+      d3Renderer.main(board, {width: 800, height: 700},
+        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName), onClickFunction);
     else
       console.log('Unsupported RuleBundle: ' + ruleBundleName);
   };

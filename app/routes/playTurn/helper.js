@@ -40,7 +40,7 @@ exports.playTurn = function (req, res) {
 
         piece.location = whereId;
         console.log(piece.id + ' has new location ' + piece.location);
-        
+
         var promise = PieceState.findByIdAndUpdateQ(id, piece._doc)
           .then(function (piece) {
             console.log("and this?")

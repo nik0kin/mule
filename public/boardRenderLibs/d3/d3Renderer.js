@@ -44,7 +44,7 @@ define([], function () {
   };
   var _svg;
 
-  that.main = function (board, size, colorRenderer, linkRenderer) {
+  that.main = function (board, size, colorRenderer, linkRenderer, onClickFunction) {
     var width = size.width,
       height = size.height;
 
@@ -82,6 +82,10 @@ define([], function () {
       .attr("r", 5)
       .style("fill", colorRenderer)
       .call(force.drag);
+
+    if (typeof onClickFunction === 'function') {
+      node.on('click', onClickFunction);
+    }
 
     node.append("title")
       .text(function(d) { return d.name; });

@@ -24,12 +24,18 @@
 
 <body>
 <div class="container">
-    <div class="row border" id="loginHeader">
-        <input id="usernameText" type="text" name="username" placeholder="username">
-        <input id="passwordText" type="text" name="password" placeholder="password">
-        <input type="button" id="loginUser" value="Login">
+    <div class="row border">
+        <div class="col-md-2">
+            Super <b>MULE</b> InDev
+        </div>
 
-        <div id="alerts"></div>
+        <div class="col-md-pull-8" id="loginHeader">
+            <input id="usernameText" type="text" name="username" placeholder="username">
+            <input id="passwordText" type="text" name="password" placeholder="password">
+            <input type="button" id="loginUser" value="Login">
+
+            <div id="alerts"></div>
+        </div>
     </div>
 
     <div class="row">
@@ -39,6 +45,27 @@
         </div>
         <div class="col-md-2">
             <div id="d3RenderBox"></div>
+        </div>
+    </div>
+
+    <div class="row" id="gameinfoFooter">
+        <div class="col-md-4 border">
+            Selected Space: <span id="selectedSpace">x1y1</span> <br>
+            <br>
+            Space Class<br>
+            Space Attributes<br>
+
+        </div>
+        <div class="col-md-4 border">
+            - Piece 1: Move button <br>
+            - Piece 2: Move button
+
+        </div>
+        <div class="col-md-4 border">
+            Turn Number <br>
+            Refresh Button <br>
+            Submit Turn Button <br>
+            List of played Turns <br>
         </div>
     </div>
 </div>
