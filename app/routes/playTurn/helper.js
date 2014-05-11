@@ -10,7 +10,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
 
 exports.playTurn = function (req, res) {
   var gameBoardId = req.body.gameBoardId;
-  var whichPieceId = req.body.whichPiece;
+  var whichPieceId = parseInt(req.body.whichPiece);
   var whereId = req.body.where;
 
   console.log("gameBoardId: " + gameBoardId);
@@ -38,8 +38,8 @@ exports.playTurn = function (req, res) {
         var id = piece._doc._id;
         delete piece._doc._id;
 
-        piece.location = whereId;
-        console.log(piece.id + ' has new location ' + piece.location);
+        piece.locationId = whereId;
+        console.log(piece.id + ' has new location ' + piece.locationId);
 
         var promise = PieceState.findByIdAndUpdateQ(id, piece._doc)
           .then(function (piece) {

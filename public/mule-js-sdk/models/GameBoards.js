@@ -79,6 +79,18 @@ define([], function () {
       return foundSpace;
     };
 
+    that.getPiecesOnSpace = function (gameBoard, spaceId) {
+      var pieces = [];
+
+      _.each(gameBoard.pieces, function (value) {
+        if (value.locationId === spaceId) {
+          pieces.push(value);
+        }
+      });
+
+      return pieces;
+    };
+
     return that;
   };
 });
