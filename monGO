@@ -1,1 +1,0 @@
-sudo ~/mongodb-linux/bin/mongod --fork --logpath /var/log/mongodb.log --logappend

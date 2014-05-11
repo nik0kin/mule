@@ -35,9 +35,25 @@ module.exports = function (grunt) {
           stdout: true
         },
         command: 'rm node_modules/mule* -rf && npm install'
+          + ' && git clone http://github.com/nik0kin/mule-utils.git node_modules/mule-utils'
+          + ' && git clone http://github.com/nik0kin/mule-models.git node_modules/mule-models'
+          + ' && git clone http://github.com/nik0kin/mule-rules.git node_modules/mule-rules'
+
+          + ' && cd node_modules/mule-utils && npm install'
+          + ' && cd ../mule-models && npm install'
+          + ' && cd ../mule-rules && npm install'
+          + ' && cd ../..'
       },
       clear_logs : {
         command: 'rm logs/mule*.log'
+      },
+      monGO: {
+        options: { stdout: true },
+        command: 'sudo ~/mongodb-linux/bin/mongod --fork --logpath /var/log/mongodb.log --logappend'
+      },
+      monDEL: {
+        options: {  stdout: true },
+        command: 'mongo mule_dev --eval "db.dropDatabase()" && mongo mule_test --eval "db.dropDatabase()"'
       }
     }
   });
@@ -46,5 +62,7 @@ module.exports = function (grunt) {
   grunt.registerTask('test', ['simplemocha']);
   grunt.registerTask('default', ['test']);
   grunt.registerTask('updateMule', ['shell:mule_update']);
-  grunt.registerTask('clearLogs', ['shell:clear_logs'])
+  grunt.registerTask('clearLogs', ['shell:clear_logs']);
+  grunt.registerTask('monGO', ['shell:monGO']);
+  grunt.registerTask('monDEL', ['shell:monDEL']);
 };

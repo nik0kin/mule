@@ -24,7 +24,7 @@
     "connect-flash": "latest",
     "winston": "latest",
     "lodash": "*",
-
+    "mkdirp": "*",
     "weighted" : "*"
   },
   "devDependencies": {
