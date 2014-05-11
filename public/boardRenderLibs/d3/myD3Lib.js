@@ -1,6 +1,6 @@
 
 define(['./d3Renderer', './colors'], function (d3Renderer, colors) {
-  var supportedGames = ['Vikings', 'Backgammon', 'Checkers', 'TicTacToe'];
+  var supportedGames = ['Vikings', 'Backgammon', 'Checkers', 'TicTacToe', 'Monopoly'];
   var that = {};
 
   that.renderSmallBoardHelper = function (ruleBundleName, board, onClickFunction) {
@@ -20,16 +20,15 @@ define(['./d3Renderer', './colors'], function (d3Renderer, colors) {
   };
 
   var getBoardNodeColors = function (ruleBundleName) {
-    switch (ruleBundleName) {
-      case 'Vikings':
-        return colors.vikingsColor;
-      case 'Backgammon':
-        return colors.backgammonColor;
-      case 'Checkers':
-        return colors.checkersColor;
-      case 'TicTacToe':
-        return colors.grayColor;
-    }
+    var colorSwitchObject = {
+      'Vikings': colors.vikingsColor,
+      'Backgammon':  colors.backgammonColor,
+      'Checkers': colors.checkersColor,
+      'TicTacToe': colors.grayColor,
+      'Monopoly': colors.monopolyColor
+    };
+
+    return colorSwitchObject[ruleBundleName];
   };
 
   var getBoardLinkColors = function (ruleBundleName) {

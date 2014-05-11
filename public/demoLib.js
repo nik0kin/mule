@@ -457,14 +457,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/arbor/myArborLib', 'boardRenderLibs/
   that.renderGameBoard = function (gameID) {
     SDK.GameBoards.readGamesBoardQ(gameID)
       .done(function(gameBoard) {
-        if (gameBoard.ruleBundle.name == 'Vikings' || gameBoard.ruleBundle.name == 'TicTacToe'){
-          myD3Lib.renderSmallBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
-        } else if (!gameBoard.board) {
-          alert('no valid gameBoard.board');
-          myArborLib.resetGameBoardRender();
-        } else {
-          myArborLib.renderGameBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
-        }
+        myD3Lib.renderSmallBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
       });
   };
 

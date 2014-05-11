@@ -71,14 +71,50 @@ define([], function () {
         case 'player2':
           c = 'red';
           break;
-      };
+      }
     }
     return c;
   };
 
   that.grayColor = function (d) {
     return 'gray';
-  }
+  };
+
+  that.monopolyColor = function (d) {
+    console.log(d)
+    switch (d.class) {
+      case 'Property':
+        var spaceGroupColor = {
+          purple: 'purple',
+          lightBlue: '#00FFFF',
+          magenta: 'magenta',
+          orange: 'orange',
+          red: 'red',
+          yellow: 'yellow',
+          green: 'green',
+          blue: 'blue',
+          railroads: 'black',
+          utilities: 'gray'
+        };
+
+        return spaceGroupColor[d.attributes.group];
+
+      case 'Go':
+      case 'Jail':
+      case 'FreeParking':
+      case 'GoToJail':
+        return '#BCC6CC';
+
+      case 'CommunityChest':
+        return '#C58917';
+      case 'Chance':
+        return '#C11B17';
+      case 'LuxuryTax':
+      case 'IncomeTax':
+        return '#C58917';
+    }
+
+  };
 
   that.ticTacToeLinkColor = function (d) {
     var c = 'gray';
@@ -99,7 +135,7 @@ define([], function () {
     }
 
     return c;
-  }
+  };
 
   return that;
 });

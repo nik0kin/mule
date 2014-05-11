@@ -13,7 +13,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
 
       SDK.GameBoards.readGamesBoardQ(gameId)
         .done(function(gameBoard) {
-          myD3Lib.renderLargeBoardHelper(gameBoard.ruleBundle.name, gameBoard.board, nodeClicked);
+          if (!currentGameBoard) myD3Lib.renderLargeBoardHelper(gameBoard.ruleBundle.name, gameBoard.board, nodeClicked);
           populateSpacesList(gameBoard);
           populatePiecesList(gameBoard);
           currentGameBoard = gameBoard
