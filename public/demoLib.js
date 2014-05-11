@@ -4,7 +4,7 @@
  * Created by niko on 2/5/14.
  */
 
-define(["mule-js-sdk/sdk", 'boardRenderLibs/arbor/myArborLib', 'boardRenderLibs/d3/myD3Lib'], function (sdk, myArborLib, myD3Lib) {
+define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib) {
   var SDK = sdk('../');
 
   var that = {};

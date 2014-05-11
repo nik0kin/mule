@@ -108,7 +108,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
   var populatePiecesList = function (gameBoard) {
     $('#piecesList').html('');
     _.each(gameBoard.pieces, function (piece) {
-      var pieceText = '[' + piece.id + '] <b>' + piece.className + '</b><br>'
+      var pieceText = '[' + piece.id + '] <b>' + piece.class + '</b><br>'
         + 'location: ' + piece.locationId + ', owner: ' + piece.ownerId;
       $('#piecesList').append(pieceText);
       _.each(piece.attributes, function (value, key) {
@@ -126,7 +126,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     var piecesOnSpace = SDK.GameBoards.getPiecesOnSpace(currentGameBoard, spaceId);
     _.each(piecesOnSpace, function (value) {
       var button = '<button id="pieceMoveButton-' + value.id + '" type="button" class="btn btn-default">Move</button>';
-      $('#pieceInfoDiv').append('Piece [' + value.id + ']: ' + button + ' <br>');
+      $('#pieceInfoDiv').append(value.ownerId + ': <b>' + value.class + '</b> [' + value.id + ']: ' + button + ' <br>');
       $('#pieceMoveButton-' + value.id).click(function () {
         clickedMovePiece(value.id, $('#pieceMoveButton-' + value.id));
       });
