@@ -84,13 +84,3 @@ td {
     height:300px;
     width: 250px;
 }
-
-/* Play */
-
-#selectedSpace {
-    font-weight:bold;
-}
-
-#turnNumberLabel {
-    font-weight:bold;
-}

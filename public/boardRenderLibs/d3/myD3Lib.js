@@ -1,43 +1,43 @@
 
-define(['./d3Renderer', './colors'], function (d3Renderer, colors) {
-  var supportedGames = ['Vikings', 'Backgammon', 'Checkers', 'TicTacToe', 'Monopoly'];
+define(['./d3Renderer',
+  '../bundleRenders/checkers', '../bundleRenders/vikings', '../bundleRenders/backgammon',
+  '../bundleRenders/tictactoe', '../bundleRenders/monopoly'],
+  function (d3Renderer, checkersRenderSet, vikingsRenderSet, backgammonRenderSet,
+            tictactoeRenderSet, monopolyRenderSet) {
+
+  var supportedGames = {
+    'Vikings': vikingsRenderSet,
+    'Backgammon': backgammonRenderSet,
+    'Checkers': checkersRenderSet,
+    'TicTacToe': tictactoeRenderSet,
+    'Monopoly': monopolyRenderSet
+  };
   var that = {};
 
   that.renderSmallBoardHelper = function (ruleBundleName, board, onClickFunction) {
-    if (_.contains(supportedGames, ruleBundleName))
+    var renderSet = supportedGames[ruleBundleName];
+
+    if (renderSet) {
       d3Renderer.main(board, {width: 500, height: 500},
-        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName), onClickFunction);
-    else
+        renderSet, onClickFunction);
+    } else
       console.log('Unsupported RuleBundle: ' + ruleBundleName);
   };
 
   that.renderLargeBoardHelper = function (ruleBundleName, board, onClickFunction) {
-    if (_.contains(supportedGames, ruleBundleName))
+    var renderSet = supportedGames[ruleBundleName];
+
+    if (renderSet) {
+      var onClick = function (node, nodeElement) {
+        d3.selectAll(".node").attr("r", renderSet.nodeSizes.normal);
+        d3.select(nodeElement).attr("r", renderSet.nodeSizes.selected);
+
+        if (onClickFunction) onClickFunction(node);
+      };
       d3Renderer.main(board, {width: 800, height: 700},
-        getBoardNodeColors(ruleBundleName), getBoardLinkColors(ruleBundleName), onClickFunction);
-    else
+        renderSet, onClick);
+    } else
       console.log('Unsupported RuleBundle: ' + ruleBundleName);
-  };
-
-  var getBoardNodeColors = function (ruleBundleName) {
-    var colorSwitchObject = {
-      'Vikings': colors.vikingsColor,
-      'Backgammon':  colors.backgammonColor,
-      'Checkers': colors.checkersColor,
-      'TicTacToe': colors.grayColor,
-      'Monopoly': colors.monopolyColor
-    };
-
-    return colorSwitchObject[ruleBundleName];
-  };
-
-  var getBoardLinkColors = function (ruleBundleName) {
-    switch (ruleBundleName) {
-      case 'TicTacToe':
-        return colors.ticTacToeLinkColor;
-      default:
-        return colors.grayColor;
-    }
   };
 
   return that;

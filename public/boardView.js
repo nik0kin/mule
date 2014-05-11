@@ -4,7 +4,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     currentGameBoard,
     isMovingPiece, movingPieceId;
 
-  var initGame = function () {
+  var initGame = function (selectSpaceId) {
     demoLib.loadGameIdURL(function (gameId) {
       SDK.Games.readQ(gameId)
         .done(function(game) {
@@ -17,18 +17,20 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
           populateSpacesList(gameBoard);
           populatePiecesList(gameBoard);
           currentGameBoard = gameBoard
+
+          changeSelectLabel(selectSpaceId);
+          populateSpacesPiecesInfo(selectSpaceId);
+          isMovingPiece = false;
         });
     });
 
-    changeSelectLabel();
-    populateSpacesPiecesInfo();
     isMovingPiece = false;
   };
 
   $('#loginUser').click(demoLib.tryLogin);
   $('#refreshButton').click(initGame);
 
-  var nodeClicked = function (node) {
+  var nodeClicked = function (node, nodeElement) {
     var spaceId = node.id;
     console.log('clicked id: ' + spaceId);
     changeSelectLabel(spaceId);
@@ -60,7 +62,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
       .then(function (result) {
         console.log(result);
         // refresh?
-        initGame();
+        initGame(spaceId);
       })
       .fail(function (err) {
         alert(JSON.stringify(err));
@@ -68,6 +70,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
   };
 
   var changeSelectLabel = function (spaceId) {
+    console.log('change selectLabel: ' + spaceId);
 
     if (spaceId) {
       $('#selectedSpace').html(spaceId);
@@ -119,6 +122,8 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
   };
 
   var populateSpacesPiecesInfo = function (spaceId) {
+    console.log('change selectLabel: ' + spaceId);
+
     $('#pieceInfoDiv').html('');
 
     if (!spaceId) { return; }

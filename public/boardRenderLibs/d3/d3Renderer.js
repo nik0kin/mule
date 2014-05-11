@@ -44,7 +44,7 @@ define([], function () {
   };
   var _svg;
 
-  that.main = function (board, size, colorRenderer, linkRenderer, onClickFunction) {
+  that.main = function (board, size, renderSet, onClickFunction) {
     var width = size.width,
       height = size.height;
 
@@ -54,7 +54,7 @@ define([], function () {
 
     var force = d3.layout.force()
       .charge(-120)
-      .linkDistance(2)
+      .linkDistance(renderSet.linkDistance)
       .size([width, height]);
 
     $("#d3RenderBox").html('');
@@ -73,18 +73,20 @@ define([], function () {
       .enter().append("line")
       .attr("class", "link")
       .style("stroke-width", function(d) { return 2; })
-      .style("stroke", linkRenderer);
+      .style("stroke", renderSet.getLinkColor);
 
     var node = svg.selectAll(".node")
       .data(graph.nodes)
       .enter().append("circle")
       .attr("class", "node")
-      .attr("r", 5)
-      .style("fill", colorRenderer)
+      .attr("r", renderSet.nodeSizes.normal)
+      .style("fill", renderSet.getColor)
       .call(force.drag);
 
     if (typeof onClickFunction === 'function') {
-      node.on('click', onClickFunction);
+      node.on('click', function (d) {
+        onClickFunction(d, this);
+      });
     }
 
     node.append("title")
