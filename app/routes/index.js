@@ -29,6 +29,9 @@ module.exports = function (app, passport) {
   // ruleBundles //
   require('./ruleBundles/routes')(app);
 
+  // historys //
+  require('./historys/routes')(app);
+
   /////////// STUFF ////////
   require('./playTurn/routes')(app);
 };

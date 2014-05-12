@@ -26,23 +26,26 @@ exports.validateMoveActionQ = function (params) {
         throw 'INVALID SPACE';
       }
 
-      return Q(gameBoard);
     });
 };
 
 exports.doMoveActionToGameBoardStateQ = function (gameBoard, params) {
-  var promises = [];
   var piece = searchThruPiecesForId(gameBoard.pieces, params.whichPieceId);
 
-  var id = piece._doc._id;
-  delete piece._doc._id;
+  var id = piece._id;
+  //delete piece._doc._id;
 
-  piece.locationId = params.whereId;
-  console.log(piece.id + ' has new location ' + piece.locationId);
+  var updatePiece = _.clone(piece._doc);
+  delete updatePiece._id;
 
-  promises.push(PieceState.findByIdAndUpdateQ(id, piece._doc));
+  updatePiece.locationId = params.whereId;
+  console.log(updatePiece.id + ' has new location ' + updatePiece.locationId);
 
-  return Q.all(promises);
+  return PieceState.findByIdAndUpdateQ(id, updatePiece)
+    .fail (function (err) {
+    console.log('failed doing basic move action: ');
+    console.log(err);
+  });
 };
 
 // Todo refactor into a smarter place?
@@ -57,6 +60,9 @@ var searchThruSpacesForId = function (spaces, spaceId) {
 };
 
 var searchThruPiecesForId = function (pieces, pieceId) {
+  if (typeof pieceId === 'string') {
+    pieceId = parseInt(pieceId);
+  }
   var found = false;
   _.each(pieces, function (value, key) {
     if (value.id === pieceId) {

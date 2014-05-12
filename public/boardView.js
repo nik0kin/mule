@@ -2,6 +2,7 @@
 define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (demoLib, sdk, myD3Lib) {
   var SDK = sdk('../'),
     currentGameBoard,
+    currentGame,
     isMovingPiece, movingPieceId;
 
   var initGame = function (selectSpaceId) {
@@ -9,6 +10,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
       SDK.Games.readQ(gameId)
         .done(function(game) {
           changeTurnLabel(game.turnNumber);
+          currentGame = game;
         });
 
       SDK.GameBoards.readGamesBoardQ(gameId)
@@ -54,9 +56,11 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     console.log('moved piece=' + pieceId + ' to spaceId: ' + spaceId);
 
     var params = {
-      "gameBoardId": currentGameBoard._id,
-      "whichPiece": parseInt(pieceId),
-      "where": spaceId
+      gameId: currentGame._id,
+      actions: [{
+        "whichPieceId": parseInt(pieceId),
+        "whereId": spaceId
+      }]
     };
     SDK.PlayTurn.sendQ(params)
       .then(function (result) {
