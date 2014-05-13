@@ -123,6 +123,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
 
     currentActions.push(params);
     populateActionsList();
+    isMovingPiece = false;
   };
 
   var submitTurn = function () {
