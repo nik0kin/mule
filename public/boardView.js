@@ -99,6 +99,12 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
   };
 
   var clickedMovePiece = function (pieceId, button) {
+    if (isMovingPiece) {
+      button.html('move');
+      isMovingPiece = false;
+      return;
+    }
+
     console.log('Choose a spot to move piece: ' + pieceId);
 
     isMovingPiece = true;
@@ -111,22 +117,31 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     console.log('moved piece=' + pieceId + ' to spaceId: ' + spaceId);
 
     var params = {
+      "whichPieceId": parseInt(pieceId),
+      "whereId": spaceId
+    };
+
+    currentActions.push(params);
+    populateActionsList();
+  };
+
+  var submitTurn = function () {
+    var params = {
       gameId: currentGame._id,
-      actions: [{
-        "whichPieceId": parseInt(pieceId),
-        "whereId": spaceId
-      }]
+      actions: currentActions
     };
     SDK.PlayTurn.sendQ(params)
       .then(function (result) {
         console.log(result);
         // refresh?
-        initGame(spaceId);
+        initGame();
       })
       .fail(function (err) {
         alert(JSON.stringify(err));
       });
   };
+
+  $('#submitTurnButton').click(submitTurn);
 
   var changeSelectLabel = function (spaceId) {
     console.log('change selectLabel: ' + spaceId);
@@ -208,7 +223,12 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
   };
 
   var populateActionsList = function () {
+    var element = $('#actionsList');
+    element.html('');
 
+    _.each(currentActions, function (value) {
+      element.append('piece[' + value.whichPieceId + '] -> ' + value.whereId + '<br>');
+    });
   };
 
   initGame();
