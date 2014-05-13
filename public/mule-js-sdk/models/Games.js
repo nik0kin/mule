@@ -4,7 +4,7 @@
  * Created by niko on 2/5/14.
  */
 
-define(['./Users'], function (Users) {
+define(['./Users', '../q'], function (Users, Q) {
   return function (contextPath) {
     var that = {};
 
@@ -51,6 +51,26 @@ define(['./Users'], function (Users) {
         type: "POST",
         url: contextPath+"games/" + gameID + '/join'
       });
+    };
+
+    ///// other //////
+
+    that.getPlayersMapQ = function (game) {
+      var map = _.clone(game.players),
+        promiseArray = [];
+
+      _.each(map, function (player, relId) {
+        promiseArray.push(Users.readCacheQ(player.playerID)
+          .then(function (user) {
+            map[relId].name = user.username;
+          })
+        );
+      });
+
+      return Q.all(promiseArray)
+        .then(function () {
+          return Q(map);
+        });
     };
 
     return that;

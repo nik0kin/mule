@@ -64,24 +64,21 @@ define(['../q'], function (Q) {
     };
 
     that.readCacheQ = function lol1(userID) {
-      return Q.promise(function lol4(reject, resolve) {
+      return Q.promise(function (resolve, reject) {
         if (that.usersCache[userID]) {
           resolve(that.usersCache[userID]);
         } else {
           that.readQ(userID)
-            .done(function lol2(result) {
+            .then(function (result) {
                 that.usersCache[result._id] = result;
                 resolve(result);
-            }, function (err) {
-              console.log('WTF')
-              resolve(err)
             });
         }
       });
     };
 
     that.indexCacheQ = function (force) {
-      return Q.promise(function (reject, resolve) {
+      return Q.promise(function (resolve, reject) {
         if (!force && _.isEmpty(that.usersCache)) {
           that.indexQ()
             .then(function (result) {

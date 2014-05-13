@@ -34,7 +34,7 @@ define(['./d3Renderer',
 
         if (onClickFunction) onClickFunction(node);
       };
-      d3Renderer.main(board, {width: 800, height: 700},
+      d3Renderer.main(board, {width: 800, height: 600},
         renderSet, onClick);
     } else
       console.log('Unsupported RuleBundle: ' + ruleBundleName);

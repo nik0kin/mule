@@ -62,21 +62,24 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
     var username = $("#usernameText").val();
     var password = $("#passwordText").val();
 
-    SDK.Users.loginQ({
+
+    $("#tabs-1").html("");
+    $("#tabs-2").html("");
+
+    return SDK.Users.loginQ({
       "username" : username,
       "password" : password
     })
-      .done(function(data ) {
+      .then(function(data ) {
         console.log( "Data Recieved: " + JSON.stringify(data) );
         that.loginSuccessAlert();
-      }).fail(function(res){
+      })
+      .fail(function(res){
         console.log(res);
         that.loginFailAlert();
         alert("login Fail: " +JSON.stringify(res.responseText));
       });
 
-    $("#tabs-1").html("");
-    $("#tabs-2").html("");
   };
 
   ///////////////////// GAME STUFF /////////////////////

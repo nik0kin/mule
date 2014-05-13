@@ -16,7 +16,7 @@
     <script src="lib/bootstrap.min.js"></script>
 
 
-    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="lib/d3.v3.min.js"></script>
 
     <script src="lib/underscore-min.js"></script>
 
@@ -58,14 +58,18 @@
             <span id="selectedSpaceAttributes"></span>
 
         </div>
-        <div id="pieceInfoDiv" class="col-md-4 border">
+        <div id="pieceInfoDiv" class="col-md-2 border">
 
         </div>
+        <div class="col-md-2 border">
+            <div id="actionsList"></div>
+            <button id="submitTurnButton" type="button" class="btn btn-default">Submit Turn</button> <br>
+        </div>
         <div class="col-md-4 border">
-            Turn: <span id="turnNumberLabel"></span> <br>
+
+            Round: <span id="turnNumberLabel"></span>
             <button id="refreshButton" type="button" class="btn btn-default">Refresh</button> <br>
-            Submit Turn Button <br>
-            List of played Turns <br>
+            <div id="playerList"></div>
         </div>
     </div>
 </div>

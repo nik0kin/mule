@@ -1,16 +1,63 @@
 
 define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (demoLib, sdk, myD3Lib) {
   var SDK = sdk('../'),
+    currentUser,
+    playerMap,
     currentGameBoard,
     currentGame,
+    currentHistory,
+    currentActions,
     isMovingPiece, movingPieceId;
 
   var initGame = function (selectSpaceId) {
     demoLib.loadGameIdURL(function (gameId) {
       SDK.Games.readQ(gameId)
         .done(function(game) {
-          changeTurnLabel(game.turnNumber);
           currentGame = game;
+
+          SDK.Historys.readGamesHistoryQ(currentGame._id)
+            .done(function(history) {
+              currentHistory = history;
+              changeTurnLabel(currentHistory.currentRound);
+
+              SDK.Games.getPlayersMapQ(game)
+                .then(function (_playerMap) {
+
+                  _.each(game.players, function (value, key) {
+                    _playerMap[key].played = currentHistory.currentTurnStatus[key];
+                  });
+
+                  console.log(_playerMap);
+
+                  if (currentUser) {
+
+                    _.each(_playerMap, function (value, key) {
+                      if (('' +value.playerID) === ('' +currentUser._id)) {
+                        currentUser.relId = key;
+                        _playerMap[key].currentUser = true;
+                        console.log(currentUser.relId);
+                      }
+                    });
+                  }
+
+                  playerMap = _playerMap;
+
+                  if (currentUser && currentUser.relId) {
+                    var currentRound = history.currentRound;
+                    if (history.turns[currentUser.relId][currentRound - 1]) {
+                      currentActions = history.turns[currentUser.relId][currentRound - 1].actions;
+                    } else {
+                      currentActions = [];
+                    }
+                  } else {
+                    currentActions = [];
+                  }
+                  console.log('loaded actions count: ' + currentActions.length);
+
+                  populatePlayerList();
+                  populateActionsList();
+                });
+            });
         });
 
       SDK.GameBoards.readGamesBoardQ(gameId)
@@ -29,8 +76,16 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     isMovingPiece = false;
   };
 
-  $('#loginUser').click(demoLib.tryLogin);
-  $('#refreshButton').click(initGame);
+  $('#loginUser').click(function () {
+    demoLib.tryLogin()
+      .then (function () {
+      currentUser = { _id: SDK.Users.getLoggedInUserID() };
+      initGame();
+    });
+  });
+  $('#refreshButton').click(function () {
+    initGame();
+  });
 
   var nodeClicked = function (node, nodeElement) {
     var spaceId = node.id;
@@ -140,6 +195,20 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
         clickedMovePiece(value.id, $('#pieceMoveButton-' + value.id));
       });
     });
+  };
+
+  var populatePlayerList = function () {
+    var element = $('#playerList');
+    element.html('');
+
+    _.each(playerMap, function (value, key) {
+      var b = !value.currentUser ? ['', ''] : ['<b>', '</b>'];
+      element.append('(' + key + ') ' + b[0] + value.name + b[1]  + ' has ' + (value.played ? '' : 'not ') + 'played<br>');
+    });
+  };
+
+  var populateActionsList = function () {
+
   };
 
   initGame();
