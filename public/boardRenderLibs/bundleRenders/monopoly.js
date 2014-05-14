@@ -47,5 +47,10 @@ define([], function () {
 
   that.linkDistance = 1;
 
+  that.getDisplayText = function (d) {
+    if (!d.pieces) return '';
+    return d.pieces.length;
+  };
+
   return that;
 });

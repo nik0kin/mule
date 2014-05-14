@@ -36,7 +36,12 @@ define([], function () {
     selected: 14
   };
 
-  that.linkDistance = 15;
+  that.linkDistance = 50;
+
+  that.getDisplayText = function (d) {
+    if (!d.pieces) return '';
+    return d.pieces.length;
+  };
 
   return that;
 });

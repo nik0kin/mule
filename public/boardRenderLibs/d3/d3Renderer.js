@@ -53,20 +53,19 @@ define([], function () {
     var graph = boardToGraphJSON(board);
 
     var force = d3.layout.force()
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .size([width, height])
       .charge(-120)
       .linkDistance(renderSet.linkDistance)
-      .size([width, height]);
+      .on("tick", tick)
+      .start();
 
     $("#d3RenderBox").html('');
     var svg = d3.select("#d3RenderBox").append("svg")
       .attr("width", width)
       .attr("height", height);
     _svg = svg;
-
-    force
-      .nodes(graph.nodes)
-      .links(graph.links)
-      .start();
 
     var link = svg.selectAll(".link")
       .data(graph.links)
@@ -76,12 +75,24 @@ define([], function () {
       .style("stroke", renderSet.getLinkColor);
 
     var node = svg.selectAll(".node")
-      .data(graph.nodes)
+      .data(force.nodes())
       .enter().append("circle")
       .attr("class", "node")
       .attr("r", renderSet.nodeSizes.normal)
       .style("fill", renderSet.getColor)
       .call(force.drag);
+
+    var number = svg.selectAll("foreignObject")
+      .data(force.nodes())
+      .enter().append("g");
+    number.append("foreignObject")
+      .attr('x', '10px')
+      .attr("height","25px")
+      .attr("width", "25px")
+      .append("xhtml:div")
+      .attr('xmlns','http://www.w3.org/1999/xhtml')
+      .attr('class','test')
+      .html(renderSet.getDisplayText);
 
     if (typeof onClickFunction === 'function') {
       node.on('click', function (d) {
@@ -89,19 +100,19 @@ define([], function () {
       });
     }
 
-    node.append("title")
-      .text(function(d) { return d.name; });
+    function tick() {
+      node.attr("transform", transform);
+      number.attr("transform", transform);
 
-    force.on("tick", function() {
       link.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
+    }
 
-      node.attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
-    });
-    //});
+    function transform(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    }
   };
   return that;
 });

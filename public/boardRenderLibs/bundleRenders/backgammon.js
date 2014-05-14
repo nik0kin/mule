@@ -36,11 +36,16 @@ define([], function () {
   };
 
   that.nodeSizes = {
-    normal: 8,
-    selected: 12
+    normal: 10,
+    selected: 15
   };
 
-  that.linkDistance = 10;
+  that.linkDistance = 15;
+
+  that.getDisplayText = function (d) {
+    if (!d.pieces) return '';
+    return d.pieces.length;
+  };
 
   return that;
 });

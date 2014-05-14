@@ -50,5 +50,10 @@ define([], function () {
 
   that.linkDistance = 20;
 
+  that.getDisplayText = function (d) {
+    if (!d.pieces) return '';
+    return d.pieces.length;
+  };
+
   return that;
 });

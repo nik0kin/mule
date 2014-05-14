@@ -27,8 +27,6 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
                     _playerMap[key].played = currentHistory.currentTurnStatus[key];
                   });
 
-                  console.log(_playerMap);
-
                   if (currentUser) {
 
                     _.each(_playerMap, function (value, key) {
@@ -62,7 +60,10 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
 
       SDK.GameBoards.readGamesBoardQ(gameId)
         .done(function(gameBoard) {
-          if (!currentGameBoard) myD3Lib.renderLargeBoardHelper(gameBoard.ruleBundle.name, gameBoard.board, nodeClicked);
+          //if (!currentGameBoard) {
+            var fullBoard = createFullBoard(gameBoard.board, gameBoard.pieces);
+            myD3Lib.renderLargeBoardHelper(gameBoard.ruleBundle.name, fullBoard, nodeClicked);
+          //}
           populateSpacesList(gameBoard);
           populatePiecesList(gameBoard);
           currentGameBoard = gameBoard
@@ -223,13 +224,38 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     });
   };
 
+  var cancelAction = function (key) {
+    currentActions.splice(key, 1);
+    populateActionsList();
+  };
+
   var populateActionsList = function () {
     var element = $('#actionsList');
     element.html('');
 
-    _.each(currentActions, function (value) {
-      element.append('piece[' + value.whichPieceId + '] -> ' + value.whereId + '<br>');
+    _.each(currentActions, function (value, key) {
+      var buttonId = 'cancelActionButton-' + key;
+        button = '<button id="' + buttonId + '" type="button" class="btn-default small">X</button><br>';
+      element.append('piece[' + value.whichPieceId + '] -> ' + value.whereId + ' ' + button);
+      $('#' + buttonId).click(function () {
+        cancelAction(key);
+      });
     });
+  };
+
+  var createFullBoard = function (board, pieces) {
+    var fullBoard = _.clone(board);
+
+    _.each(fullBoard, function (boardSpace) {
+      boardSpace.pieces = [];
+      _.each(pieces, function (piece) {
+        if (boardSpace.id === piece.locationId) {
+          boardSpace.pieces.push(piece);
+        }
+      });
+    });
+
+    return fullBoard;
   };
 
   initGame();
