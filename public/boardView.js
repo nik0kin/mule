@@ -117,12 +117,15 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
   var movePieceToSpace = function (pieceId, spaceId) {
     console.log('moved piece=' + pieceId + ' to spaceId: ' + spaceId);
 
-    var params = {
-      "whichPieceId": parseInt(pieceId),
-      "whereId": spaceId
+    var action = {
+      type: 'BasicMove',
+      params: {
+        "whichPieceId": parseInt(pieceId),
+        "whereId": spaceId
+      }
     };
 
-    currentActions.push(params);
+    currentActions.push(action);
     populateActionsList();
     isMovingPiece = false;
   };
@@ -236,7 +239,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     _.each(currentActions, function (value, key) {
       var buttonId = 'cancelActionButton-' + key;
         button = '<button id="' + buttonId + '" type="button" class="btn-default small">X</button><br>';
-      element.append('piece[' + value.whichPieceId + '] -> ' + value.whereId + ' ' + button);
+      element.append('piece[' + value.params.whichPieceId + '] -> ' + value.params.whereId + ' ' + button);
       $('#' + buttonId).click(function () {
         cancelAction(key);
       });

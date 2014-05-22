@@ -3,7 +3,7 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
-  BasicMoveAction = require('./basicMoveAction');
+  actionsHelper = require('./actionsHelper');
 
 
 exports.submitTurnQ = function (player, gameBoardId, turn) {
@@ -43,18 +43,8 @@ exports.progressRoundQ = function (gameBoardObject, historyObject) {
   var turns = historyObject.getRoundTurns(historyObject.currentRound);
   var promises = [];
   _.each(turns, function (turn, player) {
-    _.each(turn.actions, function (action, key) {
-      var promise = BasicMoveAction.doMoveActionToGameBoardStateQ(gameBoardObject, action)
-        .then(function () {
-          console.log('R' + historyObject.currentRound + ' - ' + player + ': success action #' + key);
-        })
-        .fail(function (err) {
-          console.log('R' + historyObject.currentRound + ' - ' + player + ': error action #' + key);
-          console.log(err);
-        });
-      promises.push(promise);
-
-    });
+    var promise = actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, turn.actions, player);
+    promises.push(promise);
   });
 
   return Q.all(promises)

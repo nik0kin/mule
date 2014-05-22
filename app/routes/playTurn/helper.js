@@ -5,10 +5,10 @@
 var _ = require('lodash'),
   Q = require('q');
 
-var BasicMoveAction = require('../../turnSystem/basicMoveAction'),
-  roundRobinTurnSystem = require('../../turnSystem/roundRobin'),
+var roundRobinTurnSystem = require('../../turnSystem/roundRobin'),
   playByMailTurnSystem = require('../../turnSystem/playByMail'),
-  RuleBundle = require('mule-models').RuleBundle.Model;
+  actionsHelper = require('../../turnSystem/actionsHelper'),
+  RuleBundle = require('mule-models').RuleBundle.Model,
   Game = require('mule-models').Game.Model;
 
 var turnStyleFunctions = {
@@ -41,29 +41,7 @@ exports.playTurn = function (req, res) {
         return res.status(403).send({err: 'INVALID PLAYER'});
       }
 
-      var promiseArray = [];
-
-      _.each(req.body.actions, function (value, key) {
-        var params = {
-          gameBoardId: game.gameBoard,
-          whichPieceId: parseInt(value.whichPieceId),
-          whereId: value.whereId
-        };
-
-        var promise = BasicMoveAction.validateMoveActionQ(params)
-          .then(function (gameBoard) {
-            console.log('valid move action ' + key + ': ');
-            console.log(params);
-          })
-          .fail(function (err) {
-            console.log('invalid action: ' + key);
-            throw 'action ' + key + ': ' + err;
-          });
-
-        promiseArray.push(promise);
-      });
-
-      return Q.all(promiseArray)
+      return actionsHelper.validateActionsQ(game.gameBoard, req.body.actions)
         .then(function () {
           return RuleBundle.findByIdQ(game.ruleBundle.id);
         })
@@ -82,7 +60,5 @@ exports.playTurn = function (req, res) {
           res.status(400).send({err: err});
         });
     });
-
-
 
 };

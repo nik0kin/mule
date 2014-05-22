@@ -6,8 +6,8 @@ var GameBoard = require('mule-models').GameBoard.Model,
   PieceState = require('mule-models').PieceState.Model;
 
 
-exports.validateMoveActionQ = function (params) {
-  return GameBoard.findByIdQ(params.gameBoardId)
+exports.validateQ = function (gameBoardId, params) {
+  return GameBoard.findByIdQ(gameBoardId)
     .then(function (gameBoard) {
       return gameBoard.populateQ('spaces');
     })
@@ -29,7 +29,7 @@ exports.validateMoveActionQ = function (params) {
     });
 };
 
-exports.doMoveActionToGameBoardStateQ = function (gameBoard, params) {
+exports.doQ = function (gameBoard, params) {
   var piece = searchThruPiecesForId(gameBoard.pieces, params.whichPieceId);
 
   var id = piece._id;

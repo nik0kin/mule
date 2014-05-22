@@ -28,7 +28,7 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     });
   };
 
-  var counter = 5, timerCount = 5;
+  var counter = 0, timerCount = 5;
   var refreshGame = function () {
     counter--;
     $('#refreshLabel').html('refresh...' + counter);

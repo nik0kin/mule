@@ -3,7 +3,7 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
-  BasicMoveAction = require('./basicMoveAction');
+  actionsHelper = require('./actionsHelper');
 
 
 exports.submitTurnQ = function (player, gameBoardId, turn) {
@@ -38,7 +38,7 @@ exports.submitTurnQ = function (player, gameBoardId, turn) {
         // progress turn if they are
         return exports.progressRoundQ(_gameBoard, historyObject);
       } else {
-        console.log('all turns not in: not progressing');
+        console.log('all turns not in: not progressing round count');
       }
     })
     .fail(function (err) {
@@ -51,21 +51,8 @@ exports.submitTurnQ = function (player, gameBoardId, turn) {
 exports.progressTurnQ = function (gameBoardObject, historyObject, player) {
   // do all actions for that player (in history)
   var playerTurns = historyObject.getRoundTurns(historyObject.currentRound)[player];
-  var promises = [];
 
-  _.each(playerTurns.actions, function (action, key) {
-    var promise = BasicMoveAction.doMoveActionToGameBoardStateQ(gameBoardObject, action)
-      .then(function () {
-        console.log('R' + historyObject.currentRound + ' - ' + player + ': success action #' + key);
-      })
-      .fail(function (err) {
-        console.log('R' + historyObject.currentRound + ' - ' + player + ': error action #' + key);
-        console.log(err);
-      });
-    promises.push(promise);
-  });
-
-  return Q.all(promises)
+  return actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, playerTurns.actions, player)
     .then(function () {
       console.log('Turn successful for ' + player + ': ' + historyObject.currentRound);
       historyObject.progressRoundRobinPlayerTurnTicker();
