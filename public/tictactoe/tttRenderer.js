@@ -198,25 +198,35 @@ define(function () {
     }
   };
 
+  var xRotationX = 1.8,
+    oRotationX = 1.4,
+    spaceAmount = 3.5;
 
   that.placeExistingPieces = function (listOfPieces) {
-
+    _.each(listOfPieces, function (piece) {
+      that.placePiece(piece.position, piece.class)
+    });
   };
 
   that.placePiece = function (location, xOrOhh) {
-    var material = new THREE.MeshNormalMaterial();
-    android = new THREE.Mesh( xGeometry, material );
-    android.scale.set(1,1,1);
-    android.rotation.x = 1.8;
-    scene.add( android );
+    var rot, geo;
+
+    if (xOrOhh === 'O') {
+      rot = oRotationX;
+      geo = oGeometry;
+    } else {
+      rot = xRotationX;
+      geo = xGeometry;
+    }
 
     var material = new THREE.MeshNormalMaterial();
-    ann = new THREE.Mesh( oGeometry, material );
-    ann.position.x = -3.5;
-    ann.position.y = 3.5;
-    ann.scale.set(1,1,1);
-    ann.rotation.x = 1.4;
-    scene.add( ann );
+    var newXorO = new THREE.Mesh( geo, material );
+    newXorO.scale.set(1,1,1);
+    newXorO.rotation.x = rot;
+    newXorO.position.x = -spaceAmount + location.x * spaceAmount;
+    newXorO.position.y = -spaceAmount + location.y * spaceAmount;
+    scene.add( newXorO );
+    console.log('added ' + xOrOhh + ' to board at ' + location.x + ', ' + location.y);
   };
 
   return that;

@@ -75,9 +75,32 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     }
   };
 
+  var whereMap = {
+    '0_0': 'topLeft',
+    '1_0': 'topMiddle',
+    '2_0': 'topRight',
+    '0_1': 'middleLeft',
+    '1_1': 'middleMiddle',
+    '2_1': 'middleRight',
+    '0_2': 'bottomLeft',
+    '1_2': 'bottomMiddle',
+    '2_2': 'bottomRight'
+  }, invertWhereMap = _.invert(whereMap);
+  console.log(invertWhereMap)
+
   var populateBoard = function (fullBoard) {
-    console.log(fullBoard);
-    tttRenderer.placeExistingPieces();
+    var tttPieces = fullBoard.pieces.map(function (p) {
+      var l = invertWhereMap[p.locationId].split('_');
+
+      return {
+        position: {
+          x: l[0],
+          y: l[1]
+        },
+        'class': p.class
+      };
+    });
+    tttRenderer.placeExistingPieces(tttPieces);
   };
 
   var clickSpaceCallback = function (space) {
@@ -86,21 +109,8 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     }
 
     console.log('clicked space: ' + space.x + ', ' + space.y);
-    tttRenderer.placePiece();
 
-    var where = {
-      '0_0': 'topLeft',
-      '1_0': 'topMiddle',
-      '2_0': 'topLeft',
-      '0_1': 'middleLeft',
-      '1_1': 'middleMiddle',
-      '2_1': 'middleLeft',
-      '0_2': 'bottomLeft',
-      '1_2': 'bottomMiddle',
-      '2_2': 'bottomLeft'
-    };
-
-    submitTurn(where[space.x + '_' + space.y]);
+    submitTurn(whereMap[space.x + '_' + space.y]);
   };
 
   var submitTurn = function (whereId) {
@@ -115,13 +125,16 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
         }
       }]
     };
-    counter = 10;
+
     SDK.PlayTurn.sendQ(params)
       .then(function (result) {
         console.log('Submitted turn');
         console.log(result);
         // refresh?
-        refreshGame();
+        counter = 0;
+        var space = invertWhereMap[whereId].split('_');
+        var _class = (currentUser.relId === 'p1') ? 'O' : 'X';
+        tttRenderer.placePiece({x: space[0], y: space[1]}, _class);
       })
       .fail(function (err) {
         alert(JSON.stringify(err));
