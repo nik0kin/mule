@@ -61,7 +61,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
       SDK.GameBoards.readGamesBoardQ(gameId)
         .done(function(gameBoard) {
           //if (!currentGameBoard) {
-            var fullBoard = createFullBoard(gameBoard.board, gameBoard.pieces);
+            var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
             myD3Lib.renderLargeBoardHelper(gameBoard.ruleBundle.name, fullBoard, nodeClicked);
           //}
           populateSpacesList(gameBoard);
@@ -241,21 +241,6 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
         cancelAction(key);
       });
     });
-  };
-
-  var createFullBoard = function (board, pieces) {
-    var fullBoard = _.clone(board);
-
-    _.each(fullBoard, function (boardSpace) {
-      boardSpace.pieces = [];
-      _.each(pieces, function (piece) {
-        if (boardSpace.id === piece.locationId) {
-          boardSpace.pieces.push(piece);
-        }
-      });
-    });
-
-    return fullBoard;
   };
 
   initGame();

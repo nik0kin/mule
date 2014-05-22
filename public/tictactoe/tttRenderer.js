@@ -7,7 +7,9 @@ define(function () {
   var SCREEN_WIDTH = 500, SCREEN_HEIGHT = 500;
   var VIEW_ANGLE = 75, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 1000;
 
-  that.initBasicScene = function () {
+  var xGeometry, oGeometry;
+
+  that.initBasicScene = function (clickSpaceCallback) {
     scene = new THREE.Scene();
     
     camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
@@ -60,7 +62,7 @@ define(function () {
         square.position.x = -4.0 + (x * 4);
         square.position.y = -4.0 + (y * 4);
         square.position.z = -1.0;
-        square.which = x + ' ' + y;
+        square.which = {x: x, y: y};
         scene.add(square);
         targetList.push(square);
       }
@@ -132,11 +134,7 @@ define(function () {
 
 
     var onDocumentMouseDown = function ( event ) {
-      // the following line would stop any other event handler from firing
-      // (such as the mouse's TrackballControls)
-      // event.preventDefault();
-
-      console.log("Click. " + event.clientX + ' ' + event.clientY);
+      //console.log("Click. " + event.clientX + ' ' + event.clientY);
 
       // update the mouse variable
       mouse.x = ( (event.clientX - stageOffset.x) / SCREEN_WIDTH ) * 2 - 1;
@@ -155,7 +153,8 @@ define(function () {
 
       // if there is one (or more) intersections
       if ( intersects.length > 0 ) {
-        console.log("Hit @ " + intersects[0].object.which );
+        //console.log("Hit @ " + intersects[0].object.which );
+        clickSpaceCallback(intersects[0].object.which);
         // change the color of the closest face.
         intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 );
         intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
@@ -163,16 +162,10 @@ define(function () {
 
     };
 
-    function onDocumentMouseMove( event )
-    {
-      // the following line would stop any other event handler from firing
-      // (such as the mouse's TrackballControls)
-      // event.preventDefault();
-
-      // update the mouse variable
+    var onDocumentMouseMove = function (event) {
       mouse.x = ( (event.clientX - stageOffset.x) / SCREEN_WIDTH ) * 2 - 1;
       mouse.y = - ( (event.clientY - stageOffset.y) / SCREEN_HEIGHT ) * 2 + 1;
-    }
+    };
 
     document.addEventListener( 'mousedown', onDocumentMouseDown, false );
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -181,31 +174,29 @@ define(function () {
     // test piece
 
     var jsonLoader = new THREE.JSONLoader();
-    jsonLoader.load( "X.js", addModel1ToScene );
-    jsonLoader.load( "O.js", addModel2ToScene );
+    jsonLoader.load( "X.js", saveXModel );
+    jsonLoader.load( "O.js", saveOModel );
   };
 
   var android, ann;
-  function addModel1ToScene( geometry, materials )
-  {
-    var material = new THREE.MeshFaceMaterial( materials );
-    android = new THREE.Mesh( geometry, material );
-    android.scale.set(1,1,1);
-    android.rotation.x = 45;
-    scene.add( android );
-  }
+  var saveXModel = function ( geometry, materials ) {
+    xGeometry = geometry;
+    incrementLoadedStuff();
+  };
 
-  function addModel2ToScene( geometry, materials )
-  {
-    var material = new THREE.MeshFaceMaterial( materials );
-    ann = new THREE.Mesh( geometry, material );
-    ann.position.x = -3.5;
-    ann.position.y = 3.5;
-    ann.scale.set(1,1,1);
-    ann.rotation.x = 1.4;
-    scene.add( ann );
-    console.log('ann added')
-  }
+  var saveOModel = function ( geometry, materials ) {
+    oGeometry = geometry;
+    incrementLoadedStuff();
+  };
+
+  var totalLoadedStuff = 2, currentLoadedStuff = 0;
+  var incrementLoadedStuff = function () {
+    currentLoadedStuff++;
+
+    if (currentLoadedStuff >= totalLoadedStuff) {
+
+    }
+  };
 
 
   that.placeExistingPieces = function (listOfPieces) {
@@ -213,7 +204,19 @@ define(function () {
   };
 
   that.placePiece = function (location, xOrOhh) {
+    var material = new THREE.MeshNormalMaterial();
+    android = new THREE.Mesh( xGeometry, material );
+    android.scale.set(1,1,1);
+    android.rotation.x = 1.8;
+    scene.add( android );
 
+    var material = new THREE.MeshNormalMaterial();
+    ann = new THREE.Mesh( oGeometry, material );
+    ann.position.x = -3.5;
+    ann.position.y = 3.5;
+    ann.scale.set(1,1,1);
+    ann.rotation.x = 1.4;
+    scene.add( ann );
   };
 
   return that;

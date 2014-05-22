@@ -5,9 +5,9 @@
  */
 
 define(
-  ["mule-js-sdk/models/Users", "mule-js-sdk/models/Games",
-    "mule-js-sdk/models/RuleBundles", "mule-js-sdk/models/GameBoards",
-    "mule-js-sdk/models/Historys", "mule-js-sdk/methods/PlayTurn"],
+  ["./models/Users", "./models/Games",
+    "./models/RuleBundles", "./models/GameBoards",
+    "./models/Historys", "./methods/PlayTurn"],
   function (Users, Games, RuleBundles, GameBoards, Historys, PlayTurn) {
 
   return function (contextPath) {

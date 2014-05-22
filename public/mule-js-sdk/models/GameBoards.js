@@ -91,6 +91,21 @@ define([], function () {
       return pieces;
     };
 
+    that.createFullBoard = function (board, pieces) {
+      var fullBoard = _.clone(board);
+
+      _.each(fullBoard, function (boardSpace) {
+        boardSpace.pieces = [];
+        _.each(pieces, function (piece) {
+          if (boardSpace.id === piece.locationId) {
+            boardSpace.pieces.push(piece);
+          }
+        });
+      });
+
+      return fullBoard;
+    };
+
     return that;
   };
 });
