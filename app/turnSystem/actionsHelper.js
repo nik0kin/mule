@@ -2,6 +2,7 @@ var _ = require('lodash'),
   Q = require('q');
 
 var Actions = {
+  BasicCreate: require('./tempActions/basicCreate'),
   BasicMove: require('./tempActions/basicMove')
 };
 
@@ -12,7 +13,8 @@ exports.validateActionsQ = function (gameBoardId, actions) {
   _.each(actions, function (action, key) {
     var Action = Actions[action.type];
     if (!Action) {
-      //TODO
+      //TODO correct error handling
+      console.log('wow that action doesnt exist')
     }
 
     var promise = Action.validateQ(gameBoardId, action.params)
@@ -48,4 +50,28 @@ exports.doActionsQ = function (objs, actions, playerRel) {
   });
 
   return Q.all(promiseArray);
+};
+
+// Todo refactor into a smarter place?
+exports.searchThruSpacesForId = function (spaces, spaceId) {
+  var found = false;
+  _.each(spaces, function (value, key) {
+    if (value.boardSpaceId === spaceId) {
+      found = value;
+    }
+  });
+  return found;
+};
+
+exports.searchThruPiecesForId = function (pieces, pieceId) {
+  if (typeof pieceId === 'string') {
+    pieceId = parseInt(pieceId);
+  }
+  var found = false;
+  _.each(pieces, function (value, key) {
+    if (value.id === pieceId) {
+      found = value;
+    }
+  });
+  return found;
 };

@@ -47,7 +47,7 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
         SDK.Games.getPlayersMapQ(currentGame)
           .then(function (_playerMap) {
 
-            _.each(game.players, function (value, key) {
+            _.each(currentGame.players, function (value, key) {
               _playerMap[key].played = currentHistory.currentTurnStatus[key];
             });
 
@@ -87,22 +87,45 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
 
     console.log('clicked space: ' + space.x + ', ' + space.y);
     tttRenderer.placePiece();
+
+    var where = {
+      '0_0': 'topLeft',
+      '1_0': 'topMiddle',
+      '2_0': 'topLeft',
+      '0_1': 'middleLeft',
+      '1_1': 'middleMiddle',
+      '2_1': 'middleLeft',
+      '0_2': 'bottomLeft',
+      '1_2': 'bottomMiddle',
+      '2_2': 'bottomLeft'
+    };
+
+    submitTurn(where[space.x + '_' + space.y]);
   };
 
-  var submitTurn = function () {
+  var submitTurn = function (whereId) {
     var params = {
+      playerId: currentUser.relId, //cheating here too
       gameId: currentGame._id,
-      actions: currentActions
+      actions: [{
+        type: 'BasicCreate',
+        params: {
+          playerRel: currentUser.relId, //TODO change to not needing this on the backend
+          whereId: whereId
+        }
+      }]
     };
+    counter = 10;
     SDK.PlayTurn.sendQ(params)
       .then(function (result) {
+        console.log('Submitted turn');
         console.log(result);
         // refresh?
-        initGame();
+        refreshGame();
       })
       .fail(function (err) {
         alert(JSON.stringify(err));
-      });
+      })
   };
 
   var populatePlayersLabel = function () {

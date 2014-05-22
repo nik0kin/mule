@@ -174,8 +174,8 @@ define(function () {
     // test piece
 
     var jsonLoader = new THREE.JSONLoader();
-    jsonLoader.load( "X.js", saveXModel );
-    jsonLoader.load( "O.js", saveOModel );
+    jsonLoader.load( "models/X.js", saveXModel );
+    jsonLoader.load( "models/O.js", saveOModel );
   };
 
   var android, ann;
