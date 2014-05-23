@@ -4,10 +4,12 @@
  * Created by niko on 2/5/14.
  */
 
-define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib) {
+define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (sdk, myD3Lib, dumbLib) {
   var SDK = sdk('../');
 
   var that = {};
+
+  var currentUserId;
 
   that.initPage = function () {
     //get RuleBundles
@@ -26,7 +28,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
 
         //load games
         $('#getGames').click();
-        that.loadGameIdURL(function (gameId) {
+        dumbLib.loadGameIdURL(function (gameId) {
           that.tryViewGame(gameId);
         });
       }).fail(function(msg){
@@ -51,6 +53,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
           alert("createUser failed: "+data.statusMsg);
           return;
         }
+        currentUserId = data.userID;
         that.registerSuccessAlert();
       }).fail(function(res){
         that.registerFailAlert();
@@ -62,8 +65,6 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
     var username = $("#usernameText").val();
     var password = $("#passwordText").val();
 
-
-    $("#tabs-1").html("");
     $("#tabs-2").html("");
 
     return SDK.Users.loginQ({
@@ -72,6 +73,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
     })
       .then(function(data ) {
         console.log( "Data Recieved: " + JSON.stringify(data) );
+        currentUserId = data.userID;
         that.loginSuccessAlert();
       })
       .fail(function(res){
@@ -189,11 +191,20 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
         console.log(game);
 
         $('#gameInfoArea').html('');
-        $("#gameInfoArea").append(that.makeGameInfoTable(game));
+
+        if (game.gameStatus === 'inProgress') {
+          SDK.Historys.readGamesHistoryQ(game._id)
+            .then(function (history) {
+              $("#gameInfoArea").append(that.makeGameInfoTable(game, history.currentRound));
+            })
+        } else {
+          $("#gameInfoArea").append(that.makeGameInfoTable(game, 0));
+        }
+
 
         that.renderGameBoard(gameID);
 
-        that.addGameIdURL(gameID);
+        dumbLib.addGameIdURL(gameID);
       });
   };
 
@@ -215,7 +226,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
   };
 
 
-  that.playGame = function (gameID) {
+  that.viewBoard = function (gameID) {
     window.open("play.html?gameID="+gameID)
   };
 
@@ -267,13 +278,11 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
       //error
     }
 
-    var joinedMsg;
-    if(gameData.joined != undefined && (gameData.joined == true || gameData.joined == "true")){
-      joinedMsg = "<b>Joined</b>";
-      disabled = "disabled";
+    var playButton;
+    if (gameData.gameStatus !== 'open' && gameData.ruleBundle.name === 'TicTacToe') {
+      playButton = getButton(playGame, gameData, 'Play', '', '');
     } else {
-      joinedMsg = "";
-      playDisabled = "disabled";
+      playButton = getButton(null,{},'NYI','','disabled');
     }
 
     var playersString = _.size(gameData.players) + '/' + gameData.maxPlayers;
@@ -284,7 +293,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
           .addClass("text")
           .append($('<tr></tr>')
             .append("<td>name: <h3>"+gameData.name+"</h3></td>")
-            .append("<td>Status: <FONT COLOR=\'"+color+"\'><b>"+statusMsg+"</b></FONT><br>" + joinedMsg+"</td>")
+            .append("<td>Status: <FONT COLOR=\'"+color+"\'><b>"+statusMsg+"</b></FONT><br></td>")
           )
           .append($('<tr></tr>')
             .append('<td>RuleBundle: <b>' + gameData.ruleBundle.name + '</b></td>')
@@ -293,7 +302,9 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
             )
           )
           .append($('<tr></tr>')
-            .append("<td>Turn: "+gameData.turnNumber+"</td>")
+            .append($('<td></td>')
+              .append(playButton)
+            )
             .append($('<td></td>')
               .append(getButton(that.tryViewGame, gameData._id, "View Game", 'view', ''))
             )
@@ -301,7 +312,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
           .append($('<tr></tr>')
             .append("<td>Players: "+playersString+"</td>")
             .append($('<td></td>')
-              .append(getButton(that.playGame, gameData._id, "Play Game", 'play', ''))
+              .append(getButton(that.viewBoard, gameData._id, "Board View", 'boardView', ''))
             )
           )
         )
@@ -311,7 +322,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
   };
 
   // for 'View Game Info'
-  that.makeGameInfoTable = function (gameInfo) {
+  that.makeGameInfoTable = function (gameInfo, roundNumber) {
     if(!gameInfo) return "null";
 
     var color = "#000000";
@@ -359,8 +370,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
             .append("<td>ID: "+gameInfo._id+"<br>RuleBundle: "+gameInfo.ruleBundle.name+"<br> Status: <b><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></b></td>")
           )
           .append($('<tr></tr>')
-            .append("<td>Turn: "+gameInfo.turnNumber+"<br>"+playersString)
-            .append("<td> "+JSON.stringify(gameInfo.ruleBundleGameSettings) +"</td>")
+            .append("<td>Round: "+roundNumber+"<br>"+playersString)
+            .append("<td> RuleBundle GameSettings: <br>"+JSON.stringify(gameInfo.ruleBundleGameSettings || {}) +"</td>")
           )
           .append($('<tr></tr>')
             .append(playerListDOM)
@@ -464,17 +475,20 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (sdk, myD3Lib
       });
   };
 
-  ///// URL STUFF /////
+  var playGame = function (gameData) {
+    var currentPlayerRel;
+    _.each(gameData.players, function (playerInfo, playerRel) {
+      if (playerInfo.playerID === currentUserId) {
+        currentPlayerRel = playerRel;
+      }
+    });
 
-  that.loadGameIdURL = function (callback) {
-    var gameId = window.location.href.split('?gameID=')[1];
-    console.log('Viewing: ' + gameId);
-    if (gameId)
-      callback(gameId);
-  };
+    if (!currentPlayerRel) {
+      alert('You are not in this game!');
+      return;
+    }
 
-  that.addGameIdURL = function (gameId) {
-    window.history.pushState("object or string", "Title", '?gameID=' + gameId);
+    window.open("tictactoe/?gameID="+gameData._id + '&playerRel=' + currentPlayerRel);
   };
 
   return that;

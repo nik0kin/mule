@@ -9,6 +9,10 @@ define(function () {
       callback(gameId);
   };
 
+  that.addGameIdURL = function (gameId) {
+    window.history.pushState("object or string", "Title", '?gameID=' + gameId);
+  };
+
   that.loadGameIdAndPlayerRelFromURL = function (callback) {
     var gameId = window.location.href.split('?gameID=')[1].split('&')[0];
     var playerRel = window.location.href.split('&playerRel=')[1];
