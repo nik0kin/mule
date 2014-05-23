@@ -6,7 +6,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
   actionsHelper = require('./actionsHelper');
 
 
-exports.submitTurnQ = function (player, gameBoardId, turn) {
+exports.submitTurnQ = function (game, player, gameBoardId, turn) {
   console.log('Submitting turn (playByMail) for ' + player)
   console.log(turn)
 
@@ -38,7 +38,7 @@ exports.submitTurnQ = function (player, gameBoardId, turn) {
     });
 };
 
-exports.progressRoundQ = function (gameBoardObject, historyObject) {
+exports.progressRoundQ = function (game, gameBoardObject, historyObject) {
   // do all actions in current round (in history)
   var turns = historyObject.getRoundTurns(historyObject.currentRound);
   var promises = [];

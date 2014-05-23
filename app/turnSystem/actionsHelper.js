@@ -8,7 +8,7 @@ var Actions = {
 
 
 
-exports.validateActionsQ = function (gameBoardId, actions) {
+exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
   var promiseArray = [];
   _.each(actions, function (action, key) {
     var Action = Actions[action.type];
@@ -17,7 +17,7 @@ exports.validateActionsQ = function (gameBoardId, actions) {
       console.log('wow that action doesnt exist')
     }
 
-    var promise = Action.validateQ(gameBoardId, action.params)
+    var promise = Action.validateQ(gameBoardId, action.params, ruleBundle)
       .then(function (gameBoard) {
         console.log('valid move action ' + key + ': ');
         console.log(action.params);

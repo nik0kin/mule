@@ -10,21 +10,15 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     currentGameBoard,
     currentGame,
     currentHistory,
-    currentActions,
     isGameOver = false,
     firstLoad = true;
 
   var initGame = function (selectSpaceId) {
     dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
-      var gameId = result.gameId;
+      currentGame = {_id: result.gameId };
       currentUser.relId = result.playerRel;
 
-      SDK.Games.readQ(gameId)
-        .done(function(game) {
-          currentGame = game;
-
-          refreshGame();
-        });
+      refreshGame();
     });
   };
 
@@ -40,33 +34,47 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
       counter = timerCount;
     }
 
-    SDK.Historys.readGamesHistoryQ(currentGame._id)
-      .done(function(history) {
-        currentHistory = history;
+    SDK.Games.readQ(currentGame._id)
+      .done(function(game) {
+        currentGame = game;
 
-        SDK.Games.getPlayersMapQ(currentGame)
-          .then(function (_playerMap) {
+        checkWin();
 
-            _.each(currentGame.players, function (value, key) {
-              _playerMap[key].played = currentHistory.currentTurnStatus[key];
-            });
+        SDK.Historys.readGamesHistoryQ(currentGame._id)
+          .done(function(history) {
+            currentHistory = history;
 
-            playerMap = _playerMap;
-            populatePlayersLabel();
-            populateTurnStatusLabel();
-          });
+            SDK.Games.getPlayersMapQ(currentGame)
+              .then(function (_playerMap) {
 
-        SDK.GameBoards.readGamesBoardQ(currentGame._id)
-          .done(function(gameBoard) {
-            var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
-            currentGameBoard = gameBoard;
+                _.each(currentGame.players, function (value, key) {
+                  _playerMap[key].played = currentHistory.currentTurnStatus[key];
+                });
 
-            if (firstLoad) {
-              populateBoard(gameBoard);
-              firstLoad = false;
-            }
+                playerMap = _playerMap;
+                populatePlayersLabel();
+                populateTurnStatusLabel();
+              });
 
-            console.log('refreshed');
+            SDK.GameBoards.readGamesBoardQ(currentGame._id)
+              .done(function(gameBoard) {
+                var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
+                currentGameBoard = gameBoard;
+
+                if (firstLoad) {
+                  populateBoard(gameBoard);
+                  firstLoad = false;
+                  SDK.Historys.markAllTurnsRead(currentHistory);
+                } else {
+                  //look at last turn
+                  var t = SDK.Historys.getLastUnreadTurn(currentHistory);
+                  if (t) {
+                    receiveOpponentTurn(t);
+                  }
+                }
+
+                console.log('refreshed');
+              });
           });
       });
 
@@ -86,7 +94,6 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     '1_2': 'bottomMiddle',
     '2_2': 'bottomRight'
   }, invertWhereMap = _.invert(whereMap);
-  console.log(invertWhereMap)
 
   var populateBoard = function (fullBoard) {
     var tttPieces = fullBoard.pieces.map(function (p) {
@@ -101,6 +108,15 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
       };
     });
     tttRenderer.placeExistingPieces(tttPieces);
+  };
+
+  var receiveOpponentTurn = function (turn) {
+    var createAction = turn.actions[0];
+
+    var space = invertWhereMap[createAction.params.whereId].split('_');
+    var _class = (createAction.params.playerRel === 'p1') ? 'O' : 'X';
+
+    tttRenderer.placePiece({x: space[0], y: space[1]}, _class);
   };
 
   var clickSpaceCallback = function (space) {
@@ -167,6 +183,28 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     var yourOrTheir = (whosTurn === currentUser.relId) ? 'Your' : 'Their';
 
     $('#turnStatusLabel').html(yourOrTheir + ' Turn');
+  };
+
+  var checkWin = function () {
+    _.each(currentGame.players, function (playerInfo, playerRel) {
+      if (playerRel === currentUser.relId) {
+        if (playerInfo.playerStatus === 'won') {
+          populateWinConditionLabel(true);
+          isGameOver = true;
+        } else if (playerInfo.playerStatus === 'lost') {
+          populateWinConditionLabel(false);
+          isGameOver = true;
+        }
+      }
+    });
+  };
+
+  var populateWinConditionLabel = function (didWin) {
+    if (didWin) {
+      $('#winConditionLabel').html('<b>WINNER</b>');
+    } else {
+      $('#winConditionLabel').html('<b>LOSER</b>');
+    }
   };
 
   tttRenderer.initBasicScene(clickSpaceCallback);

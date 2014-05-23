@@ -3,10 +3,11 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
+  gameHelper = require('./gameHelper'),
   actionsHelper = require('./actionsHelper');
 
 
-exports.submitTurnQ = function (player, gameBoardId, turn) {
+exports.submitTurnQ = function (game, player, gameBoardId, turn) {
   console.log('Submitting turn (roundRobin) for ' + player)
   console.log(turn)
 
@@ -22,7 +23,7 @@ exports.submitTurnQ = function (player, gameBoardId, turn) {
         // progress turn if they are the next player to play
         return historyObject.addPlayerTurnAndSaveQ(player, turn)
           .then(function () {
-            return exports.progressTurnQ(_gameBoard, historyObject, player);
+            return exports.progressTurnQ(game, _gameBoard, historyObject, player);
           });
       } else {
         console.log('Not your turn!');
@@ -48,19 +49,24 @@ exports.submitTurnQ = function (player, gameBoardId, turn) {
     });
 };
 
-exports.progressTurnQ = function (gameBoardObject, historyObject, player) {
+exports.progressTurnQ = function (game, gameBoardObject, historyObject, player) {
   // do all actions for that player (in history)
   var playerTurns = historyObject.getRoundTurns(historyObject.currentRound)[player];
 
+  var _savedHistoryObject;
   return actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, playerTurns.actions, player)
     .then(function () {
       console.log('Turn successful for ' + player + ': ' + historyObject.currentRound);
       historyObject.progressRoundRobinPlayerTurnTicker();
       return historyObject.saveQ();
+    })
+    .then(function (savedHistoryObject) {
+      _savedHistoryObject = savedHistoryObject;
+      return gameHelper.checkWinConditionQ(game, gameBoardObject._id);
+    })
+    .then(function () {
+      return Q(_savedHistoryObject);
     });
-    /*.then(function () {
-      // check if anyone's won?
-    });*/
 };
 
 exports.progressRoundQ = function (gameBoardObject, historyObject) {

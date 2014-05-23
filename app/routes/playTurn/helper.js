@@ -30,6 +30,8 @@ exports.playTurn = function (req, res) {
     .then (function (game) {
     if (!game) {
       res.status(400).send({err: 'INVALID GAME ID'});
+    } else if (game.gameStatus !== 'inProgress') {
+      res.status(400).send({err: 'GAME NOT IN PROGRESS'});
     } else {
       return Q(game);
     }
@@ -41,15 +43,17 @@ exports.playTurn = function (req, res) {
         return res.status(403).send({err: 'INVALID PLAYER'});
       }
 
-      return actionsHelper.validateActionsQ(game.gameBoard, req.body.actions)
-        .then(function () {
-          return RuleBundle.findByIdQ(game.ruleBundle.id);
-        })
+      var _ruleBundle;
+      return RuleBundle.findByIdQ(game.ruleBundle.id)
         .then(function (ruleBundle) {
-          var turnFunctions = turnStyleFunctions[ruleBundle.turnSubmitStyle];
+          _ruleBundle = ruleBundle;
+          return actionsHelper.validateActionsQ(game.gameBoard, req.body.actions, _ruleBundle);
+        })
+        .then(function () {
+          var turnFunctions = turnStyleFunctions[_ruleBundle.turnSubmitStyle];
 
-          console.log('submitting turn (' + ruleBundle.turnSubmitStyle + ')');
-          return turnFunctions.submitTurnQ(playerId, game.gameBoard, {actions: req.body.actions });
+          console.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')');
+          return turnFunctions.submitTurnQ(game, playerId, game.gameBoard, {actions: req.body.actions });
         })
         .then(function () {
           res.status(200).send({msg: "ITS TRUE"})

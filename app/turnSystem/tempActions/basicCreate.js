@@ -7,7 +7,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
   actionsHelper = require('../actionsHelper');
 
 
-exports.validateQ = function (gameBoardId, params) {
+exports.validateQ = function (gameBoardId, params, ruleBundleObject) {
   return GameBoard.findByIdQ(gameBoardId)
     .then(function (gameBoard) {
       return gameBoard.populateQ('spaces');
@@ -26,6 +26,24 @@ exports.validateQ = function (gameBoardId, params) {
         throw 'INVALID SPACE';
       }
 
+      //TODO make getting boardspace easy
+      //var boardSpace = getBoardSpace(space.boardSpaceId); //boardSpace location depends on boardType(static/built)
+      //ruleBundleObject.getSpaceClass(space.class)
+
+      var getPiecesOnSpace = function (spaceId) {
+        var array = [];
+        _.each(gameBoard.pieces, function (piece) {
+          if (spaceId === piece.locationId) {
+            array.push(piece)
+          }
+        });
+
+        return array;
+      };
+      // cheating right now
+      if (getPiecesOnSpace(space.boardSpaceId).length > 0) {
+        throw 'SPACE IS FULL';
+      }
     });
 };
 
