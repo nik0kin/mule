@@ -16,7 +16,7 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
   var initGame = function (selectSpaceId) {
     dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
       currentGame = {_id: result.gameId };
-      currentUser.relId = result.playerRel;
+      currentUser.playerRel = result.playerRel;
 
       refreshGame();
     });
@@ -131,12 +131,12 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
 
   var submitTurn = function (whereId) {
     var params = {
-      playerId: currentUser.relId, //cheating here too
+      playerId: currentUser.playerRel, //cheating here too
       gameId: currentGame._id,
       actions: [{
         type: 'BasicCreate',
         params: {
-          playerRel: currentUser.relId, //TODO change to not needing this on the backend
+          playerRel: currentUser.playerRel, //TODO change to not needing this on the backend
           whereId: whereId
         }
       }]
@@ -149,7 +149,7 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
         // refresh?
         counter = 0;
         var space = invertWhereMap[whereId].split('_');
-        var _class = (currentUser.relId === 'p1') ? 'O' : 'X';
+        var _class = (currentUser.playerRel === 'p1') ? 'O' : 'X';
         tttRenderer.placePiece({x: space[0], y: space[1]}, _class);
       })
       .fail(function (err) {
@@ -162,9 +162,9 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     var p1Name = playerMap['p1'].name;
     var p2Name = playerMap['p2'].name;
 
-    if (currentUser.relId === 'p1') {
+    if (currentUser.playerRel === 'p1') {
       p1Name = '<b>' + p1Name + '</b>';
-    } else if (currentUser.relId === 'p2') {
+    } else if (currentUser.playerRel === 'p2') {
       p2Name = '<b>' + p2Name + '</b>';
     }
 
@@ -180,14 +180,14 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
       whosTurn = 'p2';
     }
 
-    var yourOrTheir = (whosTurn === currentUser.relId) ? 'Your' : 'Their';
+    var yourOrTheir = (whosTurn === currentUser.playerRel) ? 'Your' : 'Their';
 
     $('#turnStatusLabel').html(yourOrTheir + ' Turn');
   };
 
   var checkWin = function () {
     _.each(currentGame.players, function (playerInfo, playerRel) {
-      if (playerRel === currentUser.relId) {
+      if (playerRel === currentUser.playerRel) {
         if (playerInfo.playerStatus === 'won') {
           populateWinConditionLabel(true);
           isGameOver = true;

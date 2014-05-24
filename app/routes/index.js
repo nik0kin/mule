@@ -1,15 +1,3 @@
-
-/**
- * Controllers
- */
-
-
-/**
- * Route middlewares
- */
-
-//var articleAuth = [auth.requiresLogin, auth.article.hasAuthorization];
-
 /**
  * Expose routes
  */

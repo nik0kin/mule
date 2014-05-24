@@ -51,7 +51,7 @@ require('./app/routes')(app, passport);
 require('mule-rules/lib/initRuleBundles').loadOnce(require('./app/routes/ruleBundles/crud/helper'));
 
 //Start the app by listening on <port>
-var port = process.env.PORT || 3130;
+var port = process.env.PORT || config.port;
 app.listen(port);
 console.log('The Mule has started his journey ('+port+')');
 

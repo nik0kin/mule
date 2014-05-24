@@ -31,19 +31,19 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
 
                     _.each(_playerMap, function (value, key) {
                       if (('' +value.playerID) === ('' +currentUser._id)) {
-                        currentUser.relId = key;
+                        currentUser.playerRel = key;
                         _playerMap[key].currentUser = true;
-                        console.log(currentUser.relId);
+                        console.log(currentUser.playerRel);
                       }
                     });
                   }
 
                   playerMap = _playerMap;
 
-                  if (currentUser && currentUser.relId) {
+                  if (currentUser && currentUser.playerRel) {
                     var currentRound = history.currentRound;
-                    if (history.turns[currentUser.relId][currentRound - 1]) {
-                      currentActions = history.turns[currentUser.relId][currentRound - 1].actions;
+                    if (history.turns[currentUser.playerRel][currentRound - 1]) {
+                      currentActions = history.turns[currentUser.playerRel][currentRound - 1].actions;
                     } else {
                       currentActions = [];
                     }

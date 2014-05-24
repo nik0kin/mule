@@ -4,8 +4,7 @@
  * Created by niko on 2/4/14.
  */
 
-var auth = require('../../../config/middlewares/authorization'),
-  userController = require('./crud/index'),
+var userController = require('./crud/index'),
   userServices = require('./userServices/index');
 
 module.exports = function (app, passport) {

@@ -59,10 +59,10 @@ define(['./Users', '../q'], function (Users, Q) {
       var map = _.clone(game.players),
         promiseArray = [];
 
-      _.each(map, function (player, relId) {
+      _.each(map, function (player, playerRel) {
         promiseArray.push(Users.readCacheQ(player.playerID)
           .then(function (user) {
-            map[relId].name = user.username;
+            map[playerRel].name = user.username;
           })
         );
       });
