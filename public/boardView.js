@@ -1,5 +1,5 @@
 
-define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (demoLib, sdk, myD3Lib) {
+define(['demoLib', 'dumbLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (demoLib, dumbLib, sdk, myD3Lib) {
   var SDK = sdk('../'),
     currentUser,
     playerMap,
@@ -10,7 +10,7 @@ define(['demoLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], function (d
     isMovingPiece, movingPieceId;
 
   var initGame = function (selectSpaceId) {
-    demoLib.loadGameIdURL(function (gameId) {
+    dumbLib.loadGameIdURL(function (gameId) {
       SDK.Games.readQ(gameId)
         .done(function(game) {
           currentGame = game;
