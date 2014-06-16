@@ -10,7 +10,7 @@ var _ = require('lodash'),
 var utils = require('mule-utils/jsonUtils'),
   GameBoard = require('mule-models').GameBoard.Model,
   ruleBundleHelper = require('../../ruleBundles/crud/helper'),
-  vikingBoardGen = require('../../../boardGenerator');
+  boardGen = require('../../../boardGenerator');
 
 exports.indexQ = function () {
   return GameBoard.find().execQ();
@@ -25,9 +25,10 @@ exports.createQ = function (params) {
 
     newGameBoard.ruleBundle = params.ruleBundle;
 
-    if (params.ruleBundle.name.toLowerCase() == 'vikings') { //hacky for right now
-      console.log('vikings gameboard!!')
-      vikingBoardGen.saveVikingsGameBoardQ(newGameBoard, {customBoardSettings : params.customBoardSettings, rules: params.rules})
+    if (params.rules.dynamicBoard) { //hacky for right now
+      newGameBoard.boardType = 'built';
+
+      boardGen.saveGeneratedGameBoardQ(newGameBoard, {ruleBundle: newGameBoard.ruleBundle, customBoardSettings : params.customBoardSettings, rules: params.rules})
         .done(resolve, reject);
     } else {
       newGameBoard.boardType = 'static';
@@ -58,7 +59,7 @@ exports.readQ = function (gameBoardID){
               resolve(gameBoard);
             }, reject);
         } else if (gameBoard.boardType == 'built') {
-          console.log('YOU ARE A VIKING')
+          console.log('custom map!');
           resolve(gameBoard);
         } else {
           reject('wtf boardType:' + gameBoard.boardType)

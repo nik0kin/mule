@@ -1,16 +1,17 @@
 
 define(['./d3Renderer',
   '../bundleRenders/checkers', '../bundleRenders/vikings', '../bundleRenders/backgammon',
-  '../bundleRenders/tictactoe', '../bundleRenders/monopoly'],
+  '../bundleRenders/tictactoe', '../bundleRenders/monopoly', '../bundleRenders/mulesprawl'],
   function (d3Renderer, checkersRenderSet, vikingsRenderSet, backgammonRenderSet,
-            tictactoeRenderSet, monopolyRenderSet) {
+            tictactoeRenderSet, monopolyRenderSet, mulesprawlRenderSet) {
 
   var supportedGames = {
     'Vikings': vikingsRenderSet,
     'Backgammon': backgammonRenderSet,
     'Checkers': checkersRenderSet,
     'TicTacToe': tictactoeRenderSet,
-    'Monopoly': monopolyRenderSet
+    'Monopoly': monopolyRenderSet,
+    'MuleSprawl': mulesprawlRenderSet
   };
   var that = {};
 
