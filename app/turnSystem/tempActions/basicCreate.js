@@ -4,17 +4,11 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   PieceState = require('mule-models').PieceState.Model,
-  actionsHelper = require('../actionsHelper');
+  actionsHelper = require('mule-utils/actionsUtils');
 
 
 exports.validateQ = function (gameBoardId, params, ruleBundleObject) {
-  return GameBoard.findByIdQ(gameBoardId)
-    .then(function (gameBoard) {
-      return gameBoard.populateQ('spaces');
-    })
-    .then(function (gameBoard) {
-      return gameBoard.populateQ('pieces');
-    })
+  return GameBoard.findByIdWithPopulatedStatesQ(gameBoardId)
     .then(function (gameBoard) {
       var space = actionsHelper.searchThruSpacesForId(gameBoard.spaces, params.whereId);
 

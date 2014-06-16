@@ -7,7 +7,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
   actionsHelper = require('./actionsHelper');
 
 
-exports.submitTurnQ = function (game, player, gameBoardId, turn) {
+exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
   console.log('Submitting turn (roundRobin) for ' + player)
   console.log(turn)
 
@@ -23,7 +23,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn) {
         // progress turn if they are the next player to play
         return historyObject.addPlayerTurnAndSaveQ(player, turn)
           .then(function () {
-            return exports.progressTurnQ(game, _gameBoard, historyObject, player);
+            return exports.progressTurnQ(game, player, _gameBoard, historyObject);
           });
       } else {
         console.log('Not your turn!');
@@ -37,7 +37,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn) {
       if (historyObject.getCanAdvancePlayByMailRound()) {
         console.log('advancing round');
         // progress turn if they are
-        return exports.progressRoundQ(_gameBoard, historyObject);
+        return exports.progressRoundQ(game, player, _gameBoard, historyObject, ruleBundle);
       } else {
         console.log('all turns not in: not progressing round count');
       }
@@ -49,7 +49,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn) {
     });
 };
 
-exports.progressTurnQ = function (game, gameBoardObject, historyObject, player) {
+exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) {
   // do all actions for that player (in history)
   var playerTurns = historyObject.getRoundTurns(historyObject.currentRound)[player];
 
@@ -69,7 +69,7 @@ exports.progressTurnQ = function (game, gameBoardObject, historyObject, player) 
     });
 };
 
-exports.progressRoundQ = function (gameBoardObject, historyObject) {
+exports.progressRoundQ = function (game, player, gameBoardObject, historyObject, ruleBundle) {
   return Q()
     .then(function () {
       console.log('Round successful: ' + historyObject.currentRound);

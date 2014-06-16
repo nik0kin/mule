@@ -6,7 +6,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
   actionsHelper = require('./actionsHelper');
 
 
-exports.submitTurnQ = function (game, player, gameBoardId, turn) {
+exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
   console.log('Submitting turn (playByMail) for ' + player)
   console.log(turn)
 
@@ -27,7 +27,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn) {
       if (historyObject.getCanAdvancePlayByMailRound()) {
         console.log('advancing round');
         // progress turn if they are
-        return exports.progressRoundQ(_gameBoard, historyObject);
+        return exports.progressRoundQ(game, player, _gameBoard, historyObject, ruleBundle);
       } else {
         console.log('all turns not in: not progressing');
       }
@@ -38,12 +38,12 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn) {
     });
 };
 
-exports.progressRoundQ = function (game, gameBoardObject, historyObject) {
+exports.progressRoundQ = function (game, player, gameBoardObject, historyObject, ruleBundle) {
   // do all actions in current round (in history)
   var turns = historyObject.getRoundTurns(historyObject.currentRound);
   var promises = [];
   _.each(turns, function (turn, player) {
-    var promise = actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, turn.actions, player);
+    var promise = actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, turn.actions, player, ruleBundle);
     promises.push(promise);
   });
 

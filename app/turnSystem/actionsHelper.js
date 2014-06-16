@@ -1,17 +1,32 @@
 var _ = require('lodash'),
   Q = require('q');
 
+var muleRules = require('mule-rules'),
+  GameBoard = require('mule-models').GameBoard.Model,
+  PieceState = require('mule-models').PieceState.Model;
+
 var Actions = {
   BasicCreate: require('./tempActions/basicCreate'),
   BasicMove: require('./tempActions/basicMove')
 };
 
+var initActions = function (ruleBundle) {
+  _.each(muleRules.getActions(ruleBundle.name), function (value) {
+    value.init({GameBoard: GameBoard, PieceState: PieceState});
+  });
+};
+
+var getAction = function (actionType, ruleBundle) {
+  return Actions[actionType] || muleRules.getActions(ruleBundle.name)[actionType];
+};
 
 
 exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
+  initActions(ruleBundle);
+
   var promiseArray = [];
   _.each(actions, function (action, key) {
-    var Action = Actions[action.type];
+    var Action = getAction(action.type, ruleBundle);
     if (!Action) {
       //TODO correct error handling
       console.log('wow that action doesnt exist')
@@ -33,11 +48,11 @@ exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
   return Q.all(promiseArray);
 };
 
-exports.doActionsQ = function (objs, actions, playerRel) {
+exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
   var promiseArray = [];
 
   _.each(actions, function (action, key) {
-    var Action = Actions[action.type];
+    var Action = getAction(action.type, ruleBundle);
     var promise = Action.doQ(objs.gameBoard, action.params)
       .then(function () {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + key);
@@ -50,28 +65,4 @@ exports.doActionsQ = function (objs, actions, playerRel) {
   });
 
   return Q.all(promiseArray);
-};
-
-// Todo refactor into a smarter place?
-exports.searchThruSpacesForId = function (spaces, spaceId) {
-  var found = false;
-  _.each(spaces, function (value, key) {
-    if (value.boardSpaceId === spaceId) {
-      found = value;
-    }
-  });
-  return found;
-};
-
-exports.searchThruPiecesForId = function (pieces, pieceId) {
-  if (typeof pieceId === 'string') {
-    pieceId = parseInt(pieceId);
-  }
-  var found = false;
-  _.each(pieces, function (value, key) {
-    if (value.id === pieceId) {
-      found = value;
-    }
-  });
-  return found;
 };

@@ -53,7 +53,7 @@ exports.playTurn = function (req, res) {
           var turnFunctions = turnStyleFunctions[_ruleBundle.turnSubmitStyle];
 
           console.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')');
-          return turnFunctions.submitTurnQ(game, playerId, game.gameBoard, {actions: req.body.actions });
+          return turnFunctions.submitTurnQ(game, playerId, game.gameBoard, {actions: req.body.actions }, _ruleBundle);
         })
         .then(function () {
           res.status(200).send({msg: "ITS TRUE"})

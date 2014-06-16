@@ -4,7 +4,7 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   PieceState = require('mule-models').PieceState.Model,
-  actionsHelper = require('../actionsHelper');
+  actionsHelper = require('mule-utils/actionsUtils');
 
 
 exports.validateQ = function (gameBoardId, params) {
