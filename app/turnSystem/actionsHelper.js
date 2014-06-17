@@ -54,8 +54,11 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
   _.each(actions, function (action, key) {
     var Action = getAction(action.type, ruleBundle);
     var promise = Action.doQ(objs.gameBoard, action.params)
-      .then(function () {
+      .then(function (result) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + key);
+
+        if (result)
+          return objs.history.addMetaDataToActionQ(result, key);
       })
       .fail(function (err) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + key);

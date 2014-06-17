@@ -279,7 +279,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     }
 
     var playButton;
-    if (gameData.gameStatus !== 'open' && gameData.ruleBundle.name === 'TicTacToe') {
+    if (gameData.gameStatus !== 'open' && (gameData.ruleBundle.name === 'TicTacToe' || gameData.ruleBundle.name === 'MuleSprawl')) {
       playButton = getButton(playGame, gameData, 'Play', '', '');
     } else {
       playButton = getButton(null,{},'NYI','','disabled');
@@ -488,7 +488,10 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
       return;
     }
 
-    window.open("tictactoe/?gameID="+gameData._id + '&playerRel=' + currentPlayerRel);
+    if (gameData.ruleBundle.name === 'TicTacToe')
+      window.open("tictactoe/?gameID="+gameData._id + '&playerRel=' + currentPlayerRel);
+    else if (gameData.ruleBundle.name === 'MuleSprawl')
+      window.open("mulesprawl/?gameID="+gameData._id);
   };
 
   return that;

@@ -6,14 +6,24 @@ GAME.SIZE = { x: 1280, y: 720 };
 var DEBUG = {showClickArea: false, sceneState: false};
 
 
-define(["Loader", "assets"],
-  function(Loader, ourAssets){
+define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
+  function(Loader, ourAssets, Map, dumbLib, sdk){
+    var SDK = sdk('../../');
 
     var STATES = {pregame: 0, ingame: 1, loading: 2};
 
     GAME.fps = 30;
     GAME.state;
 
+    var currentUser = {},
+      playerMap,
+      currentGameBoard,
+      currentGame,
+      currentHistory,
+      isGameOver = false,
+      firstLoad = true;
+
+    var gameMap;
 
     GAME.controls = {
       //for moving map
@@ -35,6 +45,9 @@ define(["Loader", "assets"],
 
       var rectangle = new createjs.Shape();
       rectangle.graphics.beginFill("black").drawRect(0,0,GAME.SIZE.x,GAME.SIZE.y);
+      rectangle.on("click",function () {
+        GAME.startGame();
+      });
       preContainer.addChild(rectangle);
 
 
@@ -52,11 +65,7 @@ define(["Loader", "assets"],
 
         case STATES.pregame:
           if(GAME.controls.enter){
-            GAME.state = STATES.ingame;
-
-            //GAME.startStory();
-            preContainer.visible = false;
-            console.log("end pregame state");
+            GAME.startGame();
           }
           break;
         case STATES.ingame:
@@ -69,6 +78,132 @@ define(["Loader", "assets"],
       GAME.prevControls = GAME.controls;
     };
 
+    GAME.loadGame = function () {
+      dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
+        currentGame = {_id: result.gameId };
+
+        refreshGame();
+      });
+    };
+
+    var counter = 0, timerCount = 2;
+    var refreshGame = function () {
+      counter--;
+      $('#refreshLabel').html('refresh...' + counter);
+
+      if (counter > 0) {
+        setTimeout(refreshGame, 1000);
+        return;
+      } else {
+        counter = timerCount;
+      }
+
+      SDK.Games.readQ(currentGame._id)
+        .done(function(game) {
+          currentGame = game;
+
+          //checkWin();
+
+          SDK.Historys.readGamesHistoryQ(currentGame._id)
+            .done(function(history) {
+              currentHistory = history;
+              updateDateLabel(history.currentRound);
+
+              SDK.Games.getPlayersMapQ(currentGame)
+                .then(function (_playerMap) {
+
+                  _.each(currentGame.players, function (value, key) {
+                    _playerMap[key].played = currentHistory.currentTurnStatus[key];
+                  });
+
+                  playerMap = _playerMap;
+                  //populatePlayersLabel();
+                  //populateTurnStatusLabel();
+                });
+
+              SDK.GameBoards.readGamesBoardQ(currentGame._id)
+                .done(function(gameBoard) {
+                  //var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
+                  currentGameBoard = gameBoard;
+
+                  if (firstLoad) {
+                    //populateBoard(gameBoard);
+                    firstLoad = false;
+                    SDK.Historys.markAllTurnsRead(currentHistory);
+                  } else {
+                    //look at last turn
+                    var t = SDK.Historys.getLastUnreadTurn(currentHistory);
+                    if (t) {
+                      parseTurn(t);
+                    }
+                  }
+
+                  console.log('refreshed');
+                });
+            });
+        });
+
+      if (!isGameOver) {
+        setTimeout(refreshGame, 1000);
+      }
+    };
+
+    var parseTurn = function (turn) {
+      _.each(turn.actions, function (value) {
+        if (!value.metadata) return;
+        _.each(value.metadata.newFarms, function (value) {
+          var loc = value.split(',');
+          gameMap.drawBuilding('House', {x: loc[0], y: loc[1]});
+        });
+      });
+    };
+
+    var placeCastle = function (x, y) {
+      console.log('placing at ' + x + ',' + y);
+      var params = {
+        playerId: 'p1',
+        gameId: currentGame._id,
+        actions: [{
+          type: 'PlaceCastle',
+          params: {
+            playerRel: 'p1',
+            where: {x: x, y: y}
+          }
+        }]
+      };
+
+      SDK.PlayTurn.sendQ(params)
+        .then(function (result) {
+          console.log('Submitted turn');
+          console.log(result);
+          // refresh?
+          //counter = 0;
+          gameMap.drawBuilding('Castle', {x: x, y: y});
+        })
+        .fail(function (err) {
+          alert(JSON.stringify(err));
+        })
+    };
+
+    var updateDateLabel = function (roundNumber) {
+      var year = Math.floor(roundNumber / 12);
+      var month = roundNumber % 12;
+
+      $('#dateLabel').html('year: ' + year + ', month: ' + month);
+    };
+
+    GAME.startGame = function () {
+      if (firstLoad) return;
+      GAME.state = STATES.ingame;
+
+      preContainer.visible = false;
+      console.log("end pregame state");
+
+      var size = currentGame.ruleBundleGameSettings.customBoardSettings;
+      var newMap = Map({gameBoard:currentGameBoard, size: size, func: placeCastle});
+      GAME.stage.addChild(newMap);
+      gameMap = newMap;
+    };
 
     GAME.resetGame = function(){
       console.log("reseting game");
@@ -133,6 +268,7 @@ define(["Loader", "assets"],
           GAME.init(canvas);
         }
       );
+      GAME.loadGame();
 
     }
 

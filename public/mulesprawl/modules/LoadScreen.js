@@ -21,7 +21,7 @@ define(["assets"], function (ourAssets) {
     that.progressByOneResource = function(resourceID){
       var gap = GAME.SIZE.y / totalResources;
       var rectangle = new createjs.Shape();
-      console.log(args.parentContainer)
+
       rectangle.graphics.beginFill("green").drawRect(0, currentResourcesLoaded * gap, GAME.SIZE.x, gap);
       that.addChild(rectangle);
 

@@ -104,6 +104,10 @@ define(["LoadScreen"], function(LoadScreen){
     return stills[resourceName];
   };
 
+  that.getLoadedAsset = function (id) {
+    return loadedList[id];
+  };
+
   //dont need a getSound() because SoundJS knowz
 
   that.getResourceInfo = function(args){
