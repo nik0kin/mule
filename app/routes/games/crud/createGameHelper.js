@@ -26,7 +26,14 @@ module.exports = function (params) {    //TODO this is starting to look ugly
           id : foundRuleBundle._id,
           name : foundRuleBundle.name
         };
-        newGame.markModified('ruleBundle'); // is the line necessary
+        newGame.markModified('ruleBundle');
+
+        if (!foundRuleBundle.canAutoProgress) {
+          // dont allow autoprogress
+          if (newGame.turnProgressStyle == 'autoprogress') {
+            reject({err: '\'autoprogress\' not allowed on this RuleBundle(' + foundRuleBundle.name + ')'})
+          }
+        }
 
         parseMaxPlayersQ(foundRuleBundle, newGame)
           .then(function (newGameR) {

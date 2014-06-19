@@ -25,6 +25,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
 
         //set RuleBundles to dropdown
         that.setRuleBundleDropdownOptions(data);
+        that.initializeTurnProgressSettingsDiv();
 
         //load games
         $('#getGames').click();
@@ -92,8 +93,10 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
 
     var gameConfig = {
       name: gamename,
-      ruleBundle: {id: that.selectedRuleBundle },
+      ruleBundle: {id: that.selectedRuleBundle._id },
       maxPlayers: maxPlayers,
+      turnProgressStyle: selectedTurnProgressStyle,
+      turnTimeLimit: $('#turnTimeLimit').val(),
       ruleBundleGameSettings: {
         customBoardSettings: {}
       }
@@ -113,6 +116,11 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
         }
 
         $('#getGames').click();
+
+        //reset create game fields
+        that.generateStartGameDOM(that.selectedRuleBundle);
+
+        that.tryViewGame(data.gameID);
       }).fail(function(res){
         alert("Fail " + res.responseText);
       });
@@ -227,7 +235,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
 
 
   that.viewBoard = function (gameID) {
-    window.open("play.html?gameID="+gameID)
+    window.open("board.html?gameID="+gameID)
   };
 
   ////////////////// OTHER STUFF //////////////////////
@@ -321,7 +329,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     return tableElement;
   };
 
-  // for 'View Game Info'
+  /////////////// for 'View Game Info' //////////////////
+
   that.makeGameInfoTable = function (gameInfo, roundNumber) {
     if(!gameInfo) return "null";
 
@@ -374,6 +383,10 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
             .append("<td> RuleBundle GameSettings: <br>"+JSON.stringify(gameInfo.ruleBundleGameSettings || {}) +"</td>")
           )
           .append($('<tr></tr>')
+            .append("<td>TurnProgressStyle: "+gameInfo.turnProgressStyle+"<br>")
+            .append("<td>TurnTimeLimit: "+gameInfo.turnTimeLimit+"<br>NextTurnTime: "+gameInfo.nextTurnTime+"</td>")
+          )
+          .append($('<tr></tr>')
             .append(playerListDOM)
           )
         )
@@ -382,8 +395,10 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     return tableElement;
   };
 
-  that.setRuleBundleDropdownOptions = function (object) {
-    _.each(object, function (value, key) {
+  ////////////// for Create Game setting fields modification ///////////////
+
+  that.setRuleBundleDropdownOptions = function (ruleBundleObjects) {
+    _.each(ruleBundleObjects, function (value, key) {
       $('#startG_ruleBundle_dropper')
         .append($('<li></li>')
           .append(getButton(that.generateStartGameDOM, value, value.name, 'dd' + key, ''))
@@ -391,14 +406,15 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     });
   };
 
-  that.selectedRuleBundle = '';
+  that.selectedRuleBundle;
 
   that.generateStartGameDOM = function (ruleBundleObject) {
-    that.selectedRuleBundle = ruleBundleObject._id;
+    that.selectedRuleBundle = ruleBundleObject;
 
     $('#startG_ruleBundle_dropper_label').text(ruleBundleObject.name);
     that.generateMaxPlayersDiv(ruleBundleObject.gameSettings.playerLimit);
     that.generateCustomBoardSettingsDiv(ruleBundleObject.gameSettings.customBoardSettings);
+    generateTurnProgressSettingsDiv(ruleBundleObject);
   };
 
   that.generateMaxPlayersDiv = function (playerLimit) {
@@ -440,6 +456,42 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     });
 
   };
+
+  that.initializeTurnProgressSettingsDiv = function () {
+    $('#turnProgressSettings_dropper')
+      .append($('<li></li>')
+        .append(getButton(setTurnProgressStyle, 'waitprogress', 'waitprogress', 'tps', ''))
+        .append(getButton(setTurnProgressStyle, 'autoprogress', 'autoprogress', 'tps', ''))
+      );
+  };
+
+  var generateTurnProgressSettingsDiv = function (ruleBundleObject) {
+    if (ruleBundleObject.canAutoProgress) {
+      $('#turnProgressSettings_dropper_label').text('Chooser Dropdown');
+      $('#turnProgressSettings_dropper_label').attr('disabled', false);
+      selectedTurnProgressStyle = '';
+      $('#turnTimeLimit').val('');
+      $('#turnTimeLimit').attr('disabled', false);
+      turnProgressLocked = false;
+    } else {
+      $('#turnProgressSettings_dropper_label').text('waitprogress');
+      $('#turnProgressSettings_dropper_label').attr('disabled', true);
+      selectedTurnProgressStyle = 'waitprogress';
+      $('#turnTimeLimit').val('99999');
+      $('#turnTimeLimit').attr('disabled', true);
+      turnProgressLocked = true;
+    }
+  };
+
+  var selectedTurnProgressStyle, turnProgressLocked = false;
+  var setTurnProgressStyle = function (style) {
+    if (turnProgressLocked) return;
+
+    selectedTurnProgressStyle = style;
+    $('#turnProgressSettings_dropper_label').text(style);
+  };
+
+  /////////////////////////////////////////////////////
 
   that.alertHelper = function (type, words) {
     var alertsDOM = $('#alerts');

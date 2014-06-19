@@ -3,8 +3,8 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
-  gameHelper = require('./gameHelper'),
-  actionsHelper = require('./actionsHelper');
+  gameHelper = require('./../gameHelper'),
+  actionsHelper = require('./../actionsHelper');
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
@@ -63,6 +63,9 @@ exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) 
     .then(function (savedHistoryObject) {
       _savedHistoryObject = savedHistoryObject;
       return gameHelper.checkWinConditionQ(game, gameBoardObject._id);
+    })
+    .then(function () {
+      return game.setTurnTimerQ();
     })
     .then(function () {
       return Q(_savedHistoryObject);

@@ -49,6 +49,7 @@ require('./app/routes')(app, passport);
 
 // Load RuleBundles
 require('mule-rules/lib/initRuleBundles').loadOnce(require('./app/routes/ruleBundles/crud/helper'));
+require('./app/turnSystem/turnTimer').initTurnTimerChecks();
 
 //Start the app by listening on <port>
 var port = process.env.PORT || config.port;

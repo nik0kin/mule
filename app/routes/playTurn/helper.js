@@ -5,16 +5,10 @@
 var _ = require('lodash'),
   Q = require('q');
 
-var roundRobinTurnSystem = require('../../turnSystem/roundRobin'),
-  playByMailTurnSystem = require('../../turnSystem/playByMail'),
+var turnBrain = require('../../turnSystem/brain'),
   actionsHelper = require('../../turnSystem/actionsHelper'),
   RuleBundle = require('mule-models').RuleBundle.Model,
   Game = require('mule-models').Game.Model;
-
-var turnStyleFunctions = {
-  'roundRobin':  roundRobinTurnSystem,
-  'playByMail': playByMailTurnSystem
-};
 
 exports.playTurn = function (req, res) {
 
@@ -50,10 +44,8 @@ exports.playTurn = function (req, res) {
           return actionsHelper.validateActionsQ(game.gameBoard, req.body.actions, _ruleBundle);
         })
         .then(function () {
-          var turnFunctions = turnStyleFunctions[_ruleBundle.turnSubmitStyle];
-
           console.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')');
-          return turnFunctions.submitTurnQ(game, playerId, game.gameBoard, {actions: req.body.actions }, _ruleBundle);
+          return turnBrain.submitPlayerTurnQ(game, playerId, game.gameBoard, req.body.actions, _ruleBundle);
         })
         .then(function () {
           res.status(200).send({msg: "ITS TRUE"})
