@@ -3,6 +3,7 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
+  MuleRules = require('mule-rules'),
   gameHelper = require('./../gameHelper'),
   actionsHelper = require('./../actionsHelper');
 

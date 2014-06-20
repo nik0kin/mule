@@ -21,7 +21,7 @@ exports.submitPlayerTurnQ = function (game, playerRelId, gameBoardId, actions, r
 
 // turn and/or round
 exports.forceTurnProgress = function (game) {
-  loadGameStateObjectQ(game)
+  exports.loadGameStateObjectQ(game)
     .done(function (gameStateObject) {
       console.log('try forcing for ' + gameStateObject.game._id);
       var playerRel;
@@ -53,7 +53,7 @@ exports.forceTurnProgress = function (game) {
     });
 };
 
-var loadGameStateObjectQ = function (game) {
+exports.loadGameStateObjectQ = function (game) {
   var object,
     _board,
   // _pieceStates,

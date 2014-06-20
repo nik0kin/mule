@@ -1,7 +1,7 @@
 /* ripped from rick & the ghost */
 
 var GAME = {};
-GAME.SIZE = { x: 1280, y: 720 };
+GAME.SIZE = { x: 1800, y: 1000 };
 
 var DEBUG = {showClickArea: false, sceneState: false};
 
@@ -19,6 +19,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       playerMap,
       currentGameBoard,
       currentGame,
+      currentRound = 0,
       currentHistory,
       isGameOver = false,
       firstLoad = true;
@@ -107,7 +108,14 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
           SDK.Historys.readGamesHistoryQ(currentGame._id)
             .done(function(history) {
               currentHistory = history;
-              updateDateLabel(history.currentRound);
+
+              if (currentHistory.currentRound === currentRound) {
+                return; // dont query board if you dont need to
+              }
+
+              currentRound = currentHistory.currentRound
+              updateDateLabel(currentRound);
+
 
               SDK.Games.getPlayersMapQ(currentGame)
                 .then(function (_playerMap) {
@@ -125,6 +133,8 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                 .done(function(gameBoard) {
                   //var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
                   currentGameBoard = gameBoard;
+
+                  updateGoldLabel();
 
                   if (firstLoad) {
                     //populateBoard(gameBoard);
@@ -190,6 +200,12 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       var month = roundNumber % 12;
 
       $('#dateLabel').html('year: ' + year + ', month: ' + month);
+    };
+
+    var updateGoldLabel = function () {
+      var gold = currentGameBoard.playerVariables['p1'].gold;
+      var farmerCount = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer').length;
+      $('#goldLabel').html('Gold: ' + gold + ', Farmers: ' + farmerCount)
     };
 
     GAME.startGame = function () {

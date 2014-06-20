@@ -3,7 +3,9 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
-  actionsHelper = require('./../actionsHelper');
+  MuleRules = require('mule-rules'),
+  actionsHelper = require('./../actionsHelper'),
+  brain = require('./../brain');
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
@@ -48,6 +50,15 @@ exports.progressRoundQ = function (game, player, gameBoardObject, historyObject,
   });
 
   return Q.all(promises)
+    .then(function () {
+      var bundleProgressRoundQ = MuleRules.getBundleCode(ruleBundle.name).progressRound;
+      if (typeof bundleProgressRoundQ === 'function')
+        return brain.loadGameStateObjectQ(game)
+          .then(function (result) {
+            console.log('calling bundleProgreesQ');
+            return bundleProgressRoundQ(result);
+          });
+    })
     .then(function () {
       console.log('Round successful: ' + historyObject.currentRound);
       // increment history.currentRound

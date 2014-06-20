@@ -18,6 +18,10 @@ var express = require('express'),
     mkdirp = require('mkdirp'),
     dateUtils = require('mule-utils/dateUtils');
 
+var MuleUtils = require('mule-utils'),
+  MuleRules = require('mule-rules'),
+  MuleModels = require('mule-models');
+
 /**
  * Configs
  */

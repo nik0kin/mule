@@ -1,33 +1,27 @@
 /**
- * Hacky BoardGenerator
+ * BoardGenerator
  */
 
 var Q = require('q'),
   _ = require('lodash');
 
-var GameBoard = require('mule-models').GameBoard.Model;
+var GameBoard = require('mule-models').GameBoard.Model,
+  MuleRules = require('mule-rules');
 
 exports.saveGeneratedGameBoardQ = function (newGameBoard, params) {
-  return Q.promise(function (resolve, reject) {
-    var ruleBundleName = params.ruleBundle.name;
-    var ruleBundleRules = params.rules;
+  var ruleBundleName = params.ruleBundle.name;
+  var ruleBundleRules = params.rules;
 
-    var generateFunction;
+  var generateFunctionQ = MuleRules.getBundleCode(ruleBundleName).boardGenerator;
 
-    console.log('generating for: ' + ruleBundleName);
-    if (ruleBundleName === 'Vikings') { // TODO hacky atm
-      generateFunction = require('mule-rules/bundles/vikings/boardGenerator');
-    } else if (ruleBundleName === 'MuleSprawl') {
-      generateFunction = require('mule-rules/bundles/mulesprawl/boardGenerator');
-    } else {
-      throw 'missing board generator for ' + ruleBundleName;
-    }
+  if (!generateFunctionQ || typeof generateFunctionQ !== 'function') {
+    throw 'missing board generator for ' + ruleBundleName;
+  }
 
-    generateFunction(params.customBoardSettings, ruleBundleRules)
-      .done(function (result) {
-        newGameBoard.board = result;
-        newGameBoard.saveQ()
-          .done(resolve, reject);
-      }, reject);
-  });
+  console.log('generating for: ' + ruleBundleName);
+  return generateFunctionQ(params.customBoardSettings, ruleBundleRules)
+    .then(function (result) {
+      newGameBoard.board = result;
+      return newGameBoard.saveQ()
+    });
 };

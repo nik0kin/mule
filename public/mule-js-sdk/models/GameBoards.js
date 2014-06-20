@@ -106,6 +106,18 @@ define([], function () {
       return fullBoard;
     };
 
+    that.getClassesFromPieces = function (board, className) {
+      var found = [];
+
+      _.each(board.pieces, function (value, key) {
+        if (value.class === className) {
+          found.push(value);
+        }
+      });
+
+      return found;
+    };
+
     return that;
   };
 });
