@@ -2,7 +2,6 @@ body {
     background-image:url('../assets/pageBkgrnd.png');
     background-position:top center;
     background-color:#cccccc;
-    overflow:hidden;
 }
 
 div .border{

@@ -13,7 +13,9 @@ define(function(){
       {src: 'assets/terrain/water.png', id: 'terrain_water'},
 
       {src: 'assets/buildings/castle.png', id: 'building_castle'},
-      {src: 'assets/buildings/houseGrassC1.png', id: 'building_house'}
+      {src: 'assets/buildings/houseGrassC1.png', id: 'building_house1'},
+      {src: 'assets/buildings/houseGrassC2.png', id: 'building_house2'},
+      {src: 'assets/buildings/houseGrassC3.png', id: 'building_house3'}
     ],
 
     sounds: []

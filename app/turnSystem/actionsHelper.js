@@ -59,7 +59,7 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + key);
 
         if (result)
-          return objs.history.saveMetaDataToActionQ(result, key);
+          return objs.history.saveMetaDataToActionQ(result, playerRel, key);
       })
       .fail(function (err) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + key);

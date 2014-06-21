@@ -43,34 +43,40 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
 exports.progressRoundQ = function (game, player, gameBoardObject, historyObject, ruleBundle) {
   // do all actions in current round (in history)
   var turns = historyObject.getRoundTurns(historyObject.currentRound);
-  var promises = [];
+  var promises = [], _metaData;
   _.each(turns, function (turn, player) {
-    var promise = actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, turn.actions, player, ruleBundle);
-    promises.push(promise);
+    if (player !== 'meta') {
+      var promise = actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, turn.actions, player, ruleBundle);
+      promises.push(promise);
+    }
   });
 
   return Q.all(promises)
     .then(function () {
       var bundleProgressRoundQ = MuleRules.getBundleCode(ruleBundle.name).progressRound;
-      if (typeof bundleProgressRoundQ === 'function')
+      if (typeof bundleProgressRoundQ === 'function') {
         return brain.loadGameStateObjectQ(game)
           .then(function (result) {
             console.log('calling bundleProgreesQ');
             actionsHelper.initActions(game.ruleBundle);
             return bundleProgressRoundQ(GameBoard, result)
               .then(function (metaData) {
-                History.findByIdQ(result.history._id)
-                  .done(function (fHistory) {
-                    fHistory.addPlayerTurnAndSaveQ('p1', {actions:[{type: 'metadata', metadata: metaData}] }); //TODO chanage to meta player or progressRound
-                  });
+                _metaData = metaData;
+                return History.findByIdQ(result.history._id);
+              })
+              .then(function (fHistory) {
+                return fHistory.addPlayerTurnAndSaveQ('meta', {actions:[{type: 'metadata', metadata: _metaData}] });
               });
           });
+      } else {
+        return Q(historyObject);
+      }
     })
-    .then(function () {
-      console.log('Round successful: ' + historyObject.currentRound);
+    .then(function (history) {
+      console.log('Round successful: ' + history.currentRound);
       // increment history.currentRound
-      historyObject.currentRound++;
-      return historyObject.saveQ();
+      history.currentRound++;
+      return history.saveQ();
     })
     .then(function () {
       return game.setTurnTimerQ();

@@ -47,9 +47,10 @@ define([], function () {
       var _turn = false;
 
       _.each(history.turnOrder, function (value) {
-        if (_turn) return;
+        if (_turn || value === 'meta') return;
 
         var lastTurnNumber = turnsRead[value].length;
+        console.log('las ' + lastTurnNumber)
         if (history.turns[value][lastTurnNumber]) {
           _turn = history.turns[value][lastTurnNumber];
           turnsRead[value].push(true);
@@ -59,6 +60,10 @@ define([], function () {
       });
 
       return _turn;
+    };
+
+    that.getLastRoundMeta = function (history) {
+      return history.turns['meta'][history.currentRound - 2];
     };
 
     return that;

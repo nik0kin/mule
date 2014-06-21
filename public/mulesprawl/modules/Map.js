@@ -9,7 +9,9 @@ define(['Loader'], function (Loader) {
 
   var buildingImages = {
     Castle: 'assets/buildings/castle.png',
-    House: 'assets/buildings/houseGrassC1.png'
+    House1: 'assets/buildings/houseGrassC1.png',
+    House2: 'assets/buildings/houseGrassC2.png',
+    House3: 'assets/buildings/houseGrassC3.png'
   };
 
   var Map = function (params) {
@@ -29,7 +31,7 @@ define(['Loader'], function (Loader) {
       _.each(params.gameBoard.pieces, function (value) {
         if (value.class === '_phantom') return;
         var loc = value.locationId.split(',');
-        that.drawBuilding(value.class, {x: loc[0], y: loc[1]});
+        that.drawBuilding(value.class, {x: loc[0], y: loc[1]}, value.attributes || {});
       });
 
       that.on('click', function (evt) {
@@ -49,7 +51,18 @@ define(['Loader'], function (Loader) {
       });
     };
 
-    that.drawBuilding = function (type, loc) {
+    var getHouseType = function (f) {
+      if (!f) return 'House1';
+
+      var colors = ['House1', 'House2', 'House3'];
+
+      return colors[(f.charCodeAt(0) + f.charCodeAt(1) + f.charCodeAt(2)) % 3];
+    };
+
+    that.drawBuilding = function (type, loc, attributes) {
+      if (type === 'House') {
+        type = getHouseType(attributes.family);
+      }
       if (type === 'Castle') placedCastle = true;
       var newBitmap = new createjs.Bitmap(buildingImages[type]);
       newBitmap.x = loc.x * TERRAIN_SIZE;

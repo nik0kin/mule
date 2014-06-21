@@ -157,6 +157,11 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                     if (t) {
                       parseTurn(t);
                     }
+                    var m = SDK.Historys.getLastRoundMeta(currentHistory);
+                    console.log(m);
+                    if (m) {
+                      parseTurn(m);
+                    }
                   }
 
                   console.log('refreshed');
@@ -174,7 +179,13 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
         if (!value.metadata) return;
         _.each(value.metadata.newFarms, function (value) {
           var loc = value.split(',');
-          gameMap.drawBuilding('House', {x: loc[0], y: loc[1]});
+          var family = SDK.GameBoards.getPiecesOnSpace(currentGameBoard, value);
+          _.each(family, function (piece) { // TODO move a func like this to sdk?
+            if (piece.class === 'Farmer') {
+              family = piece.attributes.familyName;
+            }
+          });
+          gameMap.drawBuilding('House', {x: loc[0], y: loc[1]}, {family: family});
         });
         updateInfoSpam(value.metadata);
       });
@@ -243,8 +254,8 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
     var updateInfoSpam = function (turnMetaData) {
       var string = '';
 
-      _.each(turnMetaData.deaths, function (name) {
-        string += '<b>' + name + '</b> died <br>';
+      _.each(turnMetaData.deaths, function (obj) {
+        string += '<b>' + obj.name + '</b> died at age ' + obj.age + '<br>';
       });
 
       _.each(turnMetaData.births, function (family) {
@@ -255,8 +266,8 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
         string += '<b>' + birthday.name + '</b> turned ' + birthday.age + ' <br>';
       });
 
-      _.each(turnMetaData.becomeMan, function (name) {
-        string += '<b>' + name + '</b> became a man<br>';
+      _.each(turnMetaData.becomeMan, function (obj) {
+        string += '<b>' + obj.name + '</b> became a man and started a farm at ' + obj.whereId + '<br>';
       });
 
       _.each(turnMetaData.miscarriage, function (name) {
@@ -264,7 +275,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       });
 
       _.each(turnMetaData.pregnancies, function (name) {
-        string += '<b>' + name + '</b>became pregnant <br>';
+        string += '<b>' + name + '</b> became pregnant <br>';
       });
 
       _.each(turnMetaData.marriages, function (marriage) {
