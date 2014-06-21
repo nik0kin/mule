@@ -51,6 +51,8 @@ exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
 
 exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
   var promiseArray = [];
+  
+  exports.initActions(ruleBundle);
 
   _.each(actions, function (action, key) {
     var Action = getAction(action.type, ruleBundle);
