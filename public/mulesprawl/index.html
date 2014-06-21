@@ -6,14 +6,42 @@
     <script src="../lib/jquery-1.11.0.min.js"></script>
     <script src="../lib/underscore-min.js"></script>
 
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" href="css/stylesheet.css">
+    <link rel="stylesheet" href="../css/boardView.css">
+
     <script data-main="modules/main" src="../lib/require.js"></script>
 </head>
 
 
 <body>
-    <span id="dateLabel">Date Label</span> ===================
-    <span id="refreshLabel">Refresh Label</span> ===================
-    <span id="goldLabel">Gold Label</span><br>
-    <canvas id="myCanvas" width="1800" height="1000"></canvas> <br>
+
+
+<div class="container">
+    <div class="row border">
+        <span id="dateLabel">Date Label</span> ===================
+        <span id="refreshLabel">Refresh Label</span> ===================
+        <span id="goldLabel">Gold Label</span><br>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div id="spaceInfoDiv" class="row border">
+                <h4>grass 1,2: </h4><br>
+                <br>
+                <b>john webanger</b> <br>
+                - age: 20, single
+            </div>
+            <br>
+            <div id="infoSpamDiv" class="row border">
+                info spam
+            </div>
+        </div>
+        <div class="col-md-10">
+            <canvas id="myCanvas"></canvas> <br>
+        </div>
+    </div>
+
 </body>
 </html>

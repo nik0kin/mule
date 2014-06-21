@@ -2,6 +2,7 @@
 
 var GAME = {};
 GAME.SIZE = { x: 1800, y: 1000 };
+var TILESIZE = 50;
 
 var DEBUG = {showClickArea: false, sceneState: false};
 
@@ -45,7 +46,12 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       preContainer = new createjs.Container();
 
       var rectangle = new createjs.Shape();
-      rectangle.graphics.beginFill("black").drawRect(0,0,GAME.SIZE.x,GAME.SIZE.y);
+      var sz = currentGame.ruleBundleGameSettings.customBoardSettings;
+      rectangle.graphics.beginFill("black").drawRect(0,0,TILESIZE * sz.width, TILESIZE * sz.height);
+      console.log(sz);
+      console.log(TILESIZE);
+      $('#myCanvas').attr('width', sz.width * sz.width);
+      $('#myCanvas').attr('height', sz.height * sz.height);
       rectangle.on("click",function () {
         GAME.startGame();
       });
@@ -79,15 +85,15 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       GAME.prevControls = GAME.controls;
     };
 
-    GAME.loadGame = function () {
+    GAME.loadGame = function (callback) {
       dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
         currentGame = {_id: result.gameId };
 
-        refreshGame();
+        refreshGame(callback);
       });
     };
 
-    var counter = 0, timerCount = 2;
+    var counter = 0, timerCount = 2, firstTime = true;
     var refreshGame = function () {
       counter--;
       $('#refreshLabel').html('refresh...' + counter);
@@ -103,6 +109,10 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
         .done(function(game) {
           currentGame = game;
 
+          if (firstTime) {
+            GAME.init(canvas);
+            firstTime = false;
+          }
           //checkWin();
 
           SDK.Historys.readGamesHistoryQ(currentGame._id)
@@ -143,6 +153,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                   } else {
                     //look at last turn
                     var t = SDK.Historys.getLastUnreadTurn(currentHistory);
+                    console.log(t);
                     if (t) {
                       parseTurn(t);
                     }
@@ -165,6 +176,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
           var loc = value.split(',');
           gameMap.drawBuilding('House', {x: loc[0], y: loc[1]});
         });
+        updateInfoSpam(value.metadata);
       });
     };
 
@@ -204,8 +216,62 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
 
     var updateGoldLabel = function () {
       var gold = currentGameBoard.playerVariables['p1'].gold;
-      var farmerCount = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer').length;
-      $('#goldLabel').html('Gold: ' + gold + ', Farmers: ' + farmerCount)
+      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer');
+
+      var pregnantWomen = [];
+      _.each(farmers, function (farmer) {
+        if (farmer.attributes.pregnant + 1 > currentRound)
+          pregnantWomen.push(farmer);
+      });
+
+      var singleMen = [], singleWomen = [];
+      _.each(farmers, function (farmer) {
+        if (farmer.attributes.sex === 'male' && farmer.attributes.age >= 16 && farmer.attributes.married === 'single') {
+          singleMen.push(farmer);
+        }
+        if (farmer.attributes.sex === 'female' && farmer.attributes.age >= 14 && farmer.attributes.married === 'single') {
+          singleWomen.push(farmer);
+        }
+      });
+      var singlesString = singleMen.length + ' bachelors, ' + singleWomen.length + ' bachelorettes';
+
+      $('#goldLabel').html('Gold: ' + gold + ', Farmers: ' + farmers.length + ',  Pregnant Women: '
+        + pregnantWomen.length + ', ' + singlesString);
+    };
+
+    var infoSpamDiv = $('#infoSpamDiv');
+    var updateInfoSpam = function (turnMetaData) {
+      var string = '';
+
+      _.each(turnMetaData.deaths, function (name) {
+        string += '<b>' + name + '</b> died <br>';
+      });
+
+      _.each(turnMetaData.births, function (family) {
+        string += 'Family:  <b>' + family + '</b> had a child. <br>';
+      });
+
+      _.each(turnMetaData.birthdays, function (birthday) {
+        string += '<b>' + birthday.name + '</b> turned ' + birthday.age + ' <br>';
+      });
+
+      _.each(turnMetaData.becomeMan, function (name) {
+        string += '<b>' + name + '</b> became a man<br>';
+      });
+
+      _.each(turnMetaData.miscarriage, function (name) {
+        string += '<b>' + name + '</b> miscarried today :( <br>';
+      });
+
+      _.each(turnMetaData.pregnancies, function (name) {
+        string += '<b>' + name + '</b>became pregnant <br>';
+      });
+
+      _.each(turnMetaData.marriages, function (marriage) {
+        string += '<b>' + marriage.wife + '</b> married <b>' + marriage.husband + '</b> <br>';
+      });
+
+      infoSpamDiv.html(string + '<br>' + infoSpamDiv.html());
     };
 
     GAME.startGame = function () {
@@ -216,7 +282,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       console.log("end pregame state");
 
       var size = currentGame.ruleBundleGameSettings.customBoardSettings;
-      var newMap = Map({gameBoard:currentGameBoard, size: size, func: placeCastle});
+      var newMap = Map({gameBoard:currentGameBoard, size: size, func: placeCastle, mainClickCallback: clickSpace});
       GAME.stage.addChild(newMap);
       gameMap = newMap;
     };
@@ -229,6 +295,23 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
 
     GAME.click = function (loc){
       //can be delt with thru http://www.createjs.com/Docs/EaselJS/classes/DisplayObject.html#event_click
+    };
+
+    var clickSpace = function (x, y) {
+      var locationId = x + ',' + y,
+        piece = SDK.GameBoards.getFullSpaceInfo(currentGameBoard, locationId),
+        string = '<h4>' + x + ', ' + y +  ' ' + piece.attributes.terrainType + '</h4><br><br>';
+
+      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer');
+      _.each(farmers, function (farmer) {
+        if (farmer.locationId === (x + ',' + y)) {
+          string += '<b>' + farmer.attributes.name + ' ' + farmer.attributes.familyName +'</b><br>';
+          string += ' - ' + farmer.attributes.sex + ', ' + farmer.attributes.age +', ' + farmer.attributes.married + '<br>';
+        }
+      });
+
+      string += '<br>';
+      $('#spaceInfoDiv').html(string);
     };
 
     //process key presses
@@ -280,11 +363,10 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
         ourAssets.images,
         ourAssets.sounds,
         function (){
-          console.log("done loading");
-          GAME.init(canvas);
+          console.log("done loading assets");
+          GAME.loadGame();
         }
       );
-      GAME.loadGame();
 
     }
 

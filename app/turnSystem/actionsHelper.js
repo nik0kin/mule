@@ -10,7 +10,8 @@ var Actions = {
   BasicMove: require('./tempActions/basicMove')
 };
 
-var initActions = function (ruleBundle) {
+exports.initActions = function (ruleBundle) {
+  console.log('init');
   _.each(muleRules.getActions(ruleBundle.name), function (value) {
     value.init({GameBoard: GameBoard, PieceState: PieceState});
   });
@@ -22,7 +23,7 @@ var getAction = function (actionType, ruleBundle) {
 
 
 exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
-  initActions(ruleBundle);
+  exports.initActions(ruleBundle);
 
   var promiseArray = [];
   _.each(actions, function (action, key) {

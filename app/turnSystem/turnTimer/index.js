@@ -4,7 +4,7 @@ var _ = require('lodash'),
 var Game = require('mule-models').Game.Model,
   turnBrain = require('../brain');
 
-var MIN_TIMER_CHECK = 30, //seconds
+var MIN_TIMER_CHECK = 10, //seconds
   MS_PER_SEC = 1000;
 
 var timeoutId, firstLoad = true;

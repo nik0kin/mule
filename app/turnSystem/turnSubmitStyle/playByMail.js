@@ -56,7 +56,14 @@ exports.progressRoundQ = function (game, player, gameBoardObject, historyObject,
         return brain.loadGameStateObjectQ(game)
           .then(function (result) {
             console.log('calling bundleProgreesQ');
-            return bundleProgressRoundQ(result);
+            actionsHelper.initActions(game.ruleBundle);
+            return bundleProgressRoundQ(GameBoard, result)
+              .then(function (metaData) {
+                History.findByIdQ(result.history._id)
+                  .done(function (fHistory) {
+                    fHistory.addPlayerTurnAndSaveQ('p1', {actions:[{type: 'metadata', metadata: metaData}] }); //TODO chanage to meta player or progressRound
+                  });
+              });
           });
     })
     .then(function () {

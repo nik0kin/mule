@@ -19,6 +19,8 @@ define(['Loader'], function (Loader) {
     var screenOffset = {x: 0, y: 0};
     var placedCastle = params.gameBoard.playerVariables['p1'].placedCastle;
 
+    var mainClickCallback = params.mainClickCallback;
+
     function init () {
       var simpleMap = getSimpleMapFromGameBoard(params.size, params.gameBoard.spaces);
 
@@ -62,6 +64,7 @@ define(['Loader'], function (Loader) {
         console.log('place castle!')
         params.func(x,y);
       }
+      mainClickCallback(x,y);
     };
 
 
