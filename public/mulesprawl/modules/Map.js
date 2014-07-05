@@ -61,7 +61,7 @@ define(['Loader'], function (Loader) {
 
     that.drawBuilding = function (type, loc, attributes) {
       if (type === 'House') {
-        type = getHouseType(attributes.family);
+        type = getHouseType(attributes.familyName || attributes.family);
       }
       if (type === 'Castle') placedCastle = true;
       var newBitmap = new createjs.Bitmap(buildingImages[type]);
