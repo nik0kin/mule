@@ -41,6 +41,12 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
 };
 
 exports.progressRoundQ = function (game, player, gameBoardObject, historyObject, ruleBundle) {
+
+  if (historyObject.currentRound > 1000) {
+    // do nothing
+    return;
+  }
+
   // do all actions in current round (in history)
   var turns = historyObject.getRoundTurns(historyObject.currentRound);
   var promises = [], _metaData;
