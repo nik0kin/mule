@@ -11,7 +11,7 @@ var Actions = {
 };
 
 exports.initActions = function (ruleBundle) {
-  console.log('init');
+  console.log('init bundle Actions');
   _.each(muleRules.getActions(ruleBundle.name), function (value) {
     value.init({GameBoard: GameBoard, PieceState: PieceState});
   });
@@ -46,7 +46,16 @@ exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
     promiseArray.push(promise);
   });
 
-  return Q.all(promiseArray);
+  return Q.all(promiseArray)
+    .then(function () {
+      var bundleCode = muleRules.getBundleCode(ruleBundle.name),
+        validateActionsQ;
+      if (bundleCode && (validateActionsQ = bundleCode.validateActions)) {
+        return validateActionsQ(actions);
+      } else {
+        return Q(actions);
+      }
+    });
 };
 
 exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {

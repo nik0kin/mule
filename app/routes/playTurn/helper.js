@@ -43,9 +43,9 @@ exports.playTurn = function (req, res) {
           _ruleBundle = ruleBundle;
           return actionsHelper.validateActionsQ(game.gameBoard, req.body.actions, _ruleBundle);
         })
-        .then(function () {
+        .then(function (validatedActions) {
           console.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')');
-          return turnBrain.submitPlayerTurnQ(game, playerId, game.gameBoard, req.body.actions, _ruleBundle);
+          return turnBrain.submitPlayerTurnQ(game, playerId, game.gameBoard, validatedActions, _ruleBundle);
         })
         .then(function () {
           res.status(200).send({msg: "ITS TRUE"})

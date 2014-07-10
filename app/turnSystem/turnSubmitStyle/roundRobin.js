@@ -5,7 +5,8 @@ var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
   MuleRules = require('mule-rules'),
   gameHelper = require('./../gameHelper'),
-  actionsHelper = require('./../actionsHelper');
+  actionsHelper = require('./../actionsHelper'),
+  brain = require('./../brain');
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
@@ -44,18 +45,19 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
       }
     })
     .fail(function (err) {
-      console.log('submit turn fail: ');
+      console.log('roundrobin submit turn fail: ');
       console.log(err);
       throw err;
     });
 };
 
 exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) {
+  console.log('roundrobin progressTurn:')
   // do all actions for that player (in history)
   var playerTurns = historyObject.getRoundTurns(historyObject.currentRound)[player];
 
   var _savedHistoryObject;
-  return actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, playerTurns.actions, player)
+  return actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, playerTurns.actions, player, game.ruleBundle)
     .then(function () {
       console.log('Turn successful for ' + player + ': ' + historyObject.currentRound);
       historyObject.progressRoundRobinPlayerTurnTicker();
@@ -63,6 +65,32 @@ exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) 
     })
     .then(function (savedHistoryObject) {
       _savedHistoryObject = savedHistoryObject;
+
+      console.log('bundleProgressTurnQ')
+      console.log(game.ruleBundle)
+      var bundleCode = MuleRules.getBundleCode(game.ruleBundle.name),
+        bundleProgressTurnQ,
+        _metaData;
+      if (bundleCode && typeof (bundleProgressTurnQ = bundleCode.progressTurn) === 'function') {
+        return brain.loadGameStateObjectQ(game)
+          .then(function (result) {
+            console.log('calling bundleProgressTurnQ');
+            actionsHelper.initActions(game.ruleBundle);
+            return bundleProgressTurnQ(GameBoard, result)
+              .then(function (metaData) {
+                _metaData = metaData;
+                return History.findByIdQ(result.history._id);
+              })
+              .then(function (fHistory) {
+                //TODO where should progressTurn's meta data go? (in players actions?)
+                return fHistory.addPlayerTurnAndSaveQ('meta', {actions:[{type: 'metadata', metadata: _metaData}] });
+              });
+          });
+      } else {
+        return Q(historyObject);
+      }
+    })
+    .then(function () {
       return gameHelper.checkWinConditionQ(game, gameBoardObject._id);
     })
     .then(function () {
@@ -70,6 +98,10 @@ exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) 
     })
     .then(function () {
       return Q(_savedHistoryObject);
+    })
+    .fail(function (err) {
+      console.log('err in roundRobin.progressTurn');
+      console.log(err);
     });
 };
 

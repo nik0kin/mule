@@ -59,8 +59,9 @@ exports.progressRoundQ = function (game, player, gameBoardObject, historyObject,
 
   return Q.all(promises)
     .then(function () {
-      var bundleProgressRoundQ = MuleRules.getBundleCode(ruleBundle.name).progressRound;
-      if (typeof bundleProgressRoundQ === 'function') {
+      var bundleCode = MuleRules.getBundleCode(ruleBundle.name),
+        bundleProgressRoundQ;
+      if (bundleCode && typeof (bundleProgressRoundQ = bundleCode.progressRound) === 'function') {
         return brain.loadGameStateObjectQ(game)
           .then(function (result) {
             console.log('calling bundleProgreesQ');
