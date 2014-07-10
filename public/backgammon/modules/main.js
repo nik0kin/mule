@@ -1,11 +1,11 @@
-/* ripped from rick & the ghost */
+/* ripped from mulesprawl (and rick & the ghost) */
 
 var GAME = {};
-GAME.SIZE = { x: 1800, y: 1000 };
-var TILESIZE = 50;
+GAME.SIZE = { x: 900, y: 600 };
 
-define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
-  function(Loader, ourAssets, Map, dumbLib, sdk){
+
+define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
+  function(Loader, ourAssets, Board, dumbLib, sdk){
     var SDK = sdk('../../');
 
     var STATES = {pregame: 0, ingame: 1, loading: 2};
@@ -43,12 +43,9 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       preContainer = new createjs.Container();
 
       var rectangle = new createjs.Shape();
-      var sz = currentGame.ruleBundleGameSettings.customBoardSettings;
-      rectangle.graphics.beginFill("black").drawRect(0,0,TILESIZE * sz.width, TILESIZE * sz.height);
-      console.log(sz);
-      console.log(TILESIZE);
-      $('#myCanvas').attr('width', sz.width * sz.width);
-      $('#myCanvas').attr('height', sz.height * sz.height);
+      rectangle.graphics.beginFill("black").drawRect(0,0,GAME.SIZE.x, GAME.SIZE.y);
+      $('#myCanvas').attr('width', GAME.SIZE.x);
+      $('#myCanvas').attr('height', GAME.SIZE.y);
       rectangle.on("click",function () {
         GAME.startGame();
       });
@@ -85,6 +82,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
     GAME.loadGame = function (callback) {
       dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
         currentGame = {_id: result.gameId };
+        currentUser = result.playerRel;
 
         refreshGame(callback);
       });
@@ -120,9 +118,8 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                 return; // dont query board if you dont need to
               }
 
-              currentRound = currentHistory.currentRound
-              updateDateLabel(currentRound);
-
+              currentRound = currentHistory.currentRound;
+              updateTurnLabel(currentRound);
 
               SDK.Games.getPlayersMapQ(currentGame)
                 .then(function (_playerMap) {
@@ -141,8 +138,6 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                   //var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
                   currentGameBoard = gameBoard;
 
-                  updateGoldLabel();
-
                   if (firstLoad) {
                     //populateBoard(gameBoard);
                     firstLoad = false;
@@ -153,11 +148,6 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                     console.log(t);
                     if (t) {
                       parseTurn(t);
-                    }
-                    var m = SDK.Historys.getLastRoundMeta(currentHistory);
-                    console.log(m);
-                    if (m) {
-                      parseTurn(m);
                     }
                   }
 
@@ -172,7 +162,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
     };
 
     var parseTurn = function (turn) {
-      _.each(turn.actions, function (value) {
+      /*_.each(turn.actions, function (value) {
         if (!value.metadata) return;
         _.each(value.metadata.newFarms, function (value) {
           var loc = value.split(',');
@@ -185,11 +175,11 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
           gameMap.drawBuilding('House', {x: loc[0], y: loc[1]}, {family: family});
         });
         updateInfoSpam(value.metadata);
-      });
+      });*/
     };
 
     var placeCastle = function (x, y) {
-      console.log('placing at ' + x + ',' + y);
+      /*console.log('placing at ' + x + ',' + y);
       var params = {
         playerId: 'p1',
         gameId: currentGame._id,
@@ -212,74 +202,12 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
         })
         .fail(function (err) {
           alert(JSON.stringify(err));
-        })
+        })*/
     };
 
-    var updateDateLabel = function (roundNumber) {
-      var year = Math.floor(roundNumber / 12);
-      var month = roundNumber % 12;
+    var updateTurnLabel = function (roundNumber) {
 
-      $('#dateLabel').html('year: ' + year + ', month: ' + month);
-    };
-
-    var updateGoldLabel = function () {
-      var gold = currentGameBoard.playerVariables['p1'].gold;
-      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer');
-
-      var pregnantWomen = [];
-      _.each(farmers, function (farmer) {
-        if (farmer.attributes.pregnant + 1 > currentRound)
-          pregnantWomen.push(farmer);
-      });
-
-      var singleMen = [], singleWomen = [];
-      _.each(farmers, function (farmer) {
-        if (farmer.attributes.sex === 'male' && farmer.attributes.age >= 16 && farmer.attributes.married === 'single') {
-          singleMen.push(farmer);
-        }
-        if (farmer.attributes.sex === 'female' && farmer.attributes.age >= 14 && farmer.attributes.married === 'single') {
-          singleWomen.push(farmer);
-        }
-      });
-      var singlesString = singleMen.length + ' bachelors, ' + singleWomen.length + ' bachelorettes';
-
-      $('#goldLabel').html('Gold: ' + gold + ', Farmers: ' + farmers.length + ',  Pregnant Women: '
-        + pregnantWomen.length + ', ' + singlesString);
-    };
-
-    var infoSpamDiv = $('#infoSpamDiv');
-    var updateInfoSpam = function (turnMetaData) {
-      var string = '';
-
-      _.each(turnMetaData.deaths, function (obj) {
-        string += '<b>' + obj.name + '</b> died at age ' + obj.age + '<br>';
-      });
-
-      _.each(turnMetaData.births, function (family) {
-        string += 'Family:  <b>' + family + '</b> had a child. <br>';
-      });
-
-      _.each(turnMetaData.birthdays, function (birthday) {
-        string += '<b>' + birthday.name + '</b> turned ' + birthday.age + ' <br>';
-      });
-
-      _.each(turnMetaData.becomeMan, function (obj) {
-        string += '<b>' + obj.name + '</b> became a man and started a farm at ' + obj.where.x + ',' + obj.where.y + '<br>';
-      });
-
-      _.each(turnMetaData.miscarriage, function (name) {
-        string += '<b>' + name + '</b> miscarried today :( <br>';
-      });
-
-      _.each(turnMetaData.pregnancies, function (name) {
-        string += '<b>' + name + '</b> became pregnant <br>';
-      });
-
-      _.each(turnMetaData.marriages, function (marriage) {
-        string += '<b>' + marriage.wife + '</b> married <b>' + marriage.husband + '</b> <br>';
-      });
-
-      infoSpamDiv.html(string + '<br>' + infoSpamDiv.html());
+      $('#turnLabel').html('turn: ' + roundNumber);
     };
 
     GAME.startGame = function () {
@@ -289,8 +217,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       preContainer.visible = false;
       console.log("end pregame state");
 
-      var size = currentGame.ruleBundleGameSettings.customBoardSettings;
-      var newMap = Map({gameBoard:currentGameBoard, size: size, func: placeCastle, mainClickCallback: clickSpace});
+      var newMap = Board({gameBoard:currentGameBoard, mainClickCallback: clickSpace});
       GAME.stage.addChild(newMap);
       gameMap = newMap;
     };
@@ -301,11 +228,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       console.log("reset State: "+GAME.state)
     };
 
-    GAME.click = function (loc){
-      //can be delt with thru http://www.createjs.com/Docs/EaselJS/classes/DisplayObject.html#event_click
-    };
-
-    var clickSpace = function (x, y) {
+    var clickSpace = function (x, y) {/*
       var locationId = x + ',' + y,
         piece = SDK.GameBoards.getFullSpaceInfo(currentGameBoard, locationId),
         string = '<h4>' + x + ', ' + y +  ' ' + piece.attributes.terrainType + '</h4><br><br>';
@@ -319,7 +242,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       });
 
       string += '<br>';
-      $('#spaceInfoDiv').html(string);
+      $('#spaceInfoDiv').html(string);*/
     };
 
     //process key presses

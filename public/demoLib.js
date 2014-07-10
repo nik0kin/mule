@@ -287,7 +287,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     }
 
     var playButton;
-    if (gameData.gameStatus !== 'open' && (gameData.ruleBundle.name === 'TicTacToe' || gameData.ruleBundle.name === 'MuleSprawl')) {
+    if (gameData.gameStatus !== 'open' && (gameData.ruleBundle.name === 'TicTacToe'
+      || gameData.ruleBundle.name === 'MuleSprawl' || gameData.ruleBundle.name === 'Backgammon')) {
       playButton = getButton(playGame, gameData, 'Play', '', '');
     } else {
       playButton = getButton(null,{},'NYI','','disabled');
@@ -544,6 +545,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
       window.open("tictactoe/?gameID="+gameData._id + '&playerRel=' + currentPlayerRel);
     else if (gameData.ruleBundle.name === 'MuleSprawl')
       window.open("mulesprawl/?gameID="+gameData._id);
+    else if (gameData.ruleBundle.name === 'Backgammon')
+      window.open("backgammon/?gameID="+gameData._id + '&playerRel=' + currentPlayerRel);
   };
 
   return that;
