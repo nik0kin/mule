@@ -1,6 +1,6 @@
 {
   "name": "ProjectMule",
-  "version": "0.0.8",
+  "version": "0.0.1",
   "description": "(Abstract) Asyncronous-play Turn-based Game Platform",
   "main": "server.js",
   "directories": {
@@ -16,16 +16,14 @@
   "dependencies": {
     "express": "3.x",
     "q": "~0.9.7",
-    "async": "~0.2.9",
     "notifier": "~0.1.1",
-    "passport": "latest",
-    "passport-local": "latest",
-    "connect-mongo": "latest",
-    "connect-flash": "latest",
-    "winston": "latest",
-    "lodash": "*",
-    "mkdirp": "*",
-    "weighted" : "*"
+    "passport": "0.2.0",
+    "passport-local": "1.0.0",
+    "connect-mongo": "~0.4.1",
+    "connect-flash": "~0.1.1",
+    "winston": "~0.7.3",
+    "lodash": "~2.4.1",
+    "mkdirp": "0.5.0"
   },
   "devDependencies": {
     "mocha": "*",

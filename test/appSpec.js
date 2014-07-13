@@ -3,9 +3,10 @@
 
 process.env.NODE_ENV = 'test';
 
-require('../server');
+var app = require('../server');
 
-var request = require('supertest');
+var request = require('supertest'),
+  should = require('should');
 
 /**
  *
@@ -16,7 +17,7 @@ describe('App', function(){
 
   describe('Smoke Tests:', function(){
     it('express should not be null', function(done){
-      app.should.be.ok;
+      should(app).be.ok;
       done();
     });
     /*it('site should be served on /public', function(done){

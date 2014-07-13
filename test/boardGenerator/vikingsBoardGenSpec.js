@@ -1,7 +1,7 @@
 
 var should = require('should');
 
-var vikingBoardGenerator = require('mule-rules/bundles/vikings/boardGenerator');
+var vikingBoardGenerator = require('mule-rules/bundles/vikings/code/boardGenerator');
 
 
 describe('BoardGenerator', function () {

@@ -61,7 +61,7 @@ describe('API: ', function () {
           .post('/LoginAuth')
           .send({password : 'validpw'})
           .set('Accept', 'application/json')
-          .expect(401)
+          .expect(400)
           .end(function(err, res){
             if (err) return done(err);
             done();
@@ -73,7 +73,7 @@ describe('API: ', function () {
           .post('/LoginAuth')
           .send({username : 'validuser'})
           .set('Accept', 'application/json')
-          .expect(401)
+          .expect(400)
           .end(function(err, res){
             if (err) return done(err);
             done();

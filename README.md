@@ -2,15 +2,13 @@
 
 Asyncronous Turn-based Game Platform?
 
-Roadmap / Milestones:
-- 0.0.1 - Users/Games
-- 0.0.5 - Refactor Week
-- 0.0.6 - Standardized http response codes
-- 0.0.7 - Concept of RuleBundles added
-- 0.0.8 - GameBoard (Spaces' and Pieces)
-- 0.0.9 - Turn System / TicTacToe  <--CURRENT
-- 0.0.10 - Huge Cleanup / Refactor Week
-- 0.0.11 - Action System / Checkers?
+Roadmap to 0.0.1 / Milestones:
+- I - Users/Games
+- II - Concept of RuleBundles added
+- III - GameBoard (Spaces' and Pieces)
+- IV - Turn System
+- V - Action System Experiments (TicTacToe, MuleSprawl, Backgammon)  <--CURRENT
+- VI - Huge Cleanup / Refactor Week
 
 Latest commit on master hosted at (CI staging):
 - http://zion.tgp.io:3130/public/

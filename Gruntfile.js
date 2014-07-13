@@ -48,6 +48,10 @@ module.exports = function (grunt) {
         command: 'rm -rf node_modules/mule-models/node_modules/mule-rules/*'
           + ' && cp -rf node_modules/mule-rules node_modules/mule-models/node_modules/mule-rules'
       },
+      updateUtils: {
+        command: 'rm -rf node_modules/mule-models/node_modules/mule-utils/*'
+          + ' && cp -rf node_modules/mule-utils node_modules/mule-models/node_modules/mule-utils'
+      },
       clear_logs : {
         command: 'rm logs/mule*.log'
       },
