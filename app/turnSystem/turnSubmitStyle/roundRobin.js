@@ -105,7 +105,7 @@ exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) 
     });
 };
 
-exports.progressRoundQ = function (game, player, gameBoardObject, historyObject, ruleBundle) {
+exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObject, historyObject, ruleBundle) {
   return Q()
     .then(function () {
       console.log('Round successful: ' + historyObject.currentRound);

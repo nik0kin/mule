@@ -4,6 +4,8 @@ define(['Loader'], function (Loader) {
 
   var terrainImages = {
     grass: 'assets/terrain/grass.png',
+    grass2: 'assets/terrain/grass2.png',
+    grass3: 'assets/terrain/grass3.png',
     water: 'assets/terrain/water.png'
   };
 
@@ -43,7 +45,18 @@ define(['Loader'], function (Loader) {
       //map =
       _.each(_map, function (yValue, y) {
         _.each(yValue, function (xValue, x) {
-          var newBitmap = new createjs.Bitmap(terrainImages[xValue]);
+
+          if (xValue === 'grass') {
+            var r = Math.floor((Math.random() * 3) + 1);
+            xValue = {
+              1: 'grass',
+              2: 'grass2',
+              3: 'grass3'
+            }[r];
+          }
+
+          var terrainImage = terrainImages[xValue]
+            newBitmap = new createjs.Bitmap(terrainImage);
           newBitmap.x = x * TERRAIN_SIZE;
           newBitmap.y = y * TERRAIN_SIZE - TERRAIN_SIZE;
           that.addChild(newBitmap);

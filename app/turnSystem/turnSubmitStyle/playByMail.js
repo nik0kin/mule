@@ -2,6 +2,7 @@ var _ = require('lodash'),
   Q = require('q');
 
 var GameBoard = require('mule-models').GameBoard.Model,
+  GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
   MuleRules = require('mule-rules'),
   actionsHelper = require('./../actionsHelper'),
@@ -12,11 +13,15 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
   console.log('Submitting turn (playByMail) for ' + player)
   console.log(turn)
 
-  var _gameBoard;
-  return GameBoard.findByIdWithPopulatedStatesQ(gameBoardId)
+  var _gameBoard, _gameState;
+  return GameBoard.findByIdQ(gameBoardId)
     .then(function (gameBoard) {
       _gameBoard = gameBoard;
-      return History.findByIdQ(gameBoard.history);
+      return GameState.findByIdQ(gameBoard.gameState);
+    })
+    .then(function (foundGameState) {
+      _gameState = foundGameState;
+      return History.findByIdQ(_gameBoard.history);
     })
     .then(function (historyObject) {
       // save the turn
@@ -29,7 +34,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
       if (historyObject.getCanAdvancePlayByMailRound()) {
         console.log('advancing round');
         // progress turn if they are
-        return exports.progressRoundQ(game, player, _gameBoard, historyObject, ruleBundle);
+        return exports.progressRoundQ(game, player, _gameBoard, _gameState, historyObject, ruleBundle);
       } else {
         console.log('all turns not in: not progressing');
       }
@@ -40,7 +45,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
     });
 };
 
-exports.progressRoundQ = function (game, player, gameBoardObject, historyObject, ruleBundle) {
+exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObject, historyObject, ruleBundle) {
 
   if (historyObject.currentRound > 1000) {
     // do nothing
@@ -52,7 +57,7 @@ exports.progressRoundQ = function (game, player, gameBoardObject, historyObject,
   var promises = [], _metaData;
   _.each(turns, function (turn, player) {
     if (player !== 'meta') {
-      var promise = actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, turn.actions, player, ruleBundle);
+      var promise = actionsHelper.doActionsQ({gameState: gameStateObject, gameBoard: gameBoardObject, history: historyObject}, turn.actions, player, ruleBundle);
       promises.push(promise);
     }
   });
@@ -66,7 +71,7 @@ exports.progressRoundQ = function (game, player, gameBoardObject, historyObject,
           .then(function (result) {
             console.log('calling bundleProgreesQ');
             actionsHelper.initActions(game.ruleBundle);
-            return bundleProgressRoundQ(GameBoard, result)
+            return bundleProgressRoundQ(GameState, result)
               .then(function (metaData) {
                 _metaData = metaData;
                 return History.findByIdQ(result.history._id);

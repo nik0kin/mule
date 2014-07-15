@@ -57,7 +57,7 @@ define([], function () {
     };
 
     //combines gameboard.board and gameboard.spaces (really just adds attributes)
-    that.getFullSpaceInfo = function (gameBoard, spaceId) {
+    that.getFullSpaceInfo = function (gameBoard, gameState, spaceId) {
       var foundSpace;
 
       _.each(gameBoard.board, function (value) {
@@ -70,7 +70,7 @@ define([], function () {
         return undefined;
       }
 
-      _.each(gameBoard.spaces, function (value) {
+      _.each(gameState.spaces, function (value) {
         if (value.boardSpaceId === spaceId) {
           foundSpace.attributes = value.attributes;
         }
@@ -79,10 +79,10 @@ define([], function () {
       return foundSpace;
     };
 
-    that.getPiecesOnSpace = function (gameBoard, spaceId) {
+    that.getPiecesOnSpace = function (gameState, spaceId) {
       var pieces = [];
 
-      _.each(gameBoard.pieces, function (value) {
+      _.each(gameState.pieces, function (value) {
         if (value.locationId === spaceId) {
           pieces.push(value);
         }
@@ -106,10 +106,10 @@ define([], function () {
       return fullBoard;
     };
 
-    that.getClassesFromPieces = function (board, className) {
+    that.getClassesFromPieces = function (gameState, className) {
       var found = [];
 
-      _.each(board.pieces, function (value, key) {
+      _.each(gameState.pieces, function (value, key) {
         if (value.class === className) {
           found.push(value);
         }

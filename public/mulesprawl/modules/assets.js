@@ -10,6 +10,8 @@ define(function(){
     },
     images: [
       {src: 'assets/terrain/grass.png', id: 'terrain_grass'},
+      {src: 'assets/terrain/grass2.png', id: 'terrain_grass2'},
+      {src: 'assets/terrain/grass3.png', id: 'terrain_grass3'},
       {src: 'assets/terrain/water.png', id: 'terrain_water'},
 
       {src: 'assets/buildings/castle.png', id: 'building_castle'},

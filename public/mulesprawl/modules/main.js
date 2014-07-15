@@ -16,6 +16,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
     var currentUser = {},
       playerMap,
       currentGameBoard,
+      currentGameState,
       currentGame,
       currentRound = 0,
       currentHistory,
@@ -136,10 +137,10 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                   //populateTurnStatusLabel();
                 });
 
-              SDK.GameBoards.readGamesBoardQ(currentGame._id)
-                .done(function(gameBoard) {
+              SDK.GameStates.readGamesStateQ(currentGame._id)
+                .done(function(gameState) {
                   //var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
-                  currentGameBoard = gameBoard;
+                  currentGameState = gameState;
 
                   updateGoldLabel();
 
@@ -147,6 +148,10 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                     //populateBoard(gameBoard);
                     firstLoad = false;
                     SDK.Historys.markAllTurnsRead(currentHistory);
+                    SDK.GameBoards.readGamesBoardQ(currentGame._id)
+                      .done(function(gameBoard) {
+                        currentGameBoard = gameBoard;
+                      });
                   } else {
                     //look at last turn
                     var t = SDK.Historys.getLastUnreadTurn(currentHistory);
@@ -176,7 +181,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
         if (!value.metadata) return;
         _.each(value.metadata.newFarms, function (value) {
           var loc = value.split(',');
-          var family = SDK.GameBoards.getPiecesOnSpace(currentGameBoard, value);
+          var family = SDK.GameBoards.getPiecesOnSpace(currentGameState, value);
           _.each(family, function (piece) { // TODO move a func like this to sdk?
             if (piece.class === 'Farmer') {
               family = piece.attributes.familyName;
@@ -223,8 +228,8 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
     };
 
     var updateGoldLabel = function () {
-      var gold = currentGameBoard.playerVariables['p1'].gold;
-      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer');
+      var gold = currentGameState.playerVariables['p1'].gold;
+      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameState, 'Farmer');
 
       var pregnantWomen = [];
       _.each(farmers, function (farmer) {
@@ -247,9 +252,29 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
         + pregnantWomen.length + ', ' + singlesString);
     };
 
+    var months = {
+      0: 'January',
+      1: 'Febuary',
+      2: 'March',
+      3: 'April',
+      4: 'May',
+      5: 'June',
+      6: 'July',
+      7: 'August',
+      8: 'September',
+      9: 'October',
+      10: 'November',
+      11: 'December'
+    };
+
     var infoSpamDiv = $('#infoSpamDiv');
     var updateInfoSpam = function (turnMetaData) {
       var string = '';
+
+      var month = currentRound % 12;
+      var year = Math.floor(currentRound / 12);
+      var monthAndYear = months[month] + ', Year ' + year;
+      string += '<small>' +monthAndYear + '</small><br>';
 
       _.each(turnMetaData.deaths, function (obj) {
         string += '<b>' + obj.name + '</b> died at age ' + obj.age + '<br>';
@@ -290,7 +315,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       console.log("end pregame state");
 
       var size = currentGame.ruleBundleGameSettings.customBoardSettings;
-      var newMap = Map({gameBoard:currentGameBoard, size: size, func: placeCastle, mainClickCallback: clickSpace});
+      var newMap = Map({gameBoard:currentGameState, size: size, func: placeCastle, mainClickCallback: clickSpace});
       GAME.stage.addChild(newMap);
       gameMap = newMap;
     };
@@ -307,10 +332,10 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
 
     var clickSpace = function (x, y) {
       var locationId = x + ',' + y,
-        piece = SDK.GameBoards.getFullSpaceInfo(currentGameBoard, locationId),
+        piece = SDK.GameBoards.getFullSpaceInfo(currentGameBoard, currentGameState, locationId),
         string = '<h4>' + x + ', ' + y +  ' ' + piece.attributes.terrainType + '</h4><br><br>';
 
-      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer');
+      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameState, 'Farmer');
       _.each(farmers, function (farmer) {
         if (farmer.locationId === (x + ',' + y)) {
           string += '<b>' + farmer.attributes.name + ' ' + farmer.attributes.familyName +'</b><br>';

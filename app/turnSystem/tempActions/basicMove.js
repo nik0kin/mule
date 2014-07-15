@@ -30,8 +30,8 @@ exports.validateQ = function (gameBoardId, params) {
     });
 };
 
-exports.doQ = function (gameBoard, params) {
-  var piece = actionsHelper.searchThruPiecesForId(gameBoard.pieces, params.whichPieceId);
+exports.doQ = function (gameState, params) {
+  var piece = actionsHelper.searchThruPiecesForId(gameState.pieces, params.whichPieceId);
 
   var id = piece._id;
   //delete piece._doc._id;

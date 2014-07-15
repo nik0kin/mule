@@ -4,6 +4,7 @@ var _ = require('lodash'),
 var roundRobinTurnSystem = require('./turnSubmitStyle/roundRobin'),
   playByMailTurnSystem = require('./turnSubmitStyle/playByMail'),
   GameBoard = require('mule-models').GameBoard.Model,
+  GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
   RuleBundle = require('mule-models').RuleBundle.Model,
   PieceState = require('mule-models').PieceState.Model,
@@ -41,7 +42,7 @@ exports.forceTurnProgress = function (game) {
         console.log('forcing round progress on ' + notPlayed +' (round ' + gameStateObject.history.currentRound + ')');
         gameStateObject.history.addPlayerTurnAndSaveQ(notPlayed, [])
           .then(function () {
-            return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, gameStateObject.gameBoard, gameStateObject.history, gameStateObject.ruleBundle);
+            return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, gameStateObject.gameBoard, gameStateObject.gameState, gameStateObject.history, gameStateObject.ruleBundle);
           })
           .done(function () {
             console.log('force complete');
@@ -61,7 +62,7 @@ exports.loadGameStateObjectQ = function (game) {
     _history,
     _ruleBundle;
 
-  return GameBoard.findByIdWithPopulatedStatesQ(game.gameBoard)
+  return GameBoard.findByIdQ(game.gameBoard)
     .then(function (foundGameBoard) {
       _board = foundGameBoard;
 
@@ -75,13 +76,17 @@ exports.loadGameStateObjectQ = function (game) {
     .then(function (foundHistory) {
       _history = foundHistory;
 
+      return GameState.findByIdWithPopulatedStatesQ(_board.gameState);
+    })
+    .then(function (foundGameState) {
       var gso = {
         game: game,
         ruleBundle: _ruleBundle,
         gameBoard: _board,
+        gameState: foundGameState,
         history: _history
       };
-      console.log('loaded?')
+      console.log('loaded gso');
       return Q(gso);
     });
 };

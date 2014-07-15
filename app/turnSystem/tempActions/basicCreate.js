@@ -2,7 +2,7 @@
 var _ = require('lodash'),
   Q = require('q');
 
-var GameBoard = require('mule-models').GameBoard.Model,
+var GameState = require('mule-models').GameState.Model,
   PieceState = require('mule-models').PieceState.Model,
   actionsHelper = require('mule-utils/actionsUtils');
 
@@ -10,9 +10,9 @@ var GameBoard = require('mule-models').GameBoard.Model,
 exports.validateQ = function (gameBoardId, params, ruleBundleObject) {
   return GameBoard.findByIdWithPopulatedStatesQ(gameBoardId)
     .then(function (gameBoard) {
-      var space = actionsHelper.searchThruSpacesForId(gameBoard.spaces, params.whereId);
+      var space = actionsHelper.searchThruSpacesForId(gameBoard.gameState.spaces, params.whereId);
 
-      if (!gameBoard.playerVariables[params.playerRel]) {
+      if (!gameBoard.gameState.playerVariables[params.playerRel]) {
         throw "INVALID playerRel";
       }
 
@@ -26,7 +26,7 @@ exports.validateQ = function (gameBoardId, params, ruleBundleObject) {
 
       var getPiecesOnSpace = function (spaceId) {
         var array = [];
-        _.each(gameBoard.pieces, function (piece) {
+        _.each(gameBoard.gameState.pieces, function (piece) {
           if (spaceId === piece.locationId) {
             array.push(piece)
           }
@@ -41,7 +41,7 @@ exports.validateQ = function (gameBoardId, params, ruleBundleObject) {
     });
 };
 
-exports.doQ = function (gameBoard, params) {
+exports.doQ = function (gameState, params) {
   console.log('new piece, ' + params.playerRel + ' at ' + params.whereId);
 
   var newPieceState = new PieceState({
@@ -55,13 +55,13 @@ exports.doQ = function (gameBoard, params) {
   return newPieceState.saveQ()
     .then(function (savedPieceState) {
       savedId = savedPieceState._id;
-      return GameBoard.findByIdQ(gameBoard._id);
+      return GameState.findByIdQ(gameState._id);
     })
-    .then(function (gameBoard) { // TODO make this better, and in another place
-      gameBoard.pieces.push(savedId);
-      gameBoard.markModified('pieces');
+    .then(function (gameState) { // TODO make this better, and in another place
+      gameState.pieces.push(savedId);
+      gameState.markModified('pieces');
 
-      return gameBoard.saveQ();
+      return gameState.saveQ();
     })
 
 };

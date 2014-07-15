@@ -33,7 +33,7 @@ var checkTicTacToeWinQ = function (gameBoardObjectId) {
       var winner = undefined,
         mPieces = {};
 
-      _.each(gameBoard.pieces, function (piece) {
+      _.each(gameBoard.gameState.pieces, function (piece) {
         mPieces[piece.locationId] = {'class': piece.class};
       });
 

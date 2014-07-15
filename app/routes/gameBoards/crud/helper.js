@@ -42,12 +42,6 @@ exports.createQ = function (params) {
 exports.readQ = function (gameBoardID){
   return Q.promise(function (resolve, reject) {
     GameBoard.findByIdQ(gameBoardID)
-      .then(function (gameBoard) {
-        return gameBoard.populateQ('spaces');
-      })
-      .then(function (gameBoard) {
-        return gameBoard.populateQ('pieces');
-      })
       .done(function (gameBoard) {
 
         if (gameBoard.boardType == 'static') {
