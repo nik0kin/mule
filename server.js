@@ -49,7 +49,9 @@ app = express();
 require('./config/express')(app, config, passport);
 
 // Bootstrap routes
-require('./app/routes')(app, passport);
+var router  = express.Router();
+require('./app/routes')(router, passport);
+app.use('/webservices', router);
 
 // Load RuleBundles
 require('mule-rules/lib/initRuleBundles').loadOnce(require('./app/routes/ruleBundles/crud/helper'));

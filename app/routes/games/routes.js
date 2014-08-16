@@ -13,7 +13,7 @@ module.exports = function (app){
   app.post('/games', auth.requiresLogin, gameController.create);
   app.get ('/games/:id', gameController.read);
   app.put ('/games/:id', auth.requiresLogin, gameController.update);  //TODO change auth function to the game owner
-  app.del ('/games/:id', auth.requiresLogin, gameController.destroy); // ^^
+  app.delete ('/games/:id', auth.requiresLogin, gameController.destroy); // ^^
 
   app.get('/users/:id/games', gameController.readUsersGames);
 

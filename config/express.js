@@ -1,66 +1,72 @@
 
 /**
- * Module dependencies.
+ * Express dependencies.
  */
 
 var express = require('express'),
-    mongoStore = require('connect-mongo')(express),
+  session = require('express-session'),
+  MongoStore = require('connect-mongo')(session),
+  compression = require('compression'),
+  morgan = require('morgan'),
+  favicon = require('serve-favicon'),
+  bodyParser = require('body-parser'),
+  cookieParser = require('cookie-parser'),
     flash = require('connect-flash'),
-    pkg = require('../package.json');
+  pkg = require('../package.json');
 
 module.exports = function (app, config, passport) {
 
   app.set('showStackError', true);
 
   // should be placed before express.static
-  app.use(express.compress({
+  app.use(compression({
     filter: function (req, res) {
       return (/json|text|javascript|css/).test(res.getHeader('Content-Type'));
     },
-    level: 9
+    threshold: 9
   }));
 
   //statically serve test site
-  app.use('/public', express.static(config.root + '/public' ));
+  app.use('/webservices/public', express.static(config.root + '/public' ));
 
   app.use(function(req, res, next) {
     if(req.url == '/')
-      res.redirect('/public');
+      res.redirect('/webservices/public');
     else
       next();
   });
 
   // don't use logger for test env
   if (process.env.NODE_ENV !== 'test') {
-    app.use(express.logger('dev'));
+    app.use(morgan(':remote-addr :status :method :url'));
   }
 
+  // expose package.json to views
+  app.use(function (req, res, next) {
+    res.locals.pkg = pkg;
+    next();
+  });
 
-  app.configure(function () {
-        // expose package.json to views
-    app.use(function (req, res, next) {
-      res.locals.pkg = pkg;
-      next();
-    });
+  app.use(favicon(__dirname + '/../public/favicon.ico'));
 
-    app.use(express.favicon(__dirname + '/../public/favicon.ico', {maxAge: 86400000}));
+  // cookieParser should be above session
+  app.use(cookieParser());
 
-    // cookieParser should be above session
-    app.use(express.cookieParser());
+  // bodyParser should be above methodOverride
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({extended: true}));
+  //app.use(express.methodOverride());
 
-    // bodyParser should be above methodOverride
-    app.use(express.json());
-    app.use(express.urlencoded());
-    app.use(express.methodOverride());
-
-    // express/mongo session storage
-    app.use(express.session({
-      secret: 'mulejs',
-      store: new mongoStore({
-        url: config.db,
-        collection : 'sessions'
-      })
-    }));
+  // express/mongo session storage
+  app.use(session({
+    secret: 'mulejs',
+    resave: true,
+    saveUninitialized: true,
+    store: new MongoStore({
+      url: config.db,
+      collection : 'sessions'
+    })
+  }));
 
     // use passport session
     app.use(passport.initialize());
@@ -85,7 +91,7 @@ module.exports = function (app, config, passport) {
     }
      */
     // routes should be at the last
-    app.use(app.router);
+    //app.use(app.router);
 
     // assume "not found" in the error msgs
     // is a 404. this is somewhat silly, but
@@ -112,7 +118,7 @@ module.exports = function (app, config, passport) {
         error: 'Not found'
       });
     });*/
-  });
+  
     /*app.get('*', function (req, res) {
       res.send("<b>mule</b><br>" + req.originalUrl + " : loooooooooool 404");
     });*/

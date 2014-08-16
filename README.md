@@ -47,6 +47,11 @@ Install ProjectMule
     grunt updateMule
 ```
 
+Nginx Config
+-----------
+
+  - Ubuntu: /etc/nginx/nginx.conf
+
 RUN:
 =======
 
