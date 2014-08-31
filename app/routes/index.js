@@ -3,6 +3,13 @@
  */
 
 module.exports = function (app, passport) {
+  // heartbeat
+  app.get('/alive', function (req, res) {
+    res.status(200).send({
+      msg: 'yee',
+      time: new Date().toString()
+    });
+  });
 
   ////////// DATA MODELS //////////
   // users //

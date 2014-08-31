@@ -43,6 +43,7 @@ exports.create = function (req, res){
         });
 
         responseJSON.userID = user._id;
+        responseJSON.username = user.username;
         winston.info('\'' + user.username +'\' created and logged in');
         return res.status(200).send(responseJSON);
       }, function (err) {
