@@ -38,7 +38,7 @@ module.exports = function (app, config, passport) {
 
   // don't use logger for test env
   if (process.env.NODE_ENV !== 'test') {
-    app.use(morgan(':remote-addr :status :method :url'));
+    app.use(morgan(':remote-addr :status :response-time ms :method :url'));
   }
 
   // expose package.json to views

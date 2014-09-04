@@ -16,6 +16,7 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
     var currentUser = {},
       playerMap,
       currentGameBoard,
+      currentGameState,
       currentGame,
       currentRound = 0,
       currentHistory,
@@ -153,6 +154,13 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
 
                   console.log('refreshed');
                 });
+
+                SDK.GameStates.readGamesStateQ(currentGame._id)
+                .done(function(gameState) {
+                  currentGameState = gameState;
+
+                  console.log('stated');
+                });
             });
         });
 
@@ -217,7 +225,7 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
       preContainer.visible = false;
       console.log("end pregame state");
 
-      var newMap = Board({gameBoard:currentGameBoard, mainClickCallback: clickSpace});
+      var newMap = Board({gameBoard:currentGameBoard, gameState: currentGameState, mainClickCallback: clickSpace});
       GAME.stage.addChild(newMap);
       gameMap = newMap;
     };

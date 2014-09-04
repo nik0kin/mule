@@ -53,7 +53,7 @@ define(['Loader'], function (Loader) {
     var mainClickCallback = params.mainClickCallback;
 
     function init () {
-      var simpleBoard = getSimpleBackgammonBoardFromGameBoard(params.size, params.gameBoard.spaces, params.gameBoard.pieces);
+      var simpleBoard = getSimpleBackgammonBoardFromGameBoard(params.size, params.gameState.spaces, params.gameState.pieces);
 
       that.drawBackground();
 
