@@ -4,17 +4,19 @@ var _ = require('lodash'),
 var Game = require('mule-models').Game.Model,
   turnBrain = require('../brain');
 
-var MIN_TIMER_CHECK = 10, //seconds
-  MS_PER_SEC = 1000;
+var MS_PER_SEC = 1000;
 
-var timeoutId, firstLoad = true;
+var timeoutId, firstLoad = true, minTimerCheck;
 
-exports.initTurnTimerChecks = function () {
+exports.initTurnTimerChecks = function (minimumTimerCheck) {
+  minimumTimerCheck = minimumTimerCheck || minTimerCheck;
+
   if (firstLoad) {
     firstLoad = false;
+    minTimerCheck = minimumTimerCheck;
     return exports.checkForExpiredTurns();
   }
-  timeoutId = setTimeout(exports.checkForExpiredTurns, MIN_TIMER_CHECK * MS_PER_SEC)
+  timeoutId = setTimeout(exports.checkForExpiredTurns, minimumTimerCheck * MS_PER_SEC)
 };
 
 exports.checkForExpiredTurns = function () {

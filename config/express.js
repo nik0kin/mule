@@ -30,7 +30,7 @@ module.exports = function (app, config, passport) {
   app.use('/webservices/public', express.static(config.root + '/public' ));
 
   app.use(function(req, res, next) {
-    if(req.url == '/')
+    if(req.url == '/webservices')
       res.redirect('/webservices/public');
     else
       next();
