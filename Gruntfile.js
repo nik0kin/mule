@@ -34,7 +34,7 @@ module.exports = function (grunt) {
         options: {                      // Options
           stdout: true
         },
-        command: 'rm node_modules/mule* -rf && npm install'
+        command: 'rm -rf node_modules/mule* || npm install'
           + ' && git clone http://github.com/nik0kin/mule-utils.git node_modules/mule-utils'
           + ' && git clone http://github.com/nik0kin/mule-models.git node_modules/mule-models'
           + ' && git clone http://github.com/nik0kin/mule-rules.git node_modules/mule-rules'
@@ -57,7 +57,7 @@ module.exports = function (grunt) {
       },
       monGO: {
         options: { stdout: true },
-        command: 'sudo ~/mongodb-linux/bin/mongod --fork --logpath /var/log/mongodb.log --logappend'
+        command: 'sudo ~/mongodb/bin/mongod --fork --logpath /var/log/mongodb.log --logappend'
       },
       monDEL: {
         options: {  stdout: true },

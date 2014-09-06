@@ -11,7 +11,8 @@ Roadmap to 0.0.1 / Milestones:
 - VI - Huge Cleanup / Refactor Week
 
 Latest commit on master hosted at (CI staging):
-- http://zion.tgp.io:3130/public/
+- MuleFrontend: http://zion.tgp.io:313/
+- Old/Debug: http://zion.tgp.io:3130/webservices/public/
 
 INSTALL:
 =======
@@ -29,7 +30,7 @@ Node (Ubuntu):
 Grunt, forever:
 -----------
 ```
-    sudo install -g grunt-cli forever
+    sudo npm install -g grunt-cli forever
 ```
 
 MongoDB:
@@ -37,7 +38,7 @@ MongoDB:
 - http://docs.mongodb.org/manual/installation/
 OR
 - http://docs.mongodb.org/manual/tutorial/install-mongodb-on-linux/
-- put mongo folder in '~/mongo-linux'
+- put mongo folder in '~/mongodb'
 - run 'grunt monGO' to start mongodb
 
 Install ProjectMule
