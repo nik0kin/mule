@@ -236,21 +236,8 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
       console.log("reset State: "+GAME.state)
     };
 
-    var clickSpace = function (x, y) {/*
-      var locationId = x + ',' + y,
-        piece = SDK.GameBoards.getFullSpaceInfo(currentGameBoard, locationId),
-        string = '<h4>' + x + ', ' + y +  ' ' + piece.attributes.terrainType + '</h4><br><br>';
-
-      var farmers = SDK.GameBoards.getClassesFromPieces(currentGameBoard, 'Farmer');
-      _.each(farmers, function (farmer) {
-        if (farmer.locationId === (x + ',' + y)) {
-          string += '<b>' + farmer.attributes.name + ' ' + farmer.attributes.familyName +'</b><br>';
-          string += ' - ' + farmer.attributes.sex + ', ' + farmer.attributes.age +', ' + farmer.attributes.married + '<br>';
-        }
-      });
-
-      string += '<br>';
-      $('#spaceInfoDiv').html(string);*/
+    var clickSpace = function (space) {
+      console.log(space);
     };
 
     //process key presses

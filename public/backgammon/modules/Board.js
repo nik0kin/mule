@@ -14,7 +14,15 @@ define(['Loader'], function (Loader) {
   var piecesImages = {
     black_piece: 'assets/boardgamePack/pieceBlack_multi10.png',
     red_piece: 'assets/boardgamePack/pieceRed_border11.png'
-    }, tokenOffset = {x: 10, y: 10};
+    },
+    tokenOffset = {x: 10, y: 10},
+    size = {x: 900, y: 600},
+    clickAreaPosOffset = {x: -10, topY: -10, botY: -220},
+    clickAreaSize = {x: 50, y: 270},
+    w1 = 80, h1 = 40,
+    diceClickAreaRect = {x: size.x/2 - w1/2, y: size.y/2 - h1/2, w: w1, h: h1},
+    topJailClickAreaRect = {x: size.x/2 - w1/2, y: 0, w: w1, h: size.y/2 - h1/2},
+    botJailClickAreaRect = {x: size.x/2 - w1/2, y: size.y/2 + h1/2, w: w1, h: size.y/2 - h1/2};
 
   var pieceStartLocations = {
       1: {x: 830, y: 540},
@@ -85,12 +93,64 @@ define(['Loader'], function (Loader) {
       }
     };
 
+    var isBetween = function (num, low, high) {
+      return num >= low && num <= high;
+    };
+
+var g = new createjs.Graphics();
     that.clickedSpace = function (x, y) {
       console.log('clicked ' + x + ', ' + y);
 
-      // where is what boxes
+      // check spaces
+      _.each(pieceStartLocations, function (startLocation, pieceNumber) {
+        var left = startLocation.x + clickAreaPosOffset.x,
+          right = startLocation.x + clickAreaPosOffset.x + clickAreaSize.x,
+          up = startLocation.y + (pieceNumber > 12 ? clickAreaPosOffset.topY : clickAreaPosOffset.botY),
+          down = up + clickAreaSize.y;
 
-      mainClickCallback(x,y);
+          /* //UNCOMMENT for hit boxes rectangles
+          var shape = new createjs.Shape();
+          shape.graphics.beginFill("#ff0000").drawRect(left, up, clickAreaSize.x, clickAreaSize.y);
+          that.addChild(shape);
+          */
+
+        if (isBetween(x, left, right) && isBetween(y, up, down)) {
+          mainClickCallback(pieceNumber);
+        }
+      });
+
+      // check dice spot
+      if (isBetween(x, diceClickAreaRect.x, diceClickAreaRect.x + diceClickAreaRect.w) && 
+        isBetween(y, diceClickAreaRect.y, diceClickAreaRect.y + diceClickAreaRect.h) ) {
+        mainClickCallback('dice');
+      }
+      /* //UNCOMMENT for hit boxes rectangles
+      var shape = new createjs.Shape();
+      shape.graphics.beginFill("#ff0000").drawRect(diceClickAreaRect.x, diceClickAreaRect.y, diceClickAreaRect.w, diceClickAreaRect.h);
+      that.addChild(shape);
+      */
+
+      // check top jail
+      if (isBetween(x, topJailClickAreaRect.x, topJailClickAreaRect.x + topJailClickAreaRect.w) && 
+        isBetween(y, topJailClickAreaRect.y, topJailClickAreaRect.y + topJailClickAreaRect.h) ) {
+        mainClickCallback('topJail');
+      }
+      /* //UNCOMMENT for hit boxes rectangles
+      var shape2 = new createjs.Shape();
+      shape2.graphics.beginFill("#0000ff").drawRect(topJailClickAreaRect.x, topJailClickAreaRect.y, topJailClickAreaRect.w, topJailClickAreaRect.h);
+      that.addChild(shape2);
+      */
+
+      // check bottom jail
+      if (isBetween(x, botJailClickAreaRect.x, botJailClickAreaRect.x + botJailClickAreaRect.w) && 
+        isBetween(y, botJailClickAreaRect.y, botJailClickAreaRect.y + botJailClickAreaRect.h) ) {
+        mainClickCallback('botJail');
+      }
+      /* //UNCOMMENT for hit boxes rectangles
+      var shape3 = new createjs.Shape();
+      shape3.graphics.beginFill("#0000ff").drawRect(botJailClickAreaRect.x, botJailClickAreaRect.y, botJailClickAreaRect.w, botJailClickAreaRect.h);
+      that.addChild(shape3);
+      */
     };
 
 
