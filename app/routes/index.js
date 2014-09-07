@@ -27,6 +27,9 @@ module.exports = function (app, passport) {
   // historys //
   require('./historys/routes')(app);
 
+  // turns //
+  require('./turns/routes')(app);
+
   // gameStates //
   require('./gameStates/routes')(app);
 

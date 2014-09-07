@@ -67,17 +67,17 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
 
   exports.initActions(ruleBundle);
 
-  _.each(actions, function (action, key) {
+  _.each(actions, function (action, actionKey) {
     var Action = getAction(action.type, ruleBundle);
     var promise = Action.doQ(objs.gameState, action.params)
-      .then(function (result) {
-        console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + key);
+      .then(function (resultActionMetaData) {
+        console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey);
 
-        if (result)
-          return objs.history.saveMetaDataToActionQ(result, playerRel, key);
+        if (resultActionMetaData)
+          return objs.history.saveMetaDataToActionQ(playerRel, actionKey, resultActionMetaData);
       })
       .fail(function (err) {
-        console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + key);
+        console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + actionKey);
         console.log(err);
       });
     promiseArray.push(promise);

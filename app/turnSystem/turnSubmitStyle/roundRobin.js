@@ -13,17 +13,18 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
   console.log('Submitting turn (roundRobin) for ' + player)
   console.log(turn)
 
-  var _gameBoard;
+  var _gameBoard, _historyObject, turnNumber;
   return GameBoard.findByIdWithPopulatedStatesQ(gameBoardId)
     .then(function (gameBoard) {
       _gameBoard = gameBoard;
       return History.findByIdQ(gameBoard.history);
     })
     .then(function (historyObject) {
+      turnNumber = historyObject.currentTurn;
       if (historyObject.isPlayersTurn(player)) {
         console.log('advancing turn');
         // progress turn if they are the next player to play
-        return historyObject.addPlayerTurnAndSaveQ(player, turn)
+        return historyObject.addRoundRobinPlayerTurnAndSaveQ(player, turn)
           .then(function () {
             return exports.progressTurnQ(game, player, _gameBoard, historyObject);
           });
@@ -34,15 +35,22 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
     })
     .then(function (historyObject) {
       console.log('successfully submitted turn (roundRobin)');
+      _historyObject = historyObject;
 
       // check if all turns are submitted
-      if (historyObject.getCanAdvancePlayByMailRound()) {
+      return historyObject.getCanAdvancePlayByMailTurnQ();
+    })
+    .then(function (canAdvance) {
+      if (canAdvance) {
         console.log('advancing round');
         // progress turn if they are
-        return exports.progressRoundQ(game, player, _gameBoard, historyObject, ruleBundle);
+        return exports.progressRoundQ(game, player, _gameBoard, _historyObject, ruleBundle);
       } else {
         console.log('all turns not in: not progressing round count');
       }
+    })
+    .then(function () {
+      return Q(turnNumber);
     })
     .fail(function (err) {
       console.log('roundrobin submit turn fail: ');
@@ -53,11 +61,18 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
 
 exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) {
   console.log('roundrobin progressTurn:')
-  // do all actions for that player (in history)
-  var playerTurns = historyObject.getRoundTurns(historyObject.currentRound)[player];
 
   var _savedHistoryObject;
-  return actionsHelper.doActionsQ({gameBoard: gameBoardObject, history: historyObject}, playerTurns.actions, player, game.ruleBundle)
+
+  // do all actions for that player (in history)
+  historyObject.getRoundTurnsQ(historyObject.currentRound)
+    .then(function (roundTurns) {
+      var playerTurns = roundTurns[player];
+      return actionsHelper.doActionsQ({
+        gameBoard: gameBoardObject,
+        history: historyObject
+      }, playerTurns.actions, player, game.ruleBundle);
+    })
     .then(function () {
       console.log('Turn successful for ' + player + ': ' + historyObject.currentRound);
       historyObject.progressRoundRobinPlayerTurnTicker();
@@ -83,7 +98,7 @@ exports.progressTurnQ = function (game, player, gameBoardObject, historyObject) 
               })
               .then(function (fHistory) {
                 //TODO where should progressTurn's meta data go? (in players actions?)
-                return fHistory.addPlayerTurnAndSaveQ('meta', {actions:[{type: 'metadata', metadata: _metaData}] });
+                return fHistory.addRoundRobinMetaAndSaveQ({actions:[{type: 'metadata', metadata: _metaData}] });
               });
           });
       } else {
@@ -109,9 +124,7 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
   return Q()
     .then(function () {
       console.log('Round successful: ' + historyObject.currentRound);
-      // increment history.currentRound
-      historyObject.currentRound++;
-      return historyObject.saveQ();
+      return historyObject.incrementRoundQ();
     })
     .then(function () {
       // check if anyone's won?

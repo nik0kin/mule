@@ -186,33 +186,6 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
       });*/
     };
 
-    var placeCastle = function (x, y) {
-      /*console.log('placing at ' + x + ',' + y);
-      var params = {
-        playerId: 'p1',
-        gameId: currentGame._id,
-        actions: [{
-          type: 'PlaceCastle',
-          params: {
-            playerRel: 'p1',
-            where: {x: x, y: y}
-          }
-        }]
-      };
-
-      SDK.PlayTurn.sendQ(params)
-        .then(function (result) {
-          console.log('Submitted turn');
-          console.log(result);
-          // refresh?
-          //counter = 0;
-          gameMap.drawBuilding('Castle', {x: x, y: y});
-        })
-        .fail(function (err) {
-          alert(JSON.stringify(err));
-        })*/
-    };
-
     var updateTurnLabel = function (roundNumber) {
 
       $('#turnLabel').html('turn: ' + roundNumber);

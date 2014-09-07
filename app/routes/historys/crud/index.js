@@ -36,9 +36,7 @@ exports.read = function (req, res) {
 
 ////////////////
 
-exports.readGamesHistory = function (req, res) {
-  winston.info('GET /games/:id/history', req.params.id);
-
+var readGamesHistoryHelper = function (req, res, helperFunction) {
   gameHelper.readQ(req.params.id)
     .done(function (foundGame) {
       if (!foundGame) {
@@ -49,10 +47,10 @@ exports.readGamesHistory = function (req, res) {
             if (!gameBoard) {
               responseUtils.sendNotFoundError(res, 'Game->GameBoard: Not Found');
             } else {
-              historyHelper.readQ(gameBoard.history)
+              helperFunction(gameBoard.history)
                 .then(function (history){
                   if (!history) {
-                    responseUtils.sendNotFoundError(res, 'Not Found');
+                    responseUtils.sendNotFoundError(res, 'Game->GameBoard->History: Not Found');
                   } else
                     res.send(history);
                 })
@@ -63,5 +61,17 @@ exports.readGamesHistory = function (req, res) {
           .fail(responseUtils.sendBadRequestCallback(res))
           .done();
       }
-    }, responseUtils.sendNotFoundErrorCallback(res))
+    }, responseUtils.sendNotFoundErrorCallback(res));
 };
+
+exports.readGamesHistory = function (req, res) {
+  winston.info('GET /games/:id/history', req.params.id);
+
+  readGamesHistoryHelper(req, res, historyHelper.readQ);
+};
+
+exports.readGamesFullHistory = function (req, res) {
+  winston.info('GET /games/:id/history/all', req.params.id);
+
+  readGamesHistoryHelper(req, res, historyHelper.readFullQ);
+}

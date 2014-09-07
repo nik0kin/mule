@@ -1,9 +1,11 @@
 
-var historyController = require('./crud/index');
+var historyCrudRoutes = require('./crud/index');
 
 module.exports = function (app){
-  app.get ('/historys', historyController.index);
-  app.get ('/historys/:id', historyController.read);
+  app.get ('/historys', historyCrudRoutes.index);
+  app.get ('/historys/:id', historyCrudRoutes.read);
 
-  app.get('/games/:id/history', historyController.readGamesHistory)
+  app.get('/games/:id/history', historyCrudRoutes.readGamesHistory);
+
+  app.get('/games/:id/history/all', historyCrudRoutes.readGamesFullHistory);
 };

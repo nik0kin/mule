@@ -17,7 +17,7 @@ var turnStyleFunctions = {
 
 exports.submitPlayerTurnQ = function (game, playerRelId, gameBoardId, actions, ruleBundle) {
   var turnFunctions = turnStyleFunctions[ruleBundle.turnSubmitStyle];
-  turnFunctions.submitTurnQ(game, playerRelId, game.gameBoard, {actions: actions }, ruleBundle);
+  return turnFunctions.submitTurnQ(game, playerRelId, game.gameBoard, {actions: actions }, ruleBundle);
 };
 
 // turn and/or round
@@ -29,7 +29,7 @@ exports.forceTurnProgress = function (game) {
       if (gameStateObject.ruleBundle.turnSubmitStyle === 'roundRobin') {
         playerRel = gameStateObject.game.getRoundRobinNextPlayerRel(); // player that needs to play
         console.log('forcing ' + playerRel + '\'s turn progress (round ' + gameStateObject.history.currentRound + ')');
-        gameStateObject.history.addPlayerTurnAndSaveQ(playerRel, [])
+        gameStateObject.history.addRoundRobinPlayerTurnAndSaveQ(playerRel, undefined)
           .then(function () {
             return roundRobinTurnSystem.progressTurnQ(gameStateObject.game, playerRel, gameStateObject.gameBoard, gameStateObject.history);
           })
@@ -37,15 +37,20 @@ exports.forceTurnProgress = function (game) {
             console.log('force complete');
           });
       } else if (gameStateObject.ruleBundle.turnSubmitStyle === 'playByMail') {
-        var notPlayed = gameStateObject.history.getPlayersThatHaveNotPlayedTheCurrentRound();
-        playerRel = undefined; // only affects a log message, maybe shouldnt exist in progressRoundQ ?
-        console.log('forcing round progress on ' + notPlayed +' (round ' + gameStateObject.history.currentRound + ')');
-        gameStateObject.history.addPlayerTurnAndSaveQ(notPlayed, [])
+        gameStateObject.history.getPlayersThatHaveNotPlayedTheCurrentTurnQ()
+          .then(function (notPlayedPlayerRels) {
+            if (notPlayedPlayerRels.length === 0) return;
+            playerRel = undefined; // only affects a log message, maybe shouldnt exist in progressRoundQ ?
+            console.log('forcing round progress on ' + JSON.stringify(notPlayedPlayerRels) +' (round ' + gameStateObject.history.currentRound + ')');
+            return gameStateObject.history.addPlayByMailPlayerTurnAndSaveQ(notPlayedPlayerRels, undefined);
+          })
           .then(function () {
             return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, gameStateObject.gameBoard, gameStateObject.gameState, gameStateObject.history, gameStateObject.ruleBundle);
           })
           .done(function () {
             console.log('force complete');
+          }, function () {
+            console.log('force failed');
           });
       }
     }, function (err) {

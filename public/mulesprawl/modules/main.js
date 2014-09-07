@@ -154,16 +154,12 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                       });
                   } else {
                     //look at last turn
-                    var t = SDK.Historys.getLastUnreadTurn(currentHistory);
-                    console.log(t);
-                    if (t) {
-                      parseTurn(t);
-                    }
-                    var m = SDK.Historys.getLastRoundMeta(currentHistory);
-                    console.log(m);
-                    if (m) {
-                      parseTurn(m);
-                    }
+                    //  TODO this could potentially skip turns if the clients internet was down for a minute
+                    SDK.Turns.readGamesTurnQ(currentGame._id, currentRound - 1)
+                      .then(function (turn) {
+                        parseTurn(turn.playerTurns['p1']);
+                        parseTurn(turn.metaTurn);
+                      });
                   }
 
                   console.log('refreshed');

@@ -56,7 +56,7 @@ require('./config/express')(app, config, passport);
 // Bootstrap routes
 var router  = express.Router();
 require('./app/routes')(router, passport);
-app.use('/webservices', router);
+app.use(config.routesPrefix, router);
 
 // Load RuleBundles
 var ruleBundleHelper = require('./app/routes/ruleBundles/crud/helper'); // BUT DUMB

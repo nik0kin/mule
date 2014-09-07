@@ -13,7 +13,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
   console.log('Submitting turn (playByMail) for ' + player)
   console.log(turn)
 
-  var _gameBoard, _gameState;
+  var _gameBoard, _gameState, _historyObject, turnNumber;
   return GameBoard.findByIdQ(gameBoardId)
     .then(function (gameBoard) {
       _gameBoard = gameBoard;
@@ -24,20 +24,29 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
       return History.findByIdQ(_gameBoard.history);
     })
     .then(function (historyObject) {
+      turnNumber = historyObject.currentTurn;
       // save the turn
-      return historyObject.addPlayerTurnAndSaveQ(player, turn);
+      return historyObject.addPlayByMailPlayerTurnAndSaveQ(player, turn);
     })
     .then(function (historyObject) {
       console.log('successfully submitted turn (playByMail)');
+      _historyObject = historyObject;
 
       // check if all turns are submitted
-      if (historyObject.getCanAdvancePlayByMailRound()) {
+      return historyObject.getCanAdvancePlayByMailTurnQ();
+    })
+    .then(function (canAdvance) {
+      if (canAdvance) {
         console.log('advancing round');
         // progress turn if they are
-        return exports.progressRoundQ(game, player, _gameBoard, _gameState, historyObject, ruleBundle);
+        return exports.progressRoundQ(game, player, _gameBoard, _gameState, _historyObject, ruleBundle);
       } else {
         console.log('all turns not in: not progressing');
       }
+    })
+    .then(function () {
+      // return turn played
+      return Q(turnNumber);
     })
     .fail(function (err) {
       console.log('submit turn fail: ');
@@ -52,17 +61,22 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
     return;
   }
 
+  var _metaData;
   // do all actions in current round (in history)
-  var turns = historyObject.getRoundTurns(historyObject.currentRound);
-  var promises = [], _metaData;
-  _.each(turns, function (turn, player) {
-    if (player !== 'meta') {
-      var promise = actionsHelper.doActionsQ({gameState: gameStateObject, gameBoard: gameBoardObject, history: historyObject}, turn.actions, player, ruleBundle);
-      promises.push(promise);
-    }
-  });
-
-  return Q.all(promises)
+  historyObject.getRoundTurnsQ(historyObject.currentRound)
+    .then(function (turns) {
+      var turnObject = turns[0],
+        promises = [];
+      _.each(turnObject.playerTurns, function (turn, player) {
+        var promise = actionsHelper.doActionsQ({
+          gameState: gameStateObject,
+          gameBoard: gameBoardObject,
+          history: historyObject
+        }, turn.actions, player, ruleBundle);
+        promises.push(promise);
+      });
+      return Q.all(promises);
+    })
     .then(function () {
       var bundleCode = MuleRules.getBundleCode(ruleBundle.name),
         bundleProgressRoundQ;
@@ -77,7 +91,9 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
                 return History.findByIdQ(result.history._id);
               })
               .then(function (fHistory) {
-                return fHistory.addPlayerTurnAndSaveQ('meta', {actions:[{type: 'metadata', metadata: _metaData}] });
+                return fHistory.addPlayByMailMetaAndSaveQ({
+                  actions:[{type: 'metadata', metadata: _metaData}]
+                });
               });
           });
       } else {
@@ -86,9 +102,7 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
     })
     .then(function (history) {
       console.log('Round successful: ' + history.currentRound);
-      // increment history.currentRound
-      history.currentRound++;
-      return history.saveQ();
+      return history.incrementRoundQ();
     })
     .then(function () {
       return game.setTurnTimerQ();

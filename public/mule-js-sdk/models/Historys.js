@@ -14,10 +14,10 @@ define([], function () {
       });
     };
 
-    that.readQ = function (gameBoardID) {
+    that.readQ = function (historyId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"historys/" + gameBoardID
+        url: contextPath+"historys/" + historyId
       })
     };
 
@@ -28,7 +28,15 @@ define([], function () {
       });
     };
 
-    /////////// hacky way for turns read by client
+    that.readGamesFullHistoryQ = function (gameId) {
+      return $.ajax({
+        type: "GET",
+        url: contextPath+"games/" + gameId + '/history/all'
+      });
+    };
+
+    /////////// START SHIT hacky way for turns read by client
+    // TODO please get rid of or rewrite with new History/Turn relationship
 
     var turnsRead;
 
@@ -65,6 +73,8 @@ define([], function () {
     that.getLastRoundMeta = function (history) {
       return history.turns['meta'][history.currentRound - 2];
     };
+
+    // END SHIT
 
     return that;
   };

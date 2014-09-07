@@ -5,6 +5,7 @@ var path = require('path'),
 
 module.exports = {
   development: {
+    routesPrefix: '/webservices',
     db: 'mongodb://localhost/mule_dev',
     root: rootPath,
     port: 3130,
@@ -13,9 +14,10 @@ module.exports = {
     }
   },
   test: {
+    routesPrefix: '',
     db: 'mongodb://localhost/mule_test',
     root: rootPath,
-    port: 7357,
+    port: 3130,
     app: {
       name: 'Mule Turnz Platform'
     }

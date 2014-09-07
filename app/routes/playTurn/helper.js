@@ -47,8 +47,9 @@ exports.playTurn = function (req, res) {
           console.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')');
           return turnBrain.submitPlayerTurnQ(game, playerId, game.gameBoard, validatedActions, _ruleBundle);
         })
-        .then(function () {
-          res.status(200).send({msg: "ITS TRUE"})
+        .then(function (turnNumber) {
+          console.log('p[' + playerId + '] justed submitted turn: ' + turnNumber);
+          res.status(200).send({msg: "Success", turnNumber: turnNumber})
         })
         .fail(function (err) {
           console.log('faile: ')
