@@ -56,7 +56,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
 
 exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObject, historyObject, ruleBundle) {
 
-  if (historyObject.currentRound > 1000) {
+  if (historyObject.currentRound > 2500) {
     // do nothing
     return;
   }

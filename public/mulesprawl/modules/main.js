@@ -285,7 +285,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
       });
 
       _.each(turnMetaData.becomeMan, function (obj) {
-        string += '<b>' + obj.name + '</b> became a man and started a farm at ' + obj.where.x + ',' + obj.where.y + '<br>';
+        string += '<b>' + obj.name + '</b> became a man and started a farm at ' + obj.where + '<br>';
       });
 
       _.each(turnMetaData.miscarriage, function (name) {
