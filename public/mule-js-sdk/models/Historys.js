@@ -76,6 +76,11 @@ define([], function () {
 
     // END SHIT
 
+    // for roundRobin
+    that.getWhosTurnIsIt = function (history) {
+      return history.turnOrder[history.currentPlayerIndexTurn];
+    };
+
     return that;
   };
 });

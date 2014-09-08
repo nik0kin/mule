@@ -22,7 +22,10 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       currentHistory,
       ourBackgammon,
       isGameOver = false,
-      firstLoad = true;
+      firstLoad = true,
+
+      whosTurn,
+      submittable = false;
 
     var gameMap;
 
@@ -90,6 +93,20 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       });
     };
 
+    var updateWhosTurnIsIt = function () {
+      var nextWhosTurn = SDK.Historys.getWhosTurnIsIt(currentHistory);
+      if (whosTurn !== nextWhosTurn) {
+        if (nextWhosTurn === currentUser.relId) {
+          console.log('beginPlayersTurn');
+          $('#submitButton').attr('disabled', false);
+        } else {
+          console.log('beginOpponentTurn');
+          $('#submitButton').attr('disabled', true);
+        }
+        whosTurn = nextWhosTurn;
+      }
+    };
+
     var counter = 0, timerCount = 2, firstTime = true;
     var refreshGame = function () {
       counter--;
@@ -140,6 +157,9 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
               });
 
               playerMap = _playerMap;
+
+              updateWhosTurnIsIt();
+
               updateDebugLabel();
             });
 
@@ -182,8 +202,9 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
 
     var updateDebugLabel = function () {
       var isPlayer1Turn = !playerMap['p1'].played,
-        whosTurn = (isPlayer1Turn && currentUser.relId === 'p1') ? 'YOUR TURN' : 'their turn';
-      $('#debugLabel').html('turn: ' + currentTurn + ', ' + whosTurn);
+        whosTurnLabel = (whosTurn === currentUser.relId) ? 'YOUR TURN' : 'their turn';
+      console.log('UPDAINGZZZZ');
+      $('#debugLabel').html('turn: ' + currentTurn + ', ' + whosTurnLabel);
     };
 
     GAME.startGame = function () {
