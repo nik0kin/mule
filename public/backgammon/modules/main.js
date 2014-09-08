@@ -4,8 +4,8 @@ var GAME = {};
 GAME.SIZE = { x: 900, y: 600 };
 
 
-define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
-  function(Loader, ourAssets, Board, dumbLib, sdk){
+define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
+  function(Loader, ourAssets, Backgammon, Board, dumbLib, sdk){
     var SDK = sdk('../../');
 
     var STATES = {pregame: 0, ingame: 1, loading: 2};
@@ -18,8 +18,9 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
       currentGameBoard,
       currentGameState,
       currentGame,
-      currentRound = 0,
+      currentTurn = 0,
       currentHistory,
+      ourBackgammon,
       isGameOver = false,
       firstLoad = true;
 
@@ -83,7 +84,7 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
     GAME.loadGame = function (callback) {
       dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
         currentGame = {_id: result.gameId };
-        currentUser = result.playerRel;
+        currentUser.relId = result.playerRel;
 
         refreshGame(callback);
       });
@@ -101,8 +102,17 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
         counter = timerCount;
       }
 
-      SDK.Games.readQ(currentGame._id)
-        .done(function(game) {
+      var gamePromise;
+
+      if (firstTime) {
+        gamePromise = SDK.Games.readQ(currentGame._id)
+      } else { //ghetto promise
+        var defer = $.Deferred(),
+          gamePromise = defer.then(function (v) { return v; });
+        defer.resolve(currentGame);
+      }
+      gamePromise
+        .then(function(game) {
           currentGame = game;
 
           if (firstTime) {
@@ -111,84 +121,69 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
           }
           //checkWin();
 
-          SDK.Historys.readGamesHistoryQ(currentGame._id)
-            .done(function(history) {
-              currentHistory = history;
+          return SDK.Historys.readGamesHistoryQ(currentGame._id)
+        })
+        .then(function(history) {
+          currentHistory = history;
 
-              if (currentHistory.currentRound === currentRound) {
-                return; // dont query board if you dont need to
+          if (currentHistory.currentTurn === currentTurn) {
+            return; // dont query board if you dont need to
+          }
+
+          currentTurn = currentHistory.currentTurn;
+
+          SDK.Games.getPlayersMapQ(currentGame)
+            .then(function (_playerMap) {
+
+              _.each(currentGame.players, function (value, key) {
+                _playerMap[key].played = currentHistory.currentTurnStatus[key];
+              });
+
+              playerMap = _playerMap;
+              updateDebugLabel();
+            });
+
+          SDK.GameBoards.readGamesBoardQ(currentGame._id)
+            .done(function(gameBoard) {
+              currentGameBoard = gameBoard;
+
+              if (firstLoad) {
+                firstLoad = false;
+                //SDK.Historys.markAllTurnsRead(currentHistory);
+              } else {
+                //look at last turn
+                //var t = SDK.Historys.getLastUnreadTurn(currentHistory);
+
+                //  TODO this could potentially skip turns if the clients internet was down for a minute
+                SDK.Turns.readGamesTurnQ(currentGame._id, currentTurn - 1)
+                  .then(function (turn) {
+                    parseTurn(turn);
+                  });
               }
 
-              currentRound = currentHistory.currentRound;
-              updateTurnLabel(currentRound);
+              console.log('refreshed');
+            });
 
-              SDK.Games.getPlayersMapQ(currentGame)
-                .then(function (_playerMap) {
+            SDK.GameStates.readGamesStateQ(currentGame._id)
+            .done(function(gameState) {
+              currentGameState = gameState;
 
-                  _.each(currentGame.players, function (value, key) {
-                    _playerMap[key].played = currentHistory.currentTurnStatus[key];
-                  });
-
-                  playerMap = _playerMap;
-                  //populatePlayersLabel();
-                  //populateTurnStatusLabel();
-                });
-
-              SDK.GameBoards.readGamesBoardQ(currentGame._id)
-                .done(function(gameBoard) {
-                  //var fullBoard = SDK.GameBoards.createFullBoard(gameBoard.board, gameBoard.pieces);
-                  currentGameBoard = gameBoard;
-
-                  if (firstLoad) {
-                    //populateBoard(gameBoard);
-                    firstLoad = false;
-                    SDK.Historys.markAllTurnsRead(currentHistory);
-                  } else {
-                    //look at last turn
-                    var t = SDK.Historys.getLastUnreadTurn(currentHistory);
-                    console.log(t);
-                    if (t) {
-                      parseTurn(t);
-                    }
-                  }
-
-                  console.log('refreshed');
-                });
-
-                SDK.GameStates.readGamesStateQ(currentGame._id)
-                .done(function(gameState) {
-                  currentGameState = gameState;
-
-                  console.log('stated');
-                });
+              console.log('stated');
             });
         });
-
       if (!isGameOver) {
         setTimeout(refreshGame, 1000);
       }
     };
 
     var parseTurn = function (turn) {
-      /*_.each(turn.actions, function (value) {
-        if (!value.metadata) return;
-        _.each(value.metadata.newFarms, function (value) {
-          var loc = value.split(',');
-          var family = SDK.GameBoards.getPiecesOnSpace(currentGameBoard, value);
-          _.each(family, function (piece) { // TODO move a func like this to sdk?
-            if (piece.class === 'Farmer') {
-              family = piece.attributes.familyName;
-            }
-          });
-          gameMap.drawBuilding('House', {x: loc[0], y: loc[1]}, {family: family});
-        });
-        updateInfoSpam(value.metadata);
-      });*/
+      ourBackgammon.parseTurn(turn);
     };
 
-    var updateTurnLabel = function (roundNumber) {
-
-      $('#turnLabel').html('turn: ' + roundNumber);
+    var updateDebugLabel = function () {
+      var isPlayer1Turn = !playerMap['p1'].played,
+        whosTurn = (isPlayer1Turn && currentUser.relId === 'p1') ? 'YOUR TURN' : 'their turn';
+      $('#debugLabel').html('turn: ' + currentTurn + ', ' + whosTurn);
     };
 
     GAME.startGame = function () {
@@ -201,6 +196,8 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
       var newMap = Board({gameBoard:currentGameBoard, gameState: currentGameState, mainClickCallback: clickSpace});
       GAME.stage.addChild(newMap);
       gameMap = newMap;
+
+      ourBackgammon = Backgammon(currentGameState, newMap);
     };
 
     GAME.resetGame = function(){
@@ -210,36 +207,7 @@ define(["Loader", "assets", "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
     };
 
     var clickSpace = function (space) {
-      console.log(space);
-    };
-
-    //process key presses
-    GAME.keyPressed = function (evt){
-      if(!evt) return;
-      switch(evt.keyCode){
-        case 13://enter
-          GAME.controls.enter = true;
-          break;
-      }
-    };
-    //process key releases
-    GAME.keyReleased = function (evt){
-      if(!evt) return
-      switch(evt.keyCode){
-        case 13://enter
-          GAME.controls.enter = false;
-          break;
-
-        case 82://r
-          //GAME.resetGame();
-          break;
-        case 77://m
-          //SoundManager.toggleMute();
-          break;
-        case 27://esc
-          //   gameplayobject.stopPlacing();
-          break;
-      }
+      ourBackgammon.clickSpace(space);
     };
 
     ////////// MAIN /////////////
