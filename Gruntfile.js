@@ -61,6 +61,13 @@ module.exports = function (grunt) {
       },
       monDEL: {
         options: {  stdout: true },
+        command: 'mongo mule_dev --eval ' +
+        '"db.gameboards.drop(); db.games.drop(); db.gamestates.drop(); db.spacestates.drop(); db.piecestates.drop(); db.turns.drop(); db.histories.drop(); db.rulebundles.drop();"'
+        + ' && mongo mule_test --eval ' +
+        '"db.gameboards.drop(); db.games.drop(); db.gamestates.drop(); db.spacestates.drop(); db.piecestates.drop(); db.turns.drop(); db.histories.drop(); db.rulebundles.drop();"'
+      },
+      monDELETE: {
+        options: {  stdout: true },
         command: 'mongo mule_dev --eval "db.dropDatabase()" && mongo mule_test --eval "db.dropDatabase()"'
       }
     }

@@ -54,7 +54,7 @@ exports.playTurn = function (req, res) {
         .fail(function (err) {
           console.log('faile: ')
           console.log(err)
-          res.status(400).send({err: err});
+          res.status(400).send({err: JSON.stringify(err)});
         });
     });
 

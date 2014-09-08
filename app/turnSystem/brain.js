@@ -31,7 +31,7 @@ exports.forceTurnProgress = function (game) {
         console.log('forcing ' + playerRel + '\'s turn progress (round ' + gameStateObject.history.currentRound + ')');
         gameStateObject.history.addRoundRobinPlayerTurnAndSaveQ(playerRel, undefined)
           .then(function () {
-            return roundRobinTurnSystem.progressTurnQ(gameStateObject.game, playerRel, gameStateObject.gameBoard, gameStateObject.history);
+            return roundRobinTurnSystem.progressTurnQ(gameStateObject, playerRel);
           })
           .done(function () {
             console.log('force complete');
