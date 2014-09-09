@@ -42,10 +42,16 @@ define([], function () {
     };
 
     var turnSubmittedIsOpponents = function (turn) {
-        // it was their turn, so now its your turn, show the move then show shaker and allow rolling
-        bgState = 'awaitingRoll';
-        board.showShaker();
-        lastRoll = turn.metadata.roll;
+      var opponentRel = myRelId === 'p1' ? 'p2' : 'p1';
+      _.each(turn.params.moveTokens, function (moveTokenActionParams) {
+        board.moveToken(moveTokenActionParams.pieceId, moveTokenActionParams.currentPieceSpace, moveTokenActionParams.spaceId);
+        console.log('they moved a token from ' + moveTokenActionParams.currentPieceSpace + ' to ' + moveTokenActionParams.spaceId);
+      })
+
+      // it was their turn, so now its your turn, show the move then show shaker and allow rolling
+      bgState = 'awaitingRoll';
+      board.showShaker();
+      lastRoll = turn.metadata.roll;
     };
 
     that.clickSpace = function (space) {

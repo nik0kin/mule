@@ -23,7 +23,7 @@ var getAction = function (actionType, ruleBundle) {
 };
 
 
-exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
+exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle) {
   exports.initActions(ruleBundle);
 
   var promiseArray = [];
@@ -36,7 +36,7 @@ exports.validateActionsQ = function (gameBoardId, actions, ruleBundle) {
 
     var promise = GameBoard.findByIdQ(gameBoardId)
       .then(function (foundGameBoard) {
-        Action.validateQ(foundGameBoard.gameState, action.params, ruleBundle)
+        return Action.validateQ(foundGameBoard, foundGameBoard.gameState, playerRel, action.params, ruleBundle)
       })
         .then(function (gameState) {
         console.log('valid move action ' + key + ': ');

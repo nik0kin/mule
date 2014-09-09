@@ -70,6 +70,8 @@ define(['Loader'], function (Loader) {
 
     var die1Bitmap, die2Bitmap;
 
+    var tokenBitmaps = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+
     function init () {
       var simpleBoard = getSimpleBackgammonBoardFromGameBoard(params.size, params.gameState.spaces, params.gameState.pieces);
 
@@ -108,16 +110,40 @@ define(['Loader'], function (Loader) {
       that.addChild(newBitmap);
     };
 
+    var getTokenPixelPosition = function (spaceId, tokensOnSpot) {
+      var l = pieceStartLocations[spaceId];
+      return {
+        x: l.x - tokenOffset.x,
+        y: l.y + tokensOnSpot * pieceSeperation * (parseInt(spaceId) > 12 ? 1 : -1) - tokenOffset.y
+      }
+    };
+
     that.drawTokens = function (color, loc, amt) {
-      var l = pieceStartLocations[loc],
-        i;
+      var i;
 
       for (i=0; i<amt; i++) {
-        var newBitmap = new createjs.Bitmap(piecesImages[color === 'red' ? 'red_piece' : 'black_piece']);
-        newBitmap.x = l.x - tokenOffset.x;
-        newBitmap.y = l.y + i * pieceSeperation * (parseInt(loc) > 12 ? 1 : -1) - tokenOffset.y;
+        var newBitmap = new createjs.Bitmap(piecesImages[color === 'red' ? 'red_piece' : 'black_piece']),
+          pos = getTokenPixelPosition(loc, i);
+
+        newBitmap.x = pos.x;
+        newBitmap.y = pos.y;
         that.addChild(newBitmap);
+        tokenBitmaps[parseInt(loc) - 1].push(newBitmap);
       }
+    };
+
+    that.moveToken = function (pieceId, currentSpaceId, destSpaceId) {
+      var currentSpaceIndexIntoBitmaps = parseInt(currentSpaceId),
+        nextSpaceIndexIntoBitmaps = parseInt(destSpaceId),
+        aToken = tokenBitmaps[currentSpaceIndexIntoBitmaps - 1].pop();
+
+        if (aToken) {
+          var pos = getTokenPixelPosition(destSpaceId, tokenBitmaps[nextSpaceIndexIntoBitmaps - 1].length);
+          aToken.x = pos.x;
+          aToken.y = pos.y;
+        } else {
+          throw 'CANT move no tokens';
+        }
     };
 
     var isBetween = function (num, low, high) {
