@@ -93,27 +93,30 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       });
     };
 
+    var setSubmitButtonEnabled = function (trueOrFalse) {
+      $('#submitButton').attr('disabled', !trueOrFalse);
+    };
+
     var updateWhosTurnIsIt = function () {
       var nextWhosTurn = SDK.Historys.getWhosTurnIsIt(currentHistory);
       if (whosTurn !== nextWhosTurn) {
         if (nextWhosTurn === currentUser.relId) {
           console.log('beginPlayersTurn');
-          $('#submitButton').attr('disabled', false);
         } else {
           console.log('beginOpponentTurn');
-          $('#submitButton').attr('disabled', true);
+          setSubmitButtonEnabled(false);
         }
         whosTurn = nextWhosTurn;
       }
     };
 
-    var counter = 0, timerCount = 2, firstTime = true;
+    var counter = 0, timerCount = 4, firstTime = true, refreshTime = 1000;
     var refreshGame = function () {
       counter--;
       $('#refreshLabel').html('refresh...' + counter);
 
       if (counter > 0) {
-        setTimeout(refreshGame, 1000);
+        setTimeout(refreshGame, refreshTime);
         return;
       } else {
         counter = timerCount;
@@ -192,12 +195,43 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
             });
         });
       if (!isGameOver) {
-        setTimeout(refreshGame, 1000);
+        setTimeout(refreshGame, refreshTime);
       }
     };
 
+    var clickSubmitTurn = function () {
+      console.log('clicked submit');
+      setSubmitButtonEnabled(false);
+
+      var params = {
+        playerId: currentUser.relId,
+        gameId: currentGame._id,
+        actions: [{
+          type: 'TurnAction',
+          params: {
+          }
+        }]
+      };
+
+      SDK.PlayTurn.sendQ(params)
+        .then(function (result) {
+          console.log('Submitted turn');
+          console.log(result);
+          // refresh? - nah wait for us to fetch the turn
+        })
+        .fail(function (err) {
+          setSubmitButtonEnabled(true);
+          alert(JSON.stringify(err));
+        })
+    };
+
     var parseTurn = function (turn) {
-      ourBackgammon.parseTurn(turn);
+      var playerRel, singleTurn;
+      _.each(turn.playerTurns, function (t, p) {
+        playerRel = p; // this should only loop once
+        singleTurn = t;
+      });
+      ourBackgammon.parseTurn(playerRel, singleTurn);
     };
 
     var updateDebugLabel = function () {
@@ -214,11 +248,16 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       preContainer.visible = false;
       console.log("end pregame state");
 
+      // ghetto wait for gameState
+      while(!currentGameState) { ; }
+
       var newMap = Board({gameBoard:currentGameBoard, gameState: currentGameState, mainClickCallback: clickSpace});
       GAME.stage.addChild(newMap);
       gameMap = newMap;
 
-      ourBackgammon = Backgammon(currentGameState, newMap);
+      ourBackgammon = Backgammon(currentUser.relId,
+        SDK.Historys.getWhosTurnIsIt(currentHistory),
+        currentGameState, newMap, setSubmitButtonEnabled);
     };
 
     GAME.resetGame = function(){
@@ -243,6 +282,8 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
 
       document.onkeydown = GAME.keyPressed;
       document.onkeyup = GAME.keyReleased;
+
+      $('#submitButton').on('click', clickSubmitTurn);
 
       //load!
       console.log("loading");

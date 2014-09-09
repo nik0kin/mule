@@ -11,15 +11,17 @@ define(function(){
     images: [
       {src: 'assets/board.png', id: 'backgammon_board'},
 
-      {src: 'assets/boardgamePack/dieRed1.png', id: 'die1'},
-      {src: 'assets/boardgamePack/dieRed2.png', id: 'die2'},
-      {src: 'assets/boardgamePack/dieRed3.png', id: 'die3'},
-      {src: 'assets/boardgamePack/dieRed4.png', id: 'die4'},
-      {src: 'assets/boardgamePack/dieRed5.png', id: 'die5'},
-      {src: 'assets/boardgamePack/dieRed6.png', id: 'die6'},
+      {src: 'assets/images/dice-1.png', id: 'die1'},
+      {src: 'assets/images/dice-2.png', id: 'die2'},
+      {src: 'assets/images/dice-3.png', id: 'die3'},
+      {src: 'assets/images/dice-4.png', id: 'die4'},
+      {src: 'assets/images/dice-5.png', id: 'die5'},
+      {src: 'assets/images/dice-5.png', id: 'die6'},
 
-      {src: 'assets/boardgamePack/pieceBlack_multi10.png', id: 'black_piece'},
-      {src: 'assets/boardgamePack/pieceRed_border11.png', id: 'red_piece'}
+      {src: 'assets/images/piece-blue.png', id: 'black_piece'},
+      {src: 'assets/images/piece-orange.png', id: 'red_piece'},
+
+      {src: 'assets/shaker.png', id: 'shaker'}
     ],
 
     sounds: []
