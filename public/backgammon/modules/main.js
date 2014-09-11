@@ -190,6 +190,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
             SDK.GameStates.readGamesStateQ(currentGame._id)
             .done(function(gameState) {
               currentGameState = gameState;
+              if (ourBackgammon) ourBackgammon.updateGameState(currentGameState);
 
               console.log('stated');
             });
@@ -201,6 +202,9 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
 
     var clickSubmitTurn = function () {
       console.log('clicked submit');
+      var pendingTurn = ourBackgammon.getPendingTurn();
+      if (pendingTurn === null) return;
+
       setSubmitButtonEnabled(false);
 
       var params = {
@@ -209,6 +213,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         actions: [{
           type: 'TurnAction',
           params: {
+            moveTokens: [pendingTurn]
           }
         }]
       };
@@ -218,6 +223,8 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           console.log('Submitted turn');
           console.log(result);
           // refresh? - nah wait for us to fetch the turn
+
+          ourBackgammon.setTurnDone();
         })
         .fail(function (err) {
           setSubmitButtonEnabled(true);

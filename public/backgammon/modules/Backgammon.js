@@ -1,7 +1,8 @@
 
-define([], function () {
+define(['../../mule-js-sdk/sdk'], function (sdk) {
   return function (myPlayerRel, whosTurn, gameState, boardDisplayObject, enableSubmitButtonCallback) {
     var that = {},
+      SDK = sdk('../../'),
       myRelId = myPlayerRel,
       currentGameState = gameState,
       board = boardDisplayObject,
@@ -54,6 +55,43 @@ define([], function () {
       lastRoll = turn.metadata.roll;
     };
 
+    that.getPendingTurn = function () {
+      return pendingTurn;
+    };
+
+    that.setTurnDone = function () {
+      pendingTurn = null;
+    }
+
+    that.resetPendingTurn = function () {
+    };
+
+    var spaceClicked, pieceClicked, pendingTurn;
+    var clickedMovableSpace = function (spaceId) {
+      if (!spaceClicked) {
+        pieceClicked = SDK.GameBoards.getPiecesOnSpace(gameState, spaceId)[0];
+        if (pieceClicked) {
+          spaceClicked = spaceId;
+          console.log('clicked to move from ' + spaceId + ', piece: ' + pieceClicked.id);
+        }
+      } else {
+        var distance = Math.abs(parseInt(spaceId) - parseInt(spaceClicked));
+        if (distance === lastRoll.die1 || distance === lastRoll.die2) {
+          console.log('clicked to move to ' + spaceId);
+          board.moveToken(pieceClicked.id, spaceClicked, spaceId);
+          spaceClicked = false
+
+          // set pending turn
+          pendingTurn = {
+            pieceId: pieceClicked.id,
+            spaceId: spaceId
+          }
+        } else {
+          console.log('invalid spot');
+        }
+      }
+    };
+
     that.clickSpace = function (space) {
       console.log('clicked space: ' + space);
 
@@ -62,8 +100,17 @@ define([], function () {
           if (space === 'dice') {
             clickShaker();
           }
-        break;
+          break;
+        case 'rolled':
+          if (!isNaN(parseInt(space))) {
+            clickedMovableSpace(space);
+          }
+          break;
       }
+    };
+
+    that.updateGameState = function (_gameState) {
+      gameState = _gameState;
     };
 
     that.parseTurn = function (playerRel, turn) {
