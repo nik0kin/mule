@@ -8,7 +8,9 @@ Roadmap to 0.0.1 / Milestones:
 - III - GameBoard (Spaces' and Pieces)
 - IV - Turn System
 - V - Action System Experiments (TicTacToe, MuleSprawl, Backgammon)  <--CURRENT
-- VI - Huge Cleanup / Refactor Week
+- VI - Huge Cleanup / Refactor Month
+- VII - Efficiency and ??? http://itch.io/jam/procjam ???
+- VIII - AI
 
 Latest commit on master hosted at (CI staging):
 - MuleFrontend: http://zion.tgp.io:313/

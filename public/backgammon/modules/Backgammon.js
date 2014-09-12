@@ -1,5 +1,5 @@
 
-define(['../../mule-js-sdk/sdk'], function (sdk) {
+define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
   return function (myPlayerRel, whosTurn, gameState, boardDisplayObject, enableSubmitButtonCallback) {
     var that = {},
       SDK = sdk('../../'),
@@ -79,6 +79,7 @@ define(['../../mule-js-sdk/sdk'], function (sdk) {
           spaceClicked = spaceId;
           console.log('clicked to move from ' + spaceId + ', piece: ' + pieceClicked.id);
           board.showSelection(spaceId);
+          console.log(bgLogic.getPossibleMoveLocations(spaceId, lastRoll, myRelId === 'p1' ? 'black' : 'white'));
         }
       } else {
         // unselection
