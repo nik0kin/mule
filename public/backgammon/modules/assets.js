@@ -21,7 +21,9 @@ define(function(){
       {src: 'assets/images/piece-blue.png', id: 'black_piece'},
       {src: 'assets/images/piece-orange.png', id: 'red_piece'},
 
-      {src: 'assets/shaker.png', id: 'shaker'}
+      {src: 'assets/shaker.png', id: 'shaker'},
+
+      {src: 'assets/indicator-selection.png', id: 'indicator-selection'}
     ],
 
     sounds: []

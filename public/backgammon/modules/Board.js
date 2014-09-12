@@ -17,6 +17,10 @@ define(['Loader'], function (Loader) {
     die6: 'assets/images/dice-5.png'
   };
 
+  var indicatorImages = {
+    selection: 'assets/indicator-selection.png'
+  };
+
   var piecesImages = {
       black_piece: 'assets/images/piece-blue.png',
       red_piece: 'assets/images/piece-orange.png'
@@ -93,6 +97,11 @@ define(['Loader'], function (Loader) {
       shaker.bitmap.y = shaker.y;
       shaker.bitmap.visible = false;
       that.addChild(shaker.bitmap);
+
+      //indicator bitmaps
+      selectionBitmap = new createjs.Bitmap(indicatorImages.selection);
+      selectionBitmap.visible = false;
+      that.addChild(selectionBitmap);
 
       _.each(simpleBoard, function (tokenInfo, spaceId) {
         that.drawTokens(tokenInfo.player === 'p1' ? 'black' : 'red', spaceId, tokenInfo.amt);
@@ -216,6 +225,32 @@ define(['Loader'], function (Loader) {
       var roll2Image = dieImages['die' + roll.die2];
       die2Bitmap.image.src = roll2Image;
     };
+
+    //////// INDICATORS //////////////
+    var selectionBitmap;
+
+    that.showSelection = function (spaceId) {
+      console.log('showSelection');
+
+      var spaceCenterCoords = getTokenPixelPosition(spaceId, 3);
+      selectionBitmap.x = spaceCenterCoords.x - 80;
+      selectionBitmap.y = spaceCenterCoords.y;
+      selectionBitmap.visible = true;
+    };
+
+    that.stopSelection = function () {
+      console.log('stopSelection')
+      selectionBitmap.visible = false;
+    };
+
+    that.showMoveLocationSpaces = function (spaceIdArray) {
+      console.log('showMoveLocationSpaces')
+    };
+
+    that.stopMoveLocationSpaces = function () {
+      console.log('stopMoveLocationSpaces')
+    };
+
 
 
     init();

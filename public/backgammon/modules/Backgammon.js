@@ -25,21 +25,13 @@ define(['../../mule-js-sdk/sdk'], function (sdk) {
       board.showRoll(lastRoll);
     };
 
+    ////////// TURN LOGIC //////////
+
     var turnSubmittedIsMine = function (turn) { // TODO find some real names for these functions
         // it was my turn, so now its their turn, so display their roll
         bgState = 'waitingOnOpponent';
         lastRoll = turn.metadata.roll;
         showRoll();
-    };
-
-    var clickShaker = function () {
-      // show dice
-      showRoll();
-      // enable submit button
-      enableSubmitButtonCallback(true);
-
-      bgState = 'rolled';
-      board.showShaker(false);
     };
 
     var turnSubmittedIsOpponents = function (turn) {
@@ -66,20 +58,44 @@ define(['../../mule-js-sdk/sdk'], function (sdk) {
     that.resetPendingTurn = function () {
     };
 
+    ////////// UI INTERACTION //////////
+
+    var clickShaker = function () {
+      // show dice
+      showRoll();
+      // enable submit button
+      enableSubmitButtonCallback(true);
+
+      bgState = 'rolled';
+      board.showShaker(false);
+    };
+
     var spaceClicked, pieceClicked, pendingTurn;
     var clickedMovableSpace = function (spaceId) {
       if (!spaceClicked) {
+        // selection
         pieceClicked = SDK.GameBoards.getPiecesOnSpace(gameState, spaceId)[0];
         if (pieceClicked) {
           spaceClicked = spaceId;
           console.log('clicked to move from ' + spaceId + ', piece: ' + pieceClicked.id);
+          board.showSelection(spaceId);
         }
       } else {
+        // unselection
+        if (spaceClicked === spaceId) {
+          console.log('unselecting');
+          board.stopSelection();
+          spaceClicked = null;
+          return;
+        }
+
+        // attempted movement
         var distance = Math.abs(parseInt(spaceId) - parseInt(spaceClicked));
         if (distance === lastRoll.die1 || distance === lastRoll.die2) {
           console.log('clicked to move to ' + spaceId);
           board.moveToken(pieceClicked.id, spaceClicked, spaceId);
-          spaceClicked = false
+          spaceClicked = false;
+          board.stopSelection();
 
           // set pending turn
           pendingTurn = {
@@ -108,6 +124,8 @@ define(['../../mule-js-sdk/sdk'], function (sdk) {
           break;
       }
     };
+
+    /////////////////////////////
 
     that.updateGameState = function (_gameState) {
       gameState = _gameState;
