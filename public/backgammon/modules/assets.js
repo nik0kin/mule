@@ -16,14 +16,16 @@ define(function(){
       {src: 'assets/images/dice-3.png', id: 'die3'},
       {src: 'assets/images/dice-4.png', id: 'die4'},
       {src: 'assets/images/dice-5.png', id: 'die5'},
-      {src: 'assets/images/dice-5.png', id: 'die6'},
+      {src: 'assets/images/dice-6.png', id: 'die6'},
 
       {src: 'assets/images/piece-blue.png', id: 'black_piece'},
       {src: 'assets/images/piece-orange.png', id: 'red_piece'},
 
       {src: 'assets/shaker.png', id: 'shaker'},
 
-      {src: 'assets/indicator-selection.png', id: 'indicator-selection'}
+      {src: 'assets/indicator-selection.png', id: 'indicator-selection'},
+      {src: 'assets/indicator-move.png', id: 'indicator-move'},
+      {src: 'assets/indicator-kill.png', id: 'indicator-kill'}
     ],
 
     sounds: []

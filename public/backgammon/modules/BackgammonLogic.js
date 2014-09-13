@@ -3,31 +3,56 @@
 define(function () {
   var that = {};
 
-  // returns an array of spaceIds
-  that.getPossibleMoveLocations = function (spaceId, diceRoll, blackOrWhite) {
-    var rollModifier = blackOrWhite === 'black' ? -1 : 1,
-      isDoubles = diceRoll.die1 === diceRoll.die2,
-      possibleMoveLocations = [],
+  // returns an object of {spaceId: [roll1]}
+  that.getPossibleMoveLocations = function (params) {
+    var spaceId = params.spaceId,
+      rollsLeft = params.rollsLeft,
+      blackOrRed = params.blackOrRed,
+
+      rollModifier = blackOrRed === 'black' ? -1 : 1,
+      possibleMoveLocations = {},
       spaceIdInt = parseInt(spaceId);
 
     if (isNaN(spaceIdInt)) {
       return [];
     }
 
-    _.each(diceRoll, function (roll) {
+    var addPossibleSpace = function (rolls) {
+      var roll = _.reduce(rolls, function (memo, num) {
+        return memo + num;
+      }, 0);
       var possibleSpace = spaceIdInt + roll * rollModifier;
 
-      if (possibleSpace < 1 || possibleSpace > 24) { return; }
+      if (that.isNotMainBoardSpace(possibleSpace)) { return; }
       // TODO is 0 or 25 = scorespace
 
-      possibleMoveLocations.push('' + possibleSpace);
-    });
+      possibleMoveLocations[possibleSpace] = rolls;
+    };
 
-    if (isDoubles) {
-      possibleMoveLocations.push('' + (diceRoll.die1 + diceRoll.die2));
+    // single rolls
+    _.each(rollsLeft, function (roll) { addPossibleSpace([roll]); });
+/*
+    // combinations
+    if (rollsLeft.length === 2) {
+      addPossibleSpace([rollsLeft[0], rollsLeft[1]]);
     }
 
+    if (rollsLeft.length === 3) {
+      addPossibleSpace([rollsLeft[0], rollsLeft[1]]);
+      addPossibleSpace([rollsLeft[1], rollsLeft[2]]);
+    }
+
+    if (rollsLeft.length === 4) {
+      addPossibleSpace([rollsLeft[0], rollsLeft[1]]);
+      addPossibleSpace([rollsLeft[0], rollsLeft[2]]);
+      addPossibleSpace([rollsLeft[1], rollsLeft[3]]);
+    }
+*/
     return possibleMoveLocations;
+  };
+
+  that.isNotMainBoardSpace = function (spaceNumber) {
+    return spaceNumber < 1 || spaceNumber > 24
   };
 
   return that;

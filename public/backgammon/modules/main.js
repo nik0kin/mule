@@ -212,9 +212,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         gameId: currentGame._id,
         actions: [{
           type: 'TurnAction',
-          params: {
-            moveTokens: [pendingTurn]
-          }
+          params: pendingTurn
         }]
       };
 

@@ -14,11 +14,13 @@ define(['Loader'], function (Loader) {
     die3: 'assets/images/dice-3.png',
     die4: 'assets/images/dice-4.png',
     die5: 'assets/images/dice-5.png',
-    die6: 'assets/images/dice-5.png'
+    die6: 'assets/images/dice-6.png'
   };
 
   var indicatorImages = {
-    selection: 'assets/indicator-selection.png'
+    selection: 'assets/indicator-selection.png',
+    move: 'assets/indicator-move.png',
+    kill: 'assets/indicator-kill.png'
   };
 
   var piecesImages = {
@@ -34,36 +36,37 @@ define(['Loader'], function (Loader) {
     topJailClickAreaRect = {x: size.x/2 - w1/2, y: 0, w: w1, h: size.y/2 - h1/2},
     botJailClickAreaRect = {x: size.x/2 - w1/2, y: size.y/2 + h1/2, w: w1, h: size.y/2 - h1/2},
     die1Pos = {x: 415, y: 280},
-    die2Pos = {x: 455, y: 280};
+    die2Pos = {x: 455, y: 280},
+    maxMoveLocationsForOneToken = 4;
 
   var pieceStartLocations = {
-      1: {x: 830, y: 540},
-      2: {x: 770, y: 540},
-      3: {x: 710, y: 540},
-      4: {x: 650, y: 540},
-      5: {x: 590, y: 540},
-      6: {x: 520, y: 540},
+      1: {x: 845, y: 540},
+      2: {x: 785, y: 540},
+      3: {x: 720, y: 540},
+      4: {x: 655, y: 540},
+      5: {x: 595, y: 540},
+      6: {x: 525, y: 540},
 
-      7: {x: 340, y: 540},
-      8: {x: 280, y: 540},
-      9: {x: 220, y: 540},
-      10: {x: 160, y: 540},
-      11: {x: 100, y: 540},
-      12: {x: 25, y: 540},
+      7: {x: 350, y: 540},
+      8: {x: 285, y: 540},
+      9: {x: 225, y: 540},
+      10: {x: 165, y: 540},
+      11: {x: 105, y: 540},
+      12: {x: 30, y: 540},
 
-      13: {x: 25, y: 20},
-      14: {x: 100, y: 20},
-      15: {x: 160, y: 20},
-      16: {x: 220, y: 20},
-      17: {x: 280, y: 20},
-      18: {x: 340, y: 20},
+      13: {x: 30, y: 20},
+      14: {x: 105, y: 20},
+      15: {x: 165, y: 20},
+      16: {x: 225, y: 20},
+      17: {x: 285, y: 20},
+      18: {x: 350, y: 20},
 
-      19: {x: 520, y: 20},
-      20: {x: 590, y: 20},
-      21: {x: 650, y: 20},
-      22: {x: 710, y: 20},
-      23: {x: 770, y: 20},
-      24: {x: 830, y: 20}
+      19: {x: 525, y: 20},
+      20: {x: 595, y: 20},
+      21: {x: 655, y: 20},
+      22: {x: 720, y: 20},
+      23: {x: 785, y: 20},
+      24: {x: 845, y: 20}
     },
     pieceSeperation = 30;
 
@@ -72,9 +75,9 @@ define(['Loader'], function (Loader) {
 
     var mainClickCallback = params.mainClickCallback;
 
-    var die1Bitmap, die2Bitmap;
-
-    var tokenBitmaps = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+    var die1Bitmap, die2Bitmap,
+      tokenBitmaps = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+      selectionBitmap, moveIndicatorBitmapArray;
 
     function init () {
       var simpleBoard = getSimpleBackgammonBoardFromGameBoard(params.size, params.gameState.spaces, params.gameState.pieces);
@@ -102,6 +105,14 @@ define(['Loader'], function (Loader) {
       selectionBitmap = new createjs.Bitmap(indicatorImages.selection);
       selectionBitmap.visible = false;
       that.addChild(selectionBitmap);
+
+      moveIndicatorBitmapArray = [];
+      _(maxMoveLocationsForOneToken).times(function () {
+        var bitmap = new createjs.Bitmap(indicatorImages.move);
+        bitmap.visible = false;
+        that.addChild(bitmap);
+        moveIndicatorBitmapArray.push(bitmap);
+      });
 
       _.each(simpleBoard, function (tokenInfo, spaceId) {
         that.drawTokens(tokenInfo.player === 'p1' ? 'black' : 'red', spaceId, tokenInfo.amt);
@@ -144,12 +155,15 @@ define(['Loader'], function (Loader) {
     that.moveToken = function (pieceId, currentSpaceId, destSpaceId) {
       var currentSpaceIndexIntoBitmaps = parseInt(currentSpaceId),
         nextSpaceIndexIntoBitmaps = parseInt(destSpaceId),
-        aToken = tokenBitmaps[currentSpaceIndexIntoBitmaps - 1].pop();
+        currenSpaceTokenBitmapArray = tokenBitmaps[currentSpaceIndexIntoBitmaps - 1];
+        aToken = currenSpaceTokenBitmapArray.pop();
 
         if (aToken) {
-          var pos = getTokenPixelPosition(destSpaceId, tokenBitmaps[nextSpaceIndexIntoBitmaps - 1].length);
+          var nextSpaceTokenBitmapArray = tokenBitmaps[nextSpaceIndexIntoBitmaps - 1],
+            pos = getTokenPixelPosition(destSpaceId, nextSpaceTokenBitmapArray.length);
           aToken.x = pos.x;
           aToken.y = pos.y;
+          nextSpaceTokenBitmapArray.push(aToken);
         } else {
           throw 'CANT move no tokens';
         }
@@ -227,8 +241,6 @@ define(['Loader'], function (Loader) {
     };
 
     //////// INDICATORS //////////////
-    var selectionBitmap;
-
     that.showSelection = function (spaceId) {
       console.log('showSelection');
 
@@ -244,11 +256,22 @@ define(['Loader'], function (Loader) {
     };
 
     that.showMoveLocationSpaces = function (spaceIdArray) {
-      console.log('showMoveLocationSpaces')
+      console.log('showMoveLocationSpaces ' + JSON.stringify(spaceIdArray));
+      var i = 0;
+      _.each(spaceIdArray, function (spaceId) {
+        var spaceCenterCoords = getTokenPixelPosition(spaceId, 3),
+          bitmap = moveIndicatorBitmapArray[i++];
+        bitmap.x = spaceCenterCoords.x - 80;
+        bitmap.y = spaceCenterCoords.y;
+        bitmap.visible = true;
+      });
     };
 
     that.stopMoveLocationSpaces = function () {
       console.log('stopMoveLocationSpaces')
+      _.each(moveIndicatorBitmapArray, function (bitmap) {
+        bitmap.visible = false;
+      });
     };
 
 
