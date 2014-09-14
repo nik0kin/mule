@@ -26,7 +26,8 @@ var getAction = function (actionType, ruleBundle) {
 exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle) {
   exports.initActions(ruleBundle);
 
-  var promiseArray = [];
+  var promiseArray = [],
+    _gameStateId;
   _.each(actions, function (action, key) {
     var Action = getAction(action.type, ruleBundle);
     if (!Action) {
@@ -36,7 +37,8 @@ exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle
 
     var promise = GameBoard.findByIdQ(gameBoardId)
       .then(function (foundGameBoard) {
-        return Action.validateQ(foundGameBoard, foundGameBoard.gameState, playerRel, action.params, ruleBundle)
+        _gameStateId = foundGameBoard.gameState;
+        return Action.validateQ(foundGameBoard, _gameStateId, playerRel, action.params, ruleBundle);
       })
         .then(function (gameState) {
         console.log('valid move action ' + key + ': ');
@@ -55,7 +57,13 @@ exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle
       var bundleCode = muleRules.getBundleCode(ruleBundle.name),
         validateActionsQ;
       if (bundleCode && (validateActionsQ = bundleCode.validateActions)) {
-        return validateActionsQ(actions);
+        return GameState.findByIdQ(_gameStateId)
+          .then(function (gameState) {
+            return validateActionsQ({
+              gameState: gameState,
+              actions: actions
+            });
+          });
       } else {
         return Q(actions);
       }
