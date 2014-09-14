@@ -47,11 +47,15 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
 
     var getOnePieceIdOnSpace = function (spaceId) {
       var gameStatePieces = SDK.GameBoards.getPiecesOnSpace(gameState, spaceId),
+        pendingPieces = getPieceIdsFromPendingMoveLocation(spaceId),
         requiredColor = myRelId === 'p1' ? 'black' : 'red';
-      if (gameStatePieces.length > 0 && gameStatePieces[0].attributes.color === requiredColor) {
+
+      if (pendingPieces.length > 0) {
+        return pendingPieces[0];
+      } else if (gameStatePieces.length > 0 && gameStatePieces[0].attributes.color === requiredColor) {
         return gameStatePieces[0].id;
       } else {
-        return getPieceIdsFromPendingMoveLocation(spaceId)[0];
+        return undefined;
       }
     };
 
@@ -62,12 +66,14 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
         bgState = 'waitingOnOpponent';
         //lastRoll = turn.metadata.roll;
         lastRoll = gameState.globalVariables.roll;
+        showRoll();
     };
 
     var turnSubmittedIsOpponents = function (turn) {
       var opponentRel = myRelId === 'p1' ? 'p2' : 'p1';
       _.each(turn.params.moveTokens, function (moveTokenActionParams) {
-        board.moveToken(moveTokenActionParams.pieceId, moveTokenActionParams.currentPieceSpace, moveTokenActionParams.spaceId);
+        var finalDestSpaceId = moveTokenActionParams.spaceIdz[moveTokenActionParams.spaceIdz.length - 1];
+        board.moveToken(moveTokenActionParams.pieceId, moveTokenActionParams.currentPieceSpace, finalDestSpaceId);
         console.log('they moved a token from ' + moveTokenActionParams.currentPieceSpace + ' to ' + moveTokenActionParams.spaceId);
       })
 
@@ -84,9 +90,21 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
         pendingTurn.moveTokens = [];
       }
 
-      // TODO split it up if it uses multiple dice
+      var existingAction = _.find(pendingTurn.moveTokens, function (moveAction) {
+        return moveAction.pieceId === action.pieceId;
+      });
+      if (existingAction) {
+        existingAction.spaceIdz.push(action.spaceId);
+      } else {
+        pendingTurn.moveTokens.push({
+          pieceId: action.pieceId,
+          spaceIdz: [action.spaceId]
+        });
+      }
 
-      pendingTurn.moveTokens.push(action);
+      // so we dont try to move it again from the olde location
+      var piece = SDK.GameBoards.getPiecesFromId(gameState, action.pieceId);
+      piece.locationId = action.spaceId;
 
       if (that.isPendingTurnComplete()) {
         // enable submit button
@@ -109,6 +127,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
         _.each(pendingTurn.moveTokens, function (move) {
           if (move.spaceId === spaceId) {
             pieceIds.push(move.pieceId);
+          } else if (move.spaceIdz && move.spaceIdz[move.spaceIdz - 1] === spaceId) {
+            pieceIds.push(move.pieceId);
           }
         });
       }
@@ -125,8 +145,17 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
     that.isPendingTurnComplete = function () {
       var requiredActionsAmount = isDoubles() ? 4 : 2;
 
-      var totalActions = (!pendingTurn.unjailMoveTokens ? 0 : pendingTurn.unjailMoveTokens.length) 
-        + (!pendingTurn.moveTokens ? 0 : pendingTurn.moveTokens.length);
+      var totalActions = (!pendingTurn.unjailMoveTokens ? 0 : pendingTurn.unjailMoveTokens.length);
+
+      if (pendingTurn.moveTokens) {
+        _.each(pendingTurn.moveTokens, function (moveSubAction) {
+          if (moveSubAction.spaceIdz) {
+            totalActions += moveSubAction.spaceIdz.length;
+          } else if (moveSubAction.spaceId) {
+            totalActions += 1;
+          }
+        });
+      }
 
       // TODO if cant unjail
 

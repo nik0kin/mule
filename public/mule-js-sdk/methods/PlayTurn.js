@@ -6,7 +6,8 @@ define([], function () {
       return $.ajax({
         type: "POST",
         url: contextPath+"playTurn",
-        data: params
+        contentType: 'application/json',
+        data: JSON.stringify(params)
       });
     };
 

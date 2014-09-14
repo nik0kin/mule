@@ -91,6 +91,12 @@ define([], function () {
       return pieces;
     };
 
+    that.getPiecesFromId = function (gameState, pieceId) {
+      return _.find(gameState.pieces, function (piece) {
+        return pieceId === piece.id;
+      });
+    };
+
     that.createFullBoard = function (board, pieces) {
       var fullBoard = _.clone(board);
 
