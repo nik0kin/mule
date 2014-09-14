@@ -110,7 +110,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       }
     };
 
-    var counter = 0, timerCount = 4, firstTime = true, refreshTime = 1000;
+    var counter = 0, timerCount = 5, firstTime = true, refreshTime = 1000;
     var refreshGame = function () {
       counter--;
       $('#refreshLabel').html('refresh...' + counter);

@@ -91,6 +91,12 @@ define([], function () {
       return pieces;
     };
 
+    that.getPiecesByOwnerIdOnSpaceId = function (gameState, spaceId, ownerId) {
+      return _.filter(gameState.pieces, function (piece) {
+        return piece.locationId === spaceId && piece.ownerId === ownerId;
+      });
+    };
+
     that.getPiecesFromId = function (gameState, pieceId) {
       return _.find(gameState.pieces, function (piece) {
         return pieceId === piece.id;

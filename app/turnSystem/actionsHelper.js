@@ -77,7 +77,7 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
 
   _.each(actions, function (action, actionKey) {
     var Action = getAction(action.type, ruleBundle);
-    var promise = Action.doQ(objs.gameState, action.params)
+    var promise = Action.doQ(objs.gameState, action.params, playerRel)
       .then(function (resultActionMetaData) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey);
 

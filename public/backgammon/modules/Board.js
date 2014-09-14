@@ -20,7 +20,7 @@ define(['Loader'], function (Loader) {
   var indicatorImages = {
     selection: 'assets/indicator-selection.png',
     move: 'assets/indicator-move.png',
-    kill: 'assets/indicator-kill.png'
+    knock: 'assets/indicator-knock.png'
   };
 
   var piecesImages = {
@@ -40,6 +40,15 @@ define(['Loader'], function (Loader) {
     maxMoveLocationsForOneToken = 4;
 
   var pieceStartLocations = {
+      'blackJail': {
+        x: botJailClickAreaRect.x + botJailClickAreaRect.w/2,
+        y: botJailClickAreaRect.y + botJailClickAreaRect.h - 30
+      },
+      'redJail': {
+        x: topJailClickAreaRect.x + topJailClickAreaRect.w/2,
+        y: topJailClickAreaRect.y + 30
+      },
+
       1: {x: 845, y: 540},
       2: {x: 785, y: 540},
       3: {x: 720, y: 540},
@@ -77,7 +86,12 @@ define(['Loader'], function (Loader) {
 
     var die1Bitmap, die2Bitmap,
       tokenBitmaps = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
-      selectionBitmap, moveIndicatorBitmapArray;
+      jailBitmaps = {
+        'redJail': [],
+        'blackJail': []
+      },
+      selectionBitmap,
+      moveIndicatorBitmapArray, knockIndicatorBitmapArray;
 
     function init () {
       var simpleBoard = getSimpleBackgammonBoardFromGameBoard(params.size, params.gameState.spaces, params.gameState.pieces);
@@ -114,6 +128,14 @@ define(['Loader'], function (Loader) {
         moveIndicatorBitmapArray.push(bitmap);
       });
 
+      knockIndicatorBitmapArray = [];
+      _(maxMoveLocationsForOneToken).times(function () {
+        var bitmap = new createjs.Bitmap(indicatorImages.knock);
+        bitmap.visible = false;
+        that.addChild(bitmap);
+        knockIndicatorBitmapArray.push(bitmap);
+      });
+
       _.each(simpleBoard, function (tokenInfo, spaceId) {
         that.drawTokens(tokenInfo.player === 'p1' ? 'black' : 'red', spaceId, tokenInfo.amt);
       });
@@ -131,11 +153,21 @@ define(['Loader'], function (Loader) {
     };
 
     var getTokenPixelPosition = function (spaceId, tokensOnSpot) {
-      var l = pieceStartLocations[spaceId];
+      var l = pieceStartLocations[spaceId],
+        upOrDownModifier = (spaceId === 'redJail' || parseInt(spaceId) > 12) ? 1 : -1; 
+
       return {
         x: l.x - tokenOffset.x,
-        y: l.y + tokensOnSpot * pieceSeperation * (parseInt(spaceId) > 12 ? 1 : -1) - tokenOffset.y
+        y: l.y + tokensOnSpot * pieceSeperation * upOrDownModifier - tokenOffset.y
       }
+    };
+
+    var getTokenBitmapArray = function (spaceId) {
+      if (!isNaN(parseInt(spaceId))) {
+          return tokenBitmaps[parseInt(spaceId) - 1];
+        } else {
+          return jailBitmaps[spaceId];
+        }
     };
 
     that.drawTokens = function (color, loc, amt) {
@@ -148,18 +180,19 @@ define(['Loader'], function (Loader) {
         newBitmap.x = pos.x;
         newBitmap.y = pos.y;
         that.addChild(newBitmap);
-        tokenBitmaps[parseInt(loc) - 1].push(newBitmap);
+
+        // adjust token bitmap arrays
+        var tokenBitmap = getTokenBitmapArray(loc);
+        tokenBitmap.push(newBitmap);
       }
     };
 
     that.moveToken = function (pieceId, currentSpaceId, destSpaceId) {
-      var currentSpaceIndexIntoBitmaps = parseInt(currentSpaceId),
-        nextSpaceIndexIntoBitmaps = parseInt(destSpaceId),
-        currenSpaceTokenBitmapArray = tokenBitmaps[currentSpaceIndexIntoBitmaps - 1];
-        aToken = currenSpaceTokenBitmapArray.pop();
+      var currentSpaceTokenBitmapArray = getTokenBitmapArray(currentSpaceId),
+        aToken = currentSpaceTokenBitmapArray.pop();
 
         if (aToken) {
-          var nextSpaceTokenBitmapArray = tokenBitmaps[nextSpaceIndexIntoBitmaps - 1],
+          var nextSpaceTokenBitmapArray = getTokenBitmapArray(destSpaceId),
             pos = getTokenPixelPosition(destSpaceId, nextSpaceTokenBitmapArray.length);
           aToken.x = pos.x;
           aToken.y = pos.y;
@@ -274,6 +307,24 @@ define(['Loader'], function (Loader) {
       });
     };
 
+    that.showKnockMoveLocationSpaces = function (spaceIdArray) {
+      console.log('showKnockMoveLocationSpaces ' + JSON.stringify(spaceIdArray));
+      var i = 0;
+      _.each(spaceIdArray, function (spaceId) {
+        var spaceCenterCoords = getTokenPixelPosition(spaceId, 3),
+          bitmap = knockIndicatorBitmapArray[i++];
+        bitmap.x = spaceCenterCoords.x - 80;
+        bitmap.y = spaceCenterCoords.y;
+        bitmap.visible = true;
+      });
+    };
+
+    that.stopKnockMoveLocationSpaces = function () {
+      console.log('stopKnockMoveLocationSpaces')
+      _.each(knockIndicatorBitmapArray, function (bitmap) {
+        bitmap.visible = false;
+      });
+    };
 
 
     init();

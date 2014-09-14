@@ -25,7 +25,7 @@ define(function(){
 
       {src: 'assets/indicator-selection.png', id: 'indicator-selection'},
       {src: 'assets/indicator-move.png', id: 'indicator-move'},
-      {src: 'assets/indicator-kill.png', id: 'indicator-kill'}
+      {src: 'assets/indicator-knock.png', id: 'indicator-knock'}
     ],
 
     sounds: []

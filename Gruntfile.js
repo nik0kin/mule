@@ -51,6 +51,10 @@ module.exports = function (grunt) {
       updateUtils: {
         command: 'rm -rf node_modules/mule-models/node_modules/mule-utils/*'
           + ' && cp -rf node_modules/mule-utils node_modules/mule-models/node_modules/mule-utils'
+          + ' && rm -rf node_modules/mule-rules/node_modules/mule-utils/*'
+          + ' && cp -rf node_modules/mule-utils node_modules/mule-rules/node_modules/mule-utils'
+          + ' && rm -rf node_modules/mule-models/node_modules/mule-rules/node_modules/mule-utils/*'
+          + ' && cp -rf node_modules/mule-utils node_modules/mule-models/node_modules/mule-rules/node_modules/mule-utils'
       },
       clear_logs : {
         command: 'rm logs/mule*.log'
@@ -78,6 +82,7 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['test']);
   grunt.registerTask('updateMule', ['shell:mule_update']);
   grunt.registerTask('updateRules', ['shell:updateRules']);
+  grunt.registerTask('updateUtils', ['shell:updateUtils']);
   grunt.registerTask('clearLogs', ['shell:clear_logs']);
   grunt.registerTask('monGO', ['shell:monGO']);
   grunt.registerTask('monDEL', ['shell:monDEL']);

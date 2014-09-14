@@ -63,15 +63,17 @@ exports.progressTurnQ = function (gso, player) {
 
   // do all actions for that player (in history)
   return gso.history.getRoundTurnsQ(gso.history.currentRound)
-    .then(function (roundTurns) {
-      console.log(roundTurns);
+    .then(function (roundTurns) { // EFF should it use roundturns here?
       var playerOrder = gso.history.getPlayersOrderNumber(player);
       var playerTurn = roundTurns[playerOrder].playerTurns[player];
       return actionsHelper.doActionsQ({
           gameState: gso.gameState,
           gameBoard: gso.gameBoard,
           history: gso.history
-      }, playerTurn.actions, player, gso.ruleBundle);
+      }, playerTurn.actions, player, gso.ruleBundle)
+        .fail(function (err) {
+          throw 'doActionsQ fail: ' + JSON.stringify(err);
+        });
     })
     .then(function () {
       console.log('Turn successful for ' + player + ': ' + gso.history.currentRound);
