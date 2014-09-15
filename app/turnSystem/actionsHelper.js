@@ -57,10 +57,12 @@ exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle
       var bundleCode = muleRules.getBundleCode(ruleBundle.name),
         validateActionsQ;
       if (bundleCode && (validateActionsQ = bundleCode.validateActions)) {
-        return GameState.findByIdQ(_gameStateId)
+        return GameState.findByIdWithPopulatedStatesQ(_gameStateId)
           .then(function (gameState) {
             return validateActionsQ({
               gameState: gameState,
+              ruleBundle: ruleBundle,
+              playerRel: playerRel,
               actions: actions
             });
           });
