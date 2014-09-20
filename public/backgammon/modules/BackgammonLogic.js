@@ -11,13 +11,17 @@ define(function () {
 
       rollModifier = blackOrRed === 'black' ? -1 : 1,
       possibleMoveLocations = {},
-      spaceIdInt = parseInt(spaceId);
+      spaceIdInt = parseInt(spaceId),
 
-    if (isNaN(spaceIdInt)) {
+      isJailSpace = spaceId === 'blackJail' || spaceId === 'redJail';
+
+    if (isNaN(spaceIdInt) && !isJailSpace) {
       return [];
     }
 
-    var addPossibleSpace = function (rolls) {
+    var addPossibleSpace = function (_spaceId, rolls) { possibleMoveLocations[_spaceId] = rolls; };
+
+    var addNormalMoveToPossibleSpace = function (rolls) {
       var roll = _.reduce(rolls, function (memo, num) {
         return memo + num;
       }, 0);
@@ -26,11 +30,18 @@ define(function () {
       if (that.isNotMainBoardSpace(possibleSpace)) { return; }
       // TODO is 0 or 25 = scorespace
 
-      possibleMoveLocations[possibleSpace] = rolls;
+      addPossibleSpace(possibleSpace, rolls);
     };
 
     // single rolls
-    _.each(rollsLeft, function (roll) { addPossibleSpace([roll]); });
+    _.each(rollsLeft, function (roll) {
+      if (isJailSpace) {
+        var possibleUnjailSpace = that.unjailRollToSpaceId(roll, spaceId === 'blackJail' ? 'black' : 'red');
+        addPossibleSpace(possibleUnjailSpace, [roll]);
+      } else {
+        addNormalMoveToPossibleSpace([roll]);
+      }
+    });
 /*
     // combinations
     if (rollsLeft.length === 2) {
@@ -53,6 +64,28 @@ define(function () {
 
   that.isNotMainBoardSpace = function (spaceNumber) {
     return spaceNumber < 1 || spaceNumber > 24
+  };
+
+  that.spaceIdToUnjailRoll = function (spaceId) {
+    var spaceIdInt = parseInt(spaceId);
+
+    if (spaceIdInt >= 1 && spaceIdInt <= 6) {
+      return spaceIdInt;
+    } else if (spaceIdInt >= 19 && spaceIdInt <= 24) {
+      return 25 - spaceIdInt;
+    } else {
+      return -1;
+    }
+  };
+
+  that.unjailRollToSpaceId = function (roll, blackOrRed) {
+    if (blackOrRed === 'red') {
+      // leaving red jail (going to 1-6)
+      return '' + roll;
+    } else {
+      // leaving black jail (going to 24-19)
+      return 25 - roll;
+    }
   };
 
   return that;

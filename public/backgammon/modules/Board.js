@@ -301,7 +301,6 @@ define(['Loader'], function (Loader) {
     };
 
     that.stopMoveLocationSpaces = function () {
-      console.log('stopMoveLocationSpaces')
       _.each(moveIndicatorBitmapArray, function (bitmap) {
         bitmap.visible = false;
       });
@@ -320,10 +319,15 @@ define(['Loader'], function (Loader) {
     };
 
     that.stopKnockMoveLocationSpaces = function () {
-      console.log('stopKnockMoveLocationSpaces')
       _.each(knockIndicatorBitmapArray, function (bitmap) {
         bitmap.visible = false;
       });
+    };
+
+    that.stopAllMoveLocationIndicators = function () {
+      that.stopSelection();
+      that.stopMoveLocationSpaces();
+      that.stopKnockMoveLocationSpaces();
     };
 
 
