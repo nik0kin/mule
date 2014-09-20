@@ -222,7 +222,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           console.log(result);
           // refresh? - nah wait for us to fetch the turn
 
-          ourBackgammon.setTurnDone();
+          //TODO lock the submit & reset button
         })
         .fail(function (err) {
           setSubmitButtonEnabled(true);

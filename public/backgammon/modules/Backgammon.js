@@ -1,10 +1,10 @@
 
-define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
+define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function (sdk, BackgammonLogic, BackgammonState) {
   return function (myPlayerRel, whosTurn, gameState, boardDisplayObject, enableSubmitButtonCallback) {
     var that = {},
       SDK = sdk('../../'),
       myRelId = myPlayerRel, opponentRelId = (myRelId === 'p1') ? 'p2' : 'p1',
-      currentGameState = gameState,
+      currentBgState = BackgammonState(SDK, gameState, myRelId),
       board = boardDisplayObject,
 
       bgState, // awaitingRoll, rolled (includes if you have pending moves), waitingOnOpponent
@@ -17,7 +17,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
       } else {
         bgState = 'waitingOnOpponent';
       }
-      lastRoll = currentGameState.globalVariables.roll;
+      lastRoll = currentBgState.getCurrentRoll();
       setPlayerRoll();
 
       showRoll();
@@ -46,14 +46,10 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
     };
 
     var getOnePieceIdOnSpace = function (spaceId, playerRel) {
-      var gameStatePieces = SDK.GameBoards.getPiecesOnSpace(currentGameState, spaceId),
-        pendingPieces = getPieceIdsFromPendingMoveLocation(spaceId),
-        requiredColor = playerRel === 'p1' ? 'black' : 'red';
+      var playersPieces = currentBgState.getPiecesOnSpace(spaceId, playerRel);
 
-      if (pendingPieces.length > 0) {
-        return pendingPieces[0];
-      } else if (gameStatePieces.length > 0 && gameStatePieces[0].attributes.color === requiredColor) {
-        return gameStatePieces[0].id;
+      if (playersPieces.length > 0) {
+        return playersPieces[0].id;
       } else {
         return undefined;
       }
@@ -64,18 +60,13 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
     };
 
     var getOneEnemyPieceIdOnSpace = function (spaceId) {
-      // TODO NEXT NEXT NEXT    this doesnt account for moved enemies, (ie you just knocked an enemy and you want to move another piece to that space)
       return getOnePieceIdOnSpace(spaceId, opponentRelId);
     };
 
     var getEnemysCountOnSpace = function (spaceId) {
-      var gameStatePieces = SDK.GameBoards.getPiecesOnSpace(currentGameState, spaceId),
-        pendingPieces = getPieceIdsFromPendingMoveLocation(spaceId),
-        requiredColor = myRelId === 'p1' ? 'red' : 'black';
+      var playersPieces = currentBgState.getPiecesOnSpace(spaceId, opponentRelId);
 
-      return pendingPieces.length + _.filter(gameStatePieces, function (piece) {
-        return piece.attributes.color === requiredColor;
-      }).length;
+      return playersPieces.length;
     };
 
     ////////// TURN LOGIC //////////
@@ -84,7 +75,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
         // it was my turn, so now its their turn, so display their roll
         bgState = 'waitingOnOpponent';
         //lastRoll = turn.metadata.roll;
-        lastRoll = currentGameState.globalVariables.roll;
+        lastRoll = currentBgState.getCurrentRoll();
         showRoll();
     };
 
@@ -103,85 +94,22 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
       // it was their turn, so now its your turn, show the move then show shaker and allow rolling
       bgState = 'awaitingRoll';
       board.showShaker();
-      //lastRoll = turn.metadata.roll;
-      lastRoll = currentGameState.globalVariables.roll;
+
+      lastRoll = currentBgState.getCurrentRoll();;
       setPlayerRoll();
     };
 
-    var addPendingAction = function (action) {
-      if (!pendingTurn.moveTokens) {
-        pendingTurn.moveTokens = [];
-      }
+    var addPendingAction = function (action, knockTempMove) {
+      currentBgState.addPendingMoveAction(action, knockTempMove);
 
-      var existingAction = _.find(pendingTurn.moveTokens, function (moveAction) {
-        return moveAction.pieceId === action.pieceId;
-      });
-      if (existingAction) {
-        existingAction.spaceIdz.push(action.spaceId);
-      } else {
-        pendingTurn.moveTokens.push({
-          pieceId: action.pieceId,
-          spaceIdz: [action.spaceId]
-        });
-      }
-
-      // so we dont try to move it again from the olde location
-      var piece = SDK.GameBoards.getPiecesFromId(currentGameState, action.pieceId);
-      piece.locationId = action.spaceId;
-
-      if (that.isPendingTurnComplete()) {
+      if (currentBgState.isPendingTurnComplete(isDoubles())) {
         // enable submit button
         enableSubmitButtonCallback(true);
       }
     };
 
-    // gets ids of pieces that are moving to @param spaceId
-    var getPieceIdsFromPendingMoveLocation = function (spaceId) {
-      var pieceIds = [];
-
-      if (pendingTurn.moveTokens) {
-        _.each(pendingTurn.moveTokens, function (moveSubAction) {
-          //_.each(moveSubAction.spaceIdz, function (_spaceId) {
-            var finalSpaceId = moveSubAction.spaceIdz[moveSubAction.spaceIdz.length - 1];
-            if (finalSpaceId === spaceId) {
-              pieceIds.push(moveSubAction.pieceId);
-            }
-          //});
-        });
-      }
-
-      return pieceIds;
-    };
-
     // returns then .params of MoveAction
-    that.getPendingTurn = function () {
-      return pendingTurn;
-    };
-
-    // used all dice rolls
-    that.isPendingTurnComplete = function () {
-      var requiredActionsAmount = isDoubles() ? 4 : 2;
-
-      var totalActions = (!pendingTurn.unjailMoveTokens ? 0 : pendingTurn.unjailMoveTokens.length);
-
-      if (pendingTurn.moveTokens) {
-        _.each(pendingTurn.moveTokens, function (moveSubAction) {
-          if (moveSubAction.spaceIdz) {
-            totalActions += moveSubAction.spaceIdz.length;
-          } else if (moveSubAction.spaceId) {
-            totalActions += 1;
-          }
-        });
-      }
-
-      // TODO if cant unjail
-
-      return requiredActionsAmount === totalActions;
-    };
-
-    that.setTurnDone = function () {
-      pendingTurn = {};
-    }
+    that.getPendingTurn = function () { return currentBgState.getPendingTurn(); };
 
     that.resetPendingTurn = function () {
     };
@@ -198,10 +126,9 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
 
     var spaceClicked,
       pieceIdClicked,
-      pendingTurn = {},
       possibleMoveLocations;
     var clickedMovableSpace = function (spaceId) {
-      if (that.isPendingTurnComplete()) {
+      if (currentBgState.isPendingTurnComplete(isDoubles())) {
         return;
       }
 
@@ -214,7 +141,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
         console.log('clicked to move from ' + spaceId + ', piece: ' + pieceIdClicked);
         board.showSelection(spaceId);
 
-        possibleMoveLocations = bgLogic.getPossibleMoveLocations({
+        possibleMoveLocations = BackgammonLogic.getPossibleMoveLocations({
           spaceId: spaceId,
           rollsLeft: rollsLeft,
           blackOrRed: myRelId === 'p1' ? 'black' : 'red'
@@ -222,9 +149,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
 
         var knockLocationIds = [],
           possibleMoveLocationsIds = _.filter(_.keys(possibleMoveLocations), function (pmlSpaceId) {
-            var opponentTokensCount = getEnemysCountOnSpace(pmlSpaceId),
-              opponentTokensAtLoc = getOneEnemyPieceIdOnSpace(pmlSpaceId);
-              console.log('enemies: ' + opponentTokensCount)
+            var opponentTokensCount = getEnemysCountOnSpace(pmlSpaceId);
+
             if (opponentTokensCount === 1) { knockLocationIds.push(pmlSpaceId) };
             return opponentTokensCount === 0;
           });
@@ -252,14 +178,20 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
             rollsUsed = _rollsUsed;
           };
         });
-        var opponentTokensOnDestSpace = SDK.GameBoards.getPiecesByOwnerIdOnSpaceId(currentGameState, spaceId, opponentRelId);
+        var opponentTokensOnDestSpace = currentBgState.getPiecesOnSpace(spaceId, opponentRelId),
+          knock;
         if (isMoveAllowed && opponentTokensOnDestSpace.length <= 1) {
           console.log('clicked to move to ' + spaceId);
 
           if (opponentTokensOnDestSpace.length === 1) {
             // knock opponent token to jail
             console.log('knocking opponent');
-            board.moveToken(opponentTokensOnDestSpace[0].id, spaceId, myRelId === 'p1' ? 'redJail' : 'blackJail');
+
+            knock = {
+              pieceId: opponentTokensOnDestSpace[0].id,
+              jailSpaceId: myRelId === 'p1' ? 'redJail' : 'blackJail'
+            }
+            board.moveToken(knock.pieceId, spaceId, knock.jailSpaceId);
           }
           board.moveToken(pieceIdClicked, spaceClicked, spaceId);
 
@@ -270,11 +202,11 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
           addPendingAction({
             pieceId: pieceIdClicked,
             spaceId: spaceId
-          });
+          }, knock);
           removeRolls(rollsUsed);
 
           console.log('pendingTurn: ');
-          console.log(pendingTurn);
+          console.log(currentBgState.getPendingTurn());
           console.log('rollsLeft: ');
           console.log(rollsLeft);
         } else {
@@ -303,7 +235,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic'], function (sdk, bgLogic) {
     /////////////////////////////
 
     that.updateGameState = function (_gameState) {
-      currentGameState = _gameState;
+      currentBgState.setNewTurnState(_gameState);
     };
 
     that.parseTurn = function (playerRel, turn) {
