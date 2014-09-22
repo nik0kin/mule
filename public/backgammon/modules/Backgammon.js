@@ -37,6 +37,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         rollsLeft.push(lastRoll.die1, lastRoll.die2);
       }
       console.log('setRollsLeft: ' + JSON.stringify(rollsLeft));
+
+      checkIfCantMove();
     };
 
     var removeRolls = function (rollsUsed) {
@@ -71,10 +73,35 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
 
     ////////// TURN LOGIC //////////
 
+    // if jailed
+    var unjailBlocked;
+    var checkIfCantMove = function () {
+      var playerJailId = myRelId === 'p1' ? 'blackJail' : 'redJail',
+        rollsOutOfJailLeft = _.clone(rollsLeft),
+        jailedTokensCount = currentBgState.getPiecesOnSpace(playerJailId).length,
+        moveableCount = 0,
+        gammonAreaEnemyTokensArray = currentBgState.getGammonAreaPieceArray(opponentRelId, opponentRelId);
+
+      // check if any jailed can move with the rolls
+      _.each(rollsOutOfJailLeft, function (roll) {
+        if (gammonAreaEnemyTokensArray[roll - 1].length <= 1) {
+          jailedTokensCount--;
+          moveableCount++;
+        }
+      });
+      console.log('blocked tokens: ' + jailedTokensCount);
+
+      if (jailedTokensCount > 0 && moveableCount === 0) {
+        console.log('cannot unjail..');
+        unjailBlocked = true;
+        enableSubmitButtonCallback(true);
+      } else { unjailBlocked = false; }
+    };
+
     var turnSubmittedIsMine = function (turn) { // TODO find some real names for these functions
         // it was my turn, so now its their turn, so display their roll
         bgState = 'waitingOnOpponent';
-        //lastRoll = turn.metadata.roll;
+
         lastRoll = currentBgState.getCurrentRoll();
         showRoll();
     };
@@ -128,7 +155,15 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       pieceIdClicked,
       possibleMoveLocations;
     var clickedMovableSpace = function (spaceId) {
-      if (currentBgState.isPendingTurnComplete(isDoubles())) {
+      if (currentBgState.isPendingTurnComplete(isDoubles()) || unjailBlocked) {
+        return;
+      }
+
+      //unjail first
+      var playerJailId = myRelId === 'p1' ? 'blackJail' : 'redJail',
+        jailedFriendlyTokens = currentBgState.getPiecesOnSpace(playerJailId);
+      if (jailedFriendlyTokens.length > 0 && spaceId !== playerJailId && !spaceClicked) {
+        console.log('move jailed units first')
         return;
       }
 
@@ -204,6 +239,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
             spaceId: spaceId
           }, knock);
           removeRolls(rollsUsed);
+
+          checkIfCantMove();
 
           console.log('pendingTurn: ');
           console.log(currentBgState.getPendingTurn());

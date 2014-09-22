@@ -75,6 +75,31 @@ define(function () {
 
     };
 
+    that.getGammonAreaPieceArray = function (playerRelSide, playerRel) {
+      var gammonArea;
+      // EFF this function :(
+      if (playerRelSide === 'p1') {
+        gammonArea = [
+          that.getPiecesOnSpace('1', playerRel),
+          that.getPiecesOnSpace('2', playerRel),
+          that.getPiecesOnSpace('3', playerRel),
+          that.getPiecesOnSpace('4', playerRel),
+          that.getPiecesOnSpace('5', playerRel),
+          that.getPiecesOnSpace('6', playerRel)
+        ];
+      } else {
+        gammonArea = [
+          that.getPiecesOnSpace('24', playerRel),
+          that.getPiecesOnSpace('23', playerRel),
+          that.getPiecesOnSpace('22', playerRel),
+          that.getPiecesOnSpace('21', playerRel),
+          that.getPiecesOnSpace('20', playerRel),
+          that.getPiecesOnSpace('19', playerRel)
+        ];
+      }
+      return gammonArea;
+    };
+
     //////////////////
 
     var changePendingPieceOnBackgammonBoard = function (fromSpaceId, toSpaceId, pieceId) {
