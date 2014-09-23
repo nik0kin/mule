@@ -5,8 +5,11 @@ GAME.SIZE = { x: 1280, y: 960 };
 
 
 define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
-  function(Loader, ourAssets, Backgammon, Board, dumbLib, sdk){
-    var SDK = sdk('../../');
+  function(Loader, generateAssets, Backgammon, Board, dumbLib, sdk){
+    var SDK = sdk('../../'),
+      themeFromUrl = dumbLib.getUrlParameter('theme'),
+      scale = (dumbLib.getUrlParameter('scale') || 65) / 100,
+      ourAssets = generateAssets(themeFromUrl);
 
     var STATES = {pregame: 0, ingame: 1, loading: 2};
 
@@ -41,6 +44,8 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
     GAME.init = function(canvas){
       GAME.stage = canvas;
       GAME.state = STATES.pregame;
+      GAME.SIZE.x *= scale;
+      GAME.SIZE.y *= scale;
 
       //load shit?
 
@@ -85,12 +90,10 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
     };
 
     GAME.loadGame = function (callback) {
-      dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
-        currentGame = {_id: result.gameId };
-        currentUser.relId = result.playerRel;
+      currentGame = {_id: dumbLib.getUrlParameter('gameID') };
+      currentUser.relId = dumbLib.getUrlParameter('playerRel');
 
-        refreshGame(callback);
-      });
+      refreshGame(callback);
     };
 
     var setSubmitButtonEnabled = function (trueOrFalse) {
@@ -256,13 +259,20 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       // ghetto wait for gameState
       while(!currentGameState) { ; }
 
-      var newMap = Board({gameBoard:currentGameBoard, gameState: currentGameState, mainClickCallback: clickSpace, loaderQueue: loaderQueue});
-      GAME.stage.addChild(newMap);
-      gameMap = newMap;
+      var boardViewParams = {
+          scale: scale,
+          gameBoard:currentGameBoard,
+          gameState: currentGameState,
+          mainClickCallback: clickSpace,
+          loaderQueue: loaderQueue
+        },
+        newBoardView = Board(boardViewParams);
+      GAME.stage.addChild(newBoardView);
+      gameMap = newBoardView;
 
       ourBackgammon = Backgammon(currentUser.relId,
         SDK.Historys.getWhosTurnIsIt(currentHistory),
-        currentGameState, newMap, setSubmitButtonEnabled);
+        currentGameState, newBoardView, setSubmitButtonEnabled);
     };
 
     GAME.resetGame = function(){

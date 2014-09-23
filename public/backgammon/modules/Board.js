@@ -14,7 +14,6 @@ define(['RenderHelper'], function (RenderHelper) {
   };
 
   var size = {x: 1280, y: 960},
-    scale = .65,
 
     tokenOffset = {x: .05, y: .01}, // offset from the pieceStartLocations[]
     tokenClickAreaPosOffset = {x: -.05, topY: -.015, botY: -.25},
@@ -29,8 +28,6 @@ define(['RenderHelper'], function (RenderHelper) {
     die1Pos = {x: .21, y: .5},
     die2Pos = {x: .27, y: .5},
     diceClickAreaRect = {x: die1Pos.x, y: die1Pos.y, w: .11, h: .08};
-
-  RenderHelper.init(scale, size);
 
   var pieceStartLocations = {
       'redJail': {
@@ -77,6 +74,7 @@ define(['RenderHelper'], function (RenderHelper) {
     var that = new createjs.Container();
 
     var mainClickCallback = params.mainClickCallback,
+      scale = params.scale,
       loaderQueue = params.loaderQueue;
 
     var die1Bitmap, die2Bitmap,
@@ -90,6 +88,8 @@ define(['RenderHelper'], function (RenderHelper) {
       moveIndicatorBitmapArray, knockIndicatorBitmapArray;
 
     function init () {
+      RenderHelper.init(scale, size);
+
       var simpleBoard = getSimpleBackgammonBoardFromGameBoard(params.size, params.gameState.spaces, params.gameState.pieces);
 
       //set images using loaderQueue

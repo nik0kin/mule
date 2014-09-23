@@ -27,7 +27,7 @@ define(["assets"], function (ourAssets) {
 
       currentResourcesLoaded++;
 
-      text.text = currentResourcesLoaded+"/"+totalResources+"   "+resourceID;
+      //text.text = currentResourcesLoaded+"/"+totalResources+"   "+resourceID;
     };
     ////////////////////////////////////
 
@@ -55,11 +55,11 @@ define(["assets"], function (ourAssets) {
         throw "bad parent Container";
       args.parentContainer.addChild(that);
 
-      var font = ourAssets.fonts["someFont"];
-      text = new createjs.Text("", font.size+"px "+font.fontFamily, font.color);
-      text.x = 570;
-      text.y = 570;
-      that.addChild(text);
+      //var font = ourAssets.fonts["someFont"];
+      //text = new createjs.Text("", font.size+"px "+font.fontFamily, font.color);
+      //text.x = 570;
+      //text.y = 570;
+      //that.addChild(text);
 
       currentResourcesLoaded = 0;
       console.log("loadScreen inited");
