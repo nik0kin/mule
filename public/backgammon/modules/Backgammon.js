@@ -253,6 +253,9 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
     };
 
     that.clickSpace = function (space) {
+      if (space === 'topJail') { space = 'redJail'; }
+      if (space === 'botJail') { space = 'blackJail'; }
+
       console.log('clicked space: ' + space);
 
       switch (bgState) {

@@ -1,7 +1,7 @@
 /* ripped from mulesprawl (and rick & the ghost) */
 
 var GAME = {};
-GAME.SIZE = { x: 900, y: 600 };
+GAME.SIZE = { x: 1280, y: 960 };
 
 
 define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
@@ -256,7 +256,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       // ghetto wait for gameState
       while(!currentGameState) { ; }
 
-      var newMap = Board({gameBoard:currentGameBoard, gameState: currentGameState, mainClickCallback: clickSpace});
+      var newMap = Board({gameBoard:currentGameBoard, gameState: currentGameState, mainClickCallback: clickSpace, loaderQueue: loaderQueue});
       GAME.stage.addChild(newMap);
       gameMap = newMap;
 
@@ -276,7 +276,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
     };
 
     ////////// MAIN /////////////
-    var canvas;
+    var canvas, loaderQueue;
     function init() {
       canvas = new createjs.Stage(document.getElementById('myCanvas'));
       canvas.enableMouseOver({frequency: 30});
@@ -296,7 +296,8 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         canvas,
         ourAssets.images,
         ourAssets.sounds,
-        function (){
+        function (_loaderQueue){
+          loaderQueue = _loaderQueue;
           console.log("done loading assets");
           GAME.loadGame();
         }

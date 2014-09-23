@@ -48,7 +48,7 @@ define(["LoadScreen"], function(LoadScreen){
         //remove the container from parent, and call the callback
         loadScreen.removeFromParent();
 
-        return finishedLoadingCallback();
+        return finishedLoadingCallback(queue);
       }
     };
 
