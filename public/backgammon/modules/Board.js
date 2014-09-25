@@ -24,10 +24,18 @@ define(['RenderHelper'], function (RenderHelper) {
     topJailClickAreaRect = {x: .5 - jailClickSize.x/2, y: .16, w: jailClickSize.x, h: jailClickSize.y},
     botJailClickAreaRect = {x: .5 - jailClickSize.x/2, y: .58, w: jailClickSize.x, h: jailClickSize.y};
 
-    shakerPos = {x: .23, y: .485},
-    die1Pos = {x: .21, y: .5},
-    die2Pos = {x: .27, y: .5},
-    diceClickAreaRect = {x: die1Pos.x, y: die1Pos.y, w: .11, h: .08};
+    shakerPos = {x: .63, y: .485},
+    dicePosition = {
+      player: { // on the right
+        die1: {x: .61, y: .5},
+        die2: {x: .67, y: .5}
+      },
+      opponent: { // on the left
+        die1: {x: .21, y: .5},
+        die2: {x: .27, y: .5}
+      }
+    },
+    diceClickAreaRect = {x: dicePosition['player'].die1.x, y: dicePosition['player'].die1.y, w: .11, h: .08};
 
   var pieceStartLocations = {
       'redJail': {
@@ -77,7 +85,10 @@ define(['RenderHelper'], function (RenderHelper) {
       scale = params.scale,
       loaderQueue = params.loaderQueue;
 
-    var die1Bitmap, die2Bitmap,
+    var diceBitmaps = {
+        player: {},
+        opponent: {}
+      },
       tokenBitmaps = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
       jailBitmaps = {
         'redJail': [],
@@ -110,8 +121,13 @@ define(['RenderHelper'], function (RenderHelper) {
       RenderHelper.createScaledBitmapAndAddChild(images.board.background, {x:0,y:0}, that);
       RenderHelper.createScaledBitmapAndAddChild(images.board.overlay, {x:0,y:0}, that);
 
-      die1Bitmap = RenderHelper.createScaledBitmapAndAddChild(images.die.die1, die1Pos, that);
-      die2Bitmap = RenderHelper.createScaledBitmapAndAddChild(images.die.die2, die2Pos, that);
+      var createDiceBitmaps = function (whichPlayer) {
+        diceBitmaps[whichPlayer].die1 = RenderHelper.createScaledBitmapAndAddChild(images.die.die1, dicePosition[whichPlayer].die1, that);
+        diceBitmaps[whichPlayer].die2 = RenderHelper.createScaledBitmapAndAddChild(images.die.die2, dicePosition[whichPlayer].die2, that);
+      };
+
+      createDiceBitmaps('player');
+      createDiceBitmaps('opponent');
 
       shakerBitmap = RenderHelper.createScaledBitmapAndAddChild('assets/shaker.png', shakerPos, that);
       shakerBitmap.visible = false;
@@ -243,10 +259,33 @@ define(['RenderHelper'], function (RenderHelper) {
       }
     };
 
-    that.showRoll = function (roll) {
-      console.log('Roll: ' + roll.die1 + ' ' + roll.die2);
-      die1Bitmap.image.src = images.die['die' + roll.die1];
-      die2Bitmap.image.src = images.die['die' + roll.die2];
+    var showRoll = function (whichPlayer, roll) {
+      console.log(whichPlayer + ' Roll: ' + roll.die1 + ' ' + roll.die2);
+      diceBitmaps[whichPlayer].die1.visible = true;
+      diceBitmaps[whichPlayer].die2.visible = true;
+      diceBitmaps[whichPlayer].die1.image.src = images.die['die' + roll.die1];
+      diceBitmaps[whichPlayer].die2.image.src = images.die['die' + roll.die2];
+    };
+
+    var hideRoll = function (whichPlayer) {
+      diceBitmaps[whichPlayer].die1.visible = false;
+      diceBitmaps[whichPlayer].die2.visible = false;
+    };
+
+    that.showPlayerRoll = function (roll) {
+      showRoll('player', roll);
+    };
+
+    that.hidePlayerRoll = function () {
+      hideRoll('player');
+    };
+
+    that.showOpponentRoll = function (roll) {
+      showRoll('opponent', roll);
+    };
+
+    that.hideOpponentRoll = function () {
+      hideRoll('opponent');
     };
 
     //////// INDICATORS //////////////

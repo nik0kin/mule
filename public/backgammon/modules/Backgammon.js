@@ -11,24 +11,32 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       lastRoll = {}, rollsLeft = [];
 
     var init = function () {
+      lastRoll = currentBgState.getCurrentRoll();
+
+      board.hidePlayerRoll();
+      board.hideOpponentRoll();
+
       if (whosTurn === myRelId) {
         bgState = 'awaitingRoll';
         board.showShaker();
+        showPlayerRoll();
+        setPlayerRoll();
       } else {
         bgState = 'waitingOnOpponent';
+        showOpponentRoll();
       }
-      lastRoll = currentBgState.getCurrentRoll();
-      setPlayerRoll();
-
-      showRoll();
     };
 
     var isDoubles = function () {
       return lastRoll.die1 === lastRoll.die2;
     };
 
-    var showRoll = function () {
-      board.showRoll(lastRoll);
+    var showPlayerRoll = function () {
+      board.showPlayerRoll(lastRoll);
+    };
+
+    var showOpponentRoll = function () {
+      board.showOpponentRoll(lastRoll);
     };
 
     var setPlayerRoll = function () {
@@ -103,7 +111,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         bgState = 'waitingOnOpponent';
 
         lastRoll = currentBgState.getCurrentRoll();
-        showRoll();
+        showOpponentRoll();
+        board.hidePlayerRoll();
     };
 
     var turnSubmittedIsOpponents = function (turn) {
@@ -124,6 +133,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
 
       lastRoll = currentBgState.getCurrentRoll();;
       setPlayerRoll();
+      showPlayerRoll();
     };
 
     var addPendingAction = function (action, knockTempMove) {
@@ -145,7 +155,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
 
     var clickShaker = function () {
       // show dice
-      showRoll();
+      showPlayerRoll();
 
       bgState = 'rolled';
       board.showShaker(false);
