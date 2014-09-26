@@ -4,7 +4,8 @@ define(['RenderHelper'], function (RenderHelper) {
       board: {},
       die: {},
       pieces: {},
-      shaker: null
+      shaker: null,
+      buttons: {}
     };
 
   var indicatorImages = {
@@ -35,7 +36,13 @@ define(['RenderHelper'], function (RenderHelper) {
         die2: {x: .27, y: .5}
       }
     },
-    diceClickAreaRect = {x: dicePosition['player'].die1.x, y: dicePosition['player'].die1.y, w: .11, h: .08};
+    diceClickAreaRect = {x: dicePosition['player'].die1.x, y: dicePosition['player'].die1.y, w: .11, h: .08},
+    buttonPostions = {
+      brandLogo: {x: .025, y: .48},
+      next: {x: .91, y: .43},
+      undo: {x: .91, y: .54}
+    };
+
 
   var pieceStartLocations = {
       'redJail': {
@@ -47,19 +54,19 @@ define(['RenderHelper'], function (RenderHelper) {
         y: topJailClickAreaRect.y + jailOffset.topY
       },
 
-      1: {x: .8835, y: .85}, // using .6575 as x seperator value
-      2: {x: .827, y: .85},
-      3: {x: .7705, y: .85},
-      4: {x: .714, y: .85},
-      5: {x: .6575, y: .85},
-      6: {x: .601, y: .85},
+      1: {x: .8835, y: .84}, // using .6575 as x seperator value
+      2: {x: .827, y: .84},
+      3: {x: .7705, y: .84},
+      4: {x: .714, y: .84},
+      5: {x: .6575, y: .84},
+      6: {x: .601, y: .84},
 
-      7: {x: .449, y: .85},
-      8: {x: .3925, y: .85},
-      9: {x: .336, y: .85},
-      10: {x: .2795, y: .85},
-      11: {x: .223, y: .85},
-      12: {x: .1665, y: .85},
+      7: {x: .449, y: .84},
+      8: {x: .3925, y: .84},
+      9: {x: .336, y: .84},
+      10: {x: .2795, y: .84},
+      11: {x: .223, y: .84},
+      12: {x: .1665, y: .84},
 
       13: {x: .1665, y: .17},
       14: {x: .223, y: .17},
@@ -96,7 +103,9 @@ define(['RenderHelper'], function (RenderHelper) {
       },
       shakerBitmap,
       selectionBitmap,
-      moveIndicatorBitmapArray, knockIndicatorBitmapArray;
+      moveIndicatorBitmapArray, knockIndicatorBitmapArray,
+
+      buttonBitmaps = {};
 
     function init () {
       RenderHelper.init(scale, size);
@@ -116,6 +125,12 @@ define(['RenderHelper'], function (RenderHelper) {
 
       images.pieces.black_piece = loaderQueue.getItem('black_piece').src;
       images.pieces.red_piece = loaderQueue.getItem('red_piece').src;
+
+      images.buttons = {
+        brandLogo: loaderQueue.getItem('brand-logo').src,
+        next: loaderQueue.getItem('button-next-inactive').src,
+        undo: loaderQueue.getItem('button-undo-inactive').src
+      };
 
       // create bitmaps
       RenderHelper.createScaledBitmapAndAddChild(images.board.background, {x:0,y:0}, that);
@@ -152,6 +167,11 @@ define(['RenderHelper'], function (RenderHelper) {
         that.addChild(bitmap);
         knockIndicatorBitmapArray.push(bitmap);
       });
+
+      // other ui bitmaps
+      buttonBitmaps.brandLogo = RenderHelper.createScaledBitmapAndAddChild(images.buttons.brandLogo, buttonPostions.brandLogo, that);
+      buttonBitmaps.next = RenderHelper.createScaledBitmapAndAddChild(images.buttons.next, buttonPostions.next, that);
+      buttonBitmaps.undo = RenderHelper.createScaledBitmapAndAddChild(images.buttons.undo, buttonPostions.undo, that);
 
       // draw initial tokens
       _.each(simpleBoard, function (tokenInfo, spaceId) {

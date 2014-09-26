@@ -26,6 +26,12 @@ define(function(){
         {src: path + 'checker-p1.png', id: 'red_piece'},
         {src: path + 'checker-p2.png', id: 'black_piece'},
 
+        {src: path + 'brand-logo.png', id: 'brand-logo'},
+
+        {src: path + 'button-next-inactive.png', id: 'button-next-inactive'},
+        {src: path + 'button-undo-inactive.png', id: 'button-undo-inactive'},
+
+
         {src: 'assets/shaker.png', id: 'shaker'},
 
         {src: 'assets/indicator-selection.png', id: 'indicator-selection'},
