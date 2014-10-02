@@ -4,8 +4,8 @@ var GAME = {};
 GAME.SIZE = { x: 1800, y: 1000 };
 var TILESIZE = 50;
 
-define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
-  function(Loader, ourAssets, Map, dumbLib, sdk){
+define(['Loader', 'assets', 'Map', '../../dumbLib', '../../mule-js-sdk/sdk', './mulesprawlHelper'],
+  function(Loader, ourAssets, Map, dumbLib, sdk, mulesprawlHelper){
     var SDK = sdk('../../');
 
     var STATES = {pregame: 0, ingame: 1, loading: 2};
@@ -143,6 +143,7 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
                   currentGameState = gameState;
 
                   updateGoldLabel();
+                  updateFamilyDiv();
 
                   if (firstLoad) {
                     //populateBoard(gameBoard);
@@ -242,10 +243,28 @@ define(["Loader", "assets", "Map", '../../dumbLib', "../../mule-js-sdk/sdk"],
           singleWomen.push(farmer);
         }
       });
-      var singlesString = singleMen.length + ' bachelors, ' + singleWomen.length + ' bachelorettes';
+
+      var singlesString = '';
+      if (singleMen.length > 1) {
+        singlesString = ', ' + singleMen.length + ' bachelors';
+      }
+      if (singleWomen.length > 1) {
+        singlesString = ', ' + singleWomen.length + ' bachelorettes';
+      }
 
       $('#goldLabel').html('Gold: ' + gold + ', Farmers: ' + farmers.length + ',  Pregnant Women: '
-        + pregnantWomen.length + ', ' + singlesString);
+        + pregnantWomen.length + singlesString);
+    };
+
+    var updateFamilyDiv = function () {
+      var familys = mulesprawlHelper.getPopulationFamilyObject(currentGameState.pieces),
+        familyhtmlString = '';
+
+      _.each(familys, function (familyMembers, familyName) {
+        familyhtmlString += familyName + ': ' + familyMembers.length + '<br>';
+      });
+
+      $('#familyInfoDiv').html(familyhtmlString);
     };
 
     var months = {
