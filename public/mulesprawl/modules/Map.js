@@ -1,19 +1,20 @@
 
 define(['Loader'], function (Loader) {
-  var TERRAIN_SIZE = 25;
+  var TERRAIN_SIZE = 25,
+    scale = .3125; // 25x50 -> 80x160
 
   var terrainImages = {
-    grass: 'assets/terrain/grass.png',
-    grass2: 'assets/terrain/grass2.png',
-    grass3: 'assets/terrain/grass3.png',
-    water: 'assets/terrain/water.png'
+    grass: 'assets/environments/grass1.png',
+    grass2: 'assets/environments/grass2.png',
+    grass3: 'assets/environments/grass3.png',
+    water: 'assets/environments/riverLR.png'
   };
 
   var buildingImages = {
-    Castle: 'assets/buildings/castle.png',
-    House1: 'assets/buildings/houseGrassC1.png',
-    House2: 'assets/buildings/houseGrassC2.png',
-    House3: 'assets/buildings/houseGrassC3.png'
+    Castle: 'assets/buildings/factoryBlue.png',
+    House1: 'assets/houses/houseBlue.png',
+    House2: 'assets/houses/houseGreen.png',
+    House3: 'assets/houses/houseRed.png'
   };
 
   var Map = function (params) {
@@ -59,6 +60,7 @@ define(['Loader'], function (Loader) {
             newBitmap = new createjs.Bitmap(terrainImage);
           newBitmap.x = x * TERRAIN_SIZE;
           newBitmap.y = y * TERRAIN_SIZE - TERRAIN_SIZE;
+          newBitmap.scaleX = newBitmap.scaleY = scale;
           that.addChild(newBitmap);
         });
       });
@@ -80,6 +82,7 @@ define(['Loader'], function (Loader) {
       var newBitmap = new createjs.Bitmap(buildingImages[type]);
       newBitmap.x = loc.x * TERRAIN_SIZE;
       newBitmap.y = loc.y * TERRAIN_SIZE - TERRAIN_SIZE;
+      newBitmap.scaleX = newBitmap.scaleY = scale;
       that.addChild(newBitmap);
     };
 
