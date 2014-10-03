@@ -75,13 +75,18 @@ define(['Loader'], function (Loader) {
     };
 
     that.drawBuilding = function (type, loc, attributes) {
+      var yOffset;
       if (type === 'House') {
+        yOffset = TERRAIN_SIZE;
         type = getHouseType(attributes.familyName || attributes.family);
       }
-      if (type === 'Castle') placedCastle = true;
+      if (type === 'Castle') {
+        yOffset = TERRAIN_SIZE * 2;
+        placedCastle = true;
+      }
       var newBitmap = new createjs.Bitmap(buildingImages[type]);
       newBitmap.x = loc.x * TERRAIN_SIZE;
-      newBitmap.y = loc.y * TERRAIN_SIZE - TERRAIN_SIZE;
+      newBitmap.y = loc.y * TERRAIN_SIZE - yOffset;
       newBitmap.scaleX = newBitmap.scaleY = scale;
       that.addChild(newBitmap);
     };
