@@ -33,7 +33,8 @@ exports.authCallback = login;
 
 exports.logout = function (req, res) {
   req.logout();
-  res.redirect('/public')
+  res.send();
+  //res.redirect('/public');
 };
 
 /**

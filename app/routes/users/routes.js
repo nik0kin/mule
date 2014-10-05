@@ -26,4 +26,15 @@ module.exports = function (app, passport) {
       failureRedirect: '/failure',
       failureFlash: 'Invalid email or password.'
     }), userServices.session);*/
+
+  app.get('/session', function (req, res) {
+    if (!req.user) {
+      res.status(403).send();
+    } else {
+      res.send(req.user);
+    }
+  });
+
+  app.post('/logout', userServices.logout);
+
 };
