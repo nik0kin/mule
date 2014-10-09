@@ -90,7 +90,7 @@ define(['RenderHelper'], function (RenderHelper) {
       24: {x: .8835, y: .17}
     },
     pieceSeperationY = .05,
-    maxMoveLocationsForOneToken = 4
+    maxMoveLocationsForOneToken = 4;
 
   var Board = function (params) {
     var that = new createjs.Container();
@@ -197,12 +197,28 @@ define(['RenderHelper'], function (RenderHelper) {
       });
     }
 
+    // tokensOnSpot is how many tokens were on the space before adding a new one.
     var getTokenPixelPosition = function (spaceId, tokensOnSpot) {
-      var l = pieceStartLocations[spaceId],
-        upOrDownModifier = (spaceId === 'redJail' || parseInt(spaceId) > 12) ? 1 : -1; 
+      var normalizedStartLocation = {
+          x: pieceStartLocations[spaceId].x - tokenOffset.x,
+          y: pieceStartLocations[spaceId].y - tokenOffset.y
+        },
+        upOrDownModifier = (spaceId === 'redJail' || parseInt(spaceId) > 12) ? 1 : -1,
+        yOffsetDueToTokensAmount;
 
-      return RenderHelper.getScaledPos(l.x - tokenOffset.x,
-          l.y + tokensOnSpot * pieceSeperationY * upOrDownModifier - tokenOffset.y);
+      // Piece Stacking for over 6 pieces per space
+      // 1 - 6 follow normal pattern
+      // 7 - 11   add half pieceSeperationY
+      // 12 - 15  add whole pieceSeperationY
+      if (tokensOnSpot < 6) {
+        yOffsetDueToTokensAmount = tokensOnSpot * pieceSeperationY;
+      } else if (tokensOnSpot < 11) {
+        yOffsetDueToTokensAmount = (tokensOnSpot - 6) * pieceSeperationY + pieceSeperationY/2;
+      } else if (tokensOnSpot < 15) {
+        yOffsetDueToTokensAmount = (tokensOnSpot - 12) * pieceSeperationY + pieceSeperationY;
+      }
+
+      return RenderHelper.getScaledPos(normalizedStartLocation.x, normalizedStartLocation.y + yOffsetDueToTokensAmount * upOrDownModifier);
     };
 
     var getTokenBitmapArray = function (spaceId) {
@@ -243,6 +259,7 @@ define(['RenderHelper'], function (RenderHelper) {
           aToken.x = pos.x;
           aToken.y = pos.y;
           nextSpaceTokenBitmapArray.push(aToken);
+          that.setChildIndex(aToken, that.getNumChildren() - 1);  // ensure tokens don't display under other tokens
         } else {
           throw 'CANT move no tokens';
         }
@@ -271,7 +288,6 @@ define(['RenderHelper'], function (RenderHelper) {
         if (isNaN(pieceNumber) && pieceNumber !== 'blackScoreSpace' && pieceNumber !== 'redScoreSpace') { return; }
 
         //RenderHelper.drawDebugRect(spaceRect, that);
-
         if (RenderHelper.isWithinScaledRect(clickPos, spaceRect)) {
           mainClickCallback(pieceNumber);
         }
