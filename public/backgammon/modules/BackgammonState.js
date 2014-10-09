@@ -47,8 +47,8 @@ define(function () {
 
       if (pendingTurn.moveTokens) {
         _.each(pendingTurn.moveTokens, function (moveSubAction) {
-          //_.each(moveSubAction.spaceIdz, function (_spaceId) {
-            var finalSpaceId = moveSubAction.spaceIdz[moveSubAction.spaceIdz.length - 1];
+          //_.each(moveSubAction.spaceId, function (_spaceId) {
+            var finalSpaceId = moveSubAction.spaceId[moveSubAction.spaceId.length - 1];
             if (finalSpaceId === spaceId) {
               pieceIds.push(moveSubAction.pieceId);
             }
@@ -119,14 +119,16 @@ define(function () {
       }),
         currentPieceSpaceId;
       if (existingAction) {
-        currentPieceSpaceId = existingAction.spaceIdz[existingAction.spaceIdz.length - 1];
-        existingAction.spaceIdz.push(subMoveAction.spaceId);
+        currentPieceSpaceId = existingAction.spaceId[existingAction.spaceId.length - 1];
+        existingAction.rollUsed.push(subMoveAction.rollUsed);
+        existingAction.spaceId.push(subMoveAction.spaceId);
       } else {
-        // EFF do we have to use SDK here. We don't know the pieces location otherwise
+        // EFF do we have to use SDK here? We don't know the pieces location otherwise
         currentPieceSpaceId = SDK.GameBoards.getPiecesFromId(originalGameState, subMoveAction.pieceId).locationId;
         pendingTurn.moveTokens.push({
           pieceId: subMoveAction.pieceId,
-          spaceIdz: [subMoveAction.spaceId]
+          rollUsed: [subMoveAction.rollUsed],
+          spaceId: [subMoveAction.spaceId]
         });
       }
 
@@ -146,8 +148,8 @@ define(function () {
 
       if (pendingTurn.moveTokens) {
         _.each(pendingTurn.moveTokens, function (moveSubAction) {
-          if (moveSubAction.spaceIdz) {
-            totalActions += moveSubAction.spaceIdz.length;
+          if (moveSubAction.spaceId) {
+            totalActions += moveSubAction.spaceId.length;
           } else if (moveSubAction.spaceId) {
             totalActions += 1;
           }

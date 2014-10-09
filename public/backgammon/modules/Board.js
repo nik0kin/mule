@@ -54,6 +54,13 @@ define(['RenderHelper'], function (RenderHelper) {
         y: topJailClickAreaRect.y + jailOffset.topY
       },
 
+      'blackScoreSpace': {
+        x: .96, y: .65
+      },
+      'redScoreSpace': {
+        x: .96, y: .243
+      },
+
       1: {x: .8835, y: .84}, // using .6575 as x seperator value
       2: {x: .827, y: .84},
       3: {x: .7705, y: .84},
@@ -96,7 +103,7 @@ define(['RenderHelper'], function (RenderHelper) {
         player: {},
         opponent: {}
       },
-      tokenBitmaps = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+      tokenBitmaps = {},
       jailBitmaps = {
         'redJail': [],
         'blackJail': []
@@ -173,6 +180,13 @@ define(['RenderHelper'], function (RenderHelper) {
       buttonBitmaps.next = RenderHelper.createScaledBitmapAndAddChild(images.buttons.next, buttonPostions.next, that);
       buttonBitmaps.undo = RenderHelper.createScaledBitmapAndAddChild(images.buttons.undo, buttonPostions.undo, that);
 
+      // initialize tokenBitmaps
+      _(24).times(function (n) {
+        tokenBitmaps[n] = [];
+      });
+      tokenBitmaps['blackScoreSpace'] = [];
+      tokenBitmaps['redScoreSpace'] = [];
+
       // draw initial tokens
       _.each(simpleBoard, function (tokenInfo, spaceId) {
         that.drawTokens(tokenInfo.player === 'p1' ? 'black' : 'red', spaceId, tokenInfo.amt);
@@ -194,7 +208,10 @@ define(['RenderHelper'], function (RenderHelper) {
     var getTokenBitmapArray = function (spaceId) {
       if (!isNaN(parseInt(spaceId))) {
           return tokenBitmaps[parseInt(spaceId) - 1];
+        } else if (tokenBitmaps[spaceId]) {
+          return tokenBitmaps[spaceId];
         } else {
+          //lol
           return jailBitmaps[spaceId];
         }
     };
@@ -251,7 +268,7 @@ define(['RenderHelper'], function (RenderHelper) {
           h: tokenClickAreaSize.y
         };
 
-        if (isNaN(pieceNumber)) { return; }
+        if (isNaN(pieceNumber) && pieceNumber !== 'blackScoreSpace' && pieceNumber !== 'redScoreSpace') { return; }
 
         //RenderHelper.drawDebugRect(spaceRect, that);
 

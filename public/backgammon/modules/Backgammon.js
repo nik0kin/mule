@@ -122,7 +122,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       });
 
       _.each(turn.params.moveTokens, function (moveTokenActionParams) {
-        var finalDestSpaceId = moveTokenActionParams.spaceIdz[moveTokenActionParams.spaceIdz.length - 1];
+        var finalDestSpaceId = moveTokenActionParams.spaceId[moveTokenActionParams.spaceId.length - 1];
         board.moveToken(moveTokenActionParams.pieceId, moveTokenActionParams.currentPieceSpace, finalDestSpaceId);
         console.log('they moved a token from ' + moveTokenActionParams.currentPieceSpace + ' to ' + moveTokenActionParams.spaceId);
       })
@@ -243,8 +243,11 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
           spaceClicked = false;
           board.stopAllMoveLocationIndicators();
 
+          var rollUsed = rollsUsed[0]; // BackgammonState only allows adding one moveToken subAction at a time
+
           // set pending turn
           addPendingAction({
+            rollUsed: rollUsed,
             pieceId: pieceIdClicked,
             spaceId: spaceId
           }, knock);
@@ -275,7 +278,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
           }
           break;
         case 'rolled':
-          if (!isNaN(parseInt(space)) || space === 'blackJail' || space === 'redJail') {
+          if (!isNaN(parseInt(space)) || space === 'blackJail' || space === 'redJail' || space === 'blackScoreSpace' || space === 'redScoreSpace') {
             clickedMovableSpace(space);
           }
           break;

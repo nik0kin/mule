@@ -22,7 +22,7 @@ module.exports = {
           maxPlayers: 1,
           turnProgressStyle: 'autoprogress',
           turnTimeLimit: 15,
-          ruleBundleGameSettings: {customBoardSettings: { width: 30, height: 30 }}
+          ruleBundleGameSettings: {customBoardSettings: { width: 32, height: 32 }}
         }
       }
     }

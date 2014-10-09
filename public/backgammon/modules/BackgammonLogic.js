@@ -25,10 +25,12 @@ define(function () {
       var roll = _.reduce(rolls, function (memo, num) {
         return memo + num;
       }, 0);
-      var possibleSpace = spaceIdInt + roll * rollModifier;
+      var possibleSpace = spaceIdInt + roll * rollModifier,
+        possibleScoreSpace = that.toSpaceId(possibleSpace);
 
-      if (that.isNotMainBoardSpace(possibleSpace)) { return; }
-      // TODO is 0 or 25 = scorespace
+      if (possibleScoreSpace) {
+        possibleSpace = possibleScoreSpace;
+      }
 
       addPossibleSpace(possibleSpace, rolls);
     };
@@ -39,6 +41,7 @@ define(function () {
         var possibleUnjailSpace = that.unjailRollToSpaceId(roll, spaceId === 'blackJail' ? 'black' : 'red');
         addPossibleSpace(possibleUnjailSpace, [roll]);
       } else {
+        // TODO NEXT, bugfix: dont call this function if it was already called for an exact move
         addNormalMoveToPossibleSpace([roll]);
       }
     });
@@ -63,7 +66,17 @@ define(function () {
   };
 
   that.isNotMainBoardSpace = function (spaceNumber) {
-    return spaceNumber < 1 || spaceNumber > 24
+    return spaceNumber < 1 || spaceNumber > 24;
+  };
+
+  that.toSpaceId = function (spaceNumber) {
+    if (spaceNumber < 1) {
+      return 'blackScoreSpace';
+    } else if (spaceNumber > 24) {
+      return 'redScoreSpace';
+    } else {
+      return undefined;
+    }
   };
 
   that.spaceIdToUnjailRoll = function (spaceId) {
