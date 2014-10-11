@@ -61,7 +61,7 @@ module.exports = function (grunt) {
       },
       monGO: {
         options: { stdout: true },
-        command: 'sudo ~/mongodb/bin/mongod --fork --logpath /var/log/mongodb.log --logappend'
+        command: 'sudo mongod --fork --logpath /var/log/mongodb.log --logappend'
       },
       monDEL: {
         options: {  stdout: true },
@@ -73,6 +73,14 @@ module.exports = function (grunt) {
       monDELETE: {
         options: {  stdout: true },
         command: 'mongo mule_dev --eval "db.dropDatabase()" && mongo mule_test --eval "db.dropDatabase()"'
+      },
+      monCLONE: {
+        options: {stdout: true},
+        command: 'mongo mule_dev_copy --eval "db.dropDatabase();"; mongo --eval "db.copyDatabase(\'mule_dev\', \'mule_dev_copy\');"'
+      },
+      monSET: {
+        options: {stdout: true},
+        command: 'mongo mule_dev --eval "db.dropDatabase(); db.copyDatabase(\'mule_dev_copy\',\'mule_dev\');"'
       }
     }
   });
@@ -80,10 +88,15 @@ module.exports = function (grunt) {
   grunt.registerTask('start', ['watch']);
   grunt.registerTask('test', ['simplemocha']);
   grunt.registerTask('default', ['test']);
+
   grunt.registerTask('updateMule', ['shell:mule_update']);
   grunt.registerTask('updateRules', ['shell:updateRules']);
   grunt.registerTask('updateUtils', ['shell:updateUtils']);
   grunt.registerTask('clearLogs', ['shell:clear_logs']);
+
   grunt.registerTask('monGO', ['shell:monGO']);
   grunt.registerTask('monDEL', ['shell:monDEL']);
+  grunt.registerTask('monDELETE', ['shell:monDELETE']);
+  grunt.registerTask('monCLONE', ['shell:monCLONE']);
+  grunt.registerTask('monSET', ['shell:monSET']);
 };

@@ -11,7 +11,7 @@
     "start": "pm2 start server.js --name \"mule\"",
     "stop": "pm2 stop server.js",
     "test": "grunt",
-    "debug": "node --debug port 5858 server.js"
+    "debug": "node-debug server.js"
   },
   "dependencies": {
     "express": "4.x",

@@ -104,9 +104,14 @@ exports.progressTurnQ = function (gso, player) {
       }
     })
     .then(function () {
-      return gameHelper.checkWinConditionQ(gso.game, gso.gameBoard._id);
+      return gameHelper.checkWinConditionQ(gso);
     })
-    .then(function () {
+    .then(function (savedHistoryObject) {
+      if (savedHistoryObject) {
+        // savedHistoryObject will exist if checkWinCondition had a wincondition and it resaved its History and Game objects
+        _savedHistoryObject = savedHistoryObject;
+      }
+
       return gso.game.setTurnTimerQ();
     })
     .then(function () {

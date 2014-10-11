@@ -1,10 +1,16 @@
 var Q = require('q'),
   _ = require('lodash');
 
-var GameBoard = require('mule-models').GameBoard.Model;
+var GameBoard = require('mule-models').GameBoard.Model,
+  GameState = require('mule-models').GameState.Model,
+  History = require('mule-models').History.Model,
+  MuleRules = require('mule-rules');
 
-exports.checkWinConditionQ = function (gameObject, gameBoardObjectId) {
+exports.checkWinConditionQ = function (gso) {
+  var gameObject = gso.game,
+    gameBoardObjectId = gso.gameBoard._id;
 
+  // TODO tic tac toe code needs to get out of here !
   if (gameObject.ruleBundle.name === 'TicTacToe') {
     return checkTicTacToeWinQ(gameBoardObjectId)
       .then(function (winnerPlayerRel) {
@@ -25,6 +31,21 @@ exports.checkWinConditionQ = function (gameObject, gameBoardObjectId) {
       });
   }
 
+  var bundleCode = MuleRules.getBundleCode(gso.ruleBundle.name),
+    bundleWinConditionQ;
+
+  if (bundleCode && typeof (bundleWinConditionQ = bundleCode.winCondition) === 'function') {
+    console.log('calling bundleProgressTurnQ');
+    return bundleWinConditionQ(GameState, gso)
+      .then(function (winner) {
+        if (winner) {
+          return gameObject.setWinnerAndSaveQ(winner)
+            .then(function () {
+              return History.setWinnerAndSaveQ(gso.history._id, winner);
+            });
+        }
+      });
+  }
 };
 
 var checkTicTacToeWinQ = function (gameBoardObjectId) {
