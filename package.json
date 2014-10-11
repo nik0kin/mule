@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "start": "forever start -a -p . -o ./logs/forever-out.log -e ./logs/forever-err.log -l ./logs/forever.log server.js",
-    "stop": "forever stop server.js",
+    "start": "pm2 start server.js --name \"mule\"",
+    "stop": "pm2 stop server.js",
     "test": "grunt",
     "debug": "node --debug port 5858 server.js"
   },
@@ -45,11 +45,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/nik0kin/ProjectMule"
+    "url": "http://github.com/nik0kin/mule"
   },
   "author": "@nikpoklitar",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/nik0kin/ProjectMule/issues"
+    "url": "https://github.com/nik0kin/mule/issues"
   }
 }

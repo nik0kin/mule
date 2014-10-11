@@ -58,7 +58,7 @@ Nginx Config
 
 RUN:
 =======
-
+To run as a background process using pm2 (```sudo npm install pm2 -g```)
 ```
     npm start
 ```
