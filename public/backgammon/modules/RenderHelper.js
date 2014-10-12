@@ -9,6 +9,29 @@ define(function () {
     scaledViewPortSize = {x: scale * viewPortSize.x, y: scale * viewPortSize.y};
   };
 
+  // fontDef is from assets.js
+  // normalizedPosition is the center of the text
+  that.createScaledTextAndAddChild = function (textString, fontDef, normalizedPosition, stage) {
+    if(!fontDef) {
+      throw "invalid font..." + fontDef;
+    }
+
+    var newText = new createjs.Text(
+      textString || '',
+      fontDef.size + 'px ' + fontDef.fontFamily,
+      fontDef.color
+    );
+
+    newText.textAlign = 'center';
+
+    newText.x = normalizedPosition.x * scaledViewPortSize.x;
+    newText.y = normalizedPosition.y * scaledViewPortSize.y;
+    newText.scaleX = scale;
+    newText.scaleY = scale;
+
+    stage.addChild(newText);
+  };
+
   that.createScaledBitmap = function (bitmapSrc, normalizedPosition) {
     normalizedPosition = normalizedPosition || {x: 0, y: 0};
 

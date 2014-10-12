@@ -1,17 +1,34 @@
 
 define(function(){
-  return function (_theme) {
-    var theme = _theme || 'classic',
-      path = 'assets/' + theme + '/';
+  var validThemes = ['classic', 'camfrog', 'diablo'];
+
+  return function (theme) {
+    if (!_.contains(validThemes, theme)) {
+      // default to using the 'classic' theme
+      theme = 'classic';
+    }
+
+    var path = 'assets/' + theme + '/',
+
+      usernameColor = '#ffffff';
+
+    switch (theme) {
+      case 'classic':
+        break;
+      case 'camfrog':
+        break;
+      case 'diablo':
+        break;
+    };
 
     return {
-      /*fonts: {
-        "someFont": {
-          fontFamily: "RBNo2",
-          color: "#ffffff",
-          size: 24
+      fonts: {
+        "usernameFont": {
+          fontFamily: "Open Sans Condensed Light",
+          color: usernameColor,
+          size: 28
         }
-      },*/
+      },
       images: [
         {src: path + 'board-main.png', id: 'board_background'},
         {src: path + 'board-overlay.png', id: 'board_overlay'},
@@ -27,6 +44,8 @@ define(function(){
         {src: path + 'checker-p2.png', id: 'black_piece'},
 
         {src: path + 'brand-logo.png', id: 'brand-logo'},
+        {src: path + 'icon-p2.png', id: 'black-icon'},
+        {src: path + 'icon-p1.png', id: 'red-icon'},
 
         {src: path + 'button-next-inactive.png', id: 'button-next-inactive'},
         {src: path + 'button-undo-inactive.png', id: 'button-undo-inactive'},

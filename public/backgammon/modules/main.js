@@ -264,6 +264,8 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           gameBoard:currentGameBoard,
           gameState: currentGameState,
           mainClickCallback: clickSpace,
+          fontDefs: ourAssets.fonts,
+          usernames: {p1: playerMap.p1.name, p2: playerMap.p2.name},
           loaderQueue: loaderQueue
         },
         newBoardView = Board(boardViewParams);

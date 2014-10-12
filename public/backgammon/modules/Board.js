@@ -5,6 +5,8 @@ define(['RenderHelper'], function (RenderHelper) {
       die: {},
       pieces: {},
       shaker: null,
+
+      ui: {},
       buttons: {}
     };
 
@@ -41,6 +43,12 @@ define(['RenderHelper'], function (RenderHelper) {
       brandLogo: {x: .025, y: .48},
       next: {x: .91, y: .43},
       undo: {x: .91, y: .54}
+    },
+    nonGameplayUiPositions = {
+      playerIcon: {x: .055 , y: .16},
+      playerUsername: {x: .065, y: .19},
+      opponentIcon: {x: .055 , y: .80},
+      opponentUsername: {x: .065, y: .83}
     };
 
 
@@ -97,6 +105,8 @@ define(['RenderHelper'], function (RenderHelper) {
 
     var mainClickCallback = params.mainClickCallback,
       scale = params.scale,
+      fontDefs = params.fontDefs,
+      usernames = params.usernames,
       loaderQueue = params.loaderQueue;
 
     var diceBitmaps = {
@@ -137,6 +147,11 @@ define(['RenderHelper'], function (RenderHelper) {
         brandLogo: loaderQueue.getItem('brand-logo').src,
         next: loaderQueue.getItem('button-next-inactive').src,
         undo: loaderQueue.getItem('button-undo-inactive').src
+      };
+
+      images.ui = {
+        blackIcon: loaderQueue.getItem('black-icon').src,
+        redIcon: loaderQueue.getItem('red-icon').src
       };
 
       // create bitmaps
@@ -192,6 +207,23 @@ define(['RenderHelper'], function (RenderHelper) {
         that.drawTokens(tokenInfo.player === 'p1' ? 'black' : 'red', spaceId, tokenInfo.amt);
       });
 
+      // draw usernames text and color dot //
+      function capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+      }
+
+      _.mixin({ 'capitalize': capitalize });
+
+      var p1UsernameLabel = _.capitalize(usernames['p1'].substring(0, 12)),
+        p2UsernameLabel = _.capitalize(usernames['p2'].substring(0, 12));
+
+      RenderHelper.createScaledTextAndAddChild(p1UsernameLabel, fontDefs.usernameFont, nonGameplayUiPositions.playerUsername, that);
+      RenderHelper.createScaledTextAndAddChild(p2UsernameLabel, fontDefs.usernameFont, nonGameplayUiPositions.opponentUsername, that);
+
+      buttonBitmaps.playerIcon = RenderHelper.createScaledBitmapAndAddChild(images.ui.blackIcon, nonGameplayUiPositions.playerIcon, that);
+      buttonBitmaps.opponentIcon = RenderHelper.createScaledBitmapAndAddChild(images.ui.redIcon, nonGameplayUiPositions.opponentIcon, that);
+
+      /////////
       that.on('click', function (evt) {
         that.clickedSpace(evt.stageX, evt.stageY);
       });
