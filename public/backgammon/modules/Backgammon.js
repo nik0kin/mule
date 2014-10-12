@@ -118,12 +118,12 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
     var turnSubmittedIsOpponents = function (turn) {
       // move knocks
       _.each(turn.metadata.knockedPieces, function (info) {
-        board.moveToken(info.pieceId, info.fromSpaceId, myRelId === 'p1' ? 'blackJail' : 'redJail');
+        board.moveToken(info.fromSpaceId, myRelId === 'p1' ? 'blackJail' : 'redJail');
       });
 
       _.each(turn.params.moveTokens, function (moveTokenActionParams) {
         var finalDestSpaceId = moveTokenActionParams.spaceId[moveTokenActionParams.spaceId.length - 1];
-        board.moveToken(moveTokenActionParams.pieceId, moveTokenActionParams.currentPieceSpace, finalDestSpaceId);
+        board.moveToken(moveTokenActionParams.currentPieceSpace, finalDestSpaceId);
         console.log('they moved a token from ' + moveTokenActionParams.currentPieceSpace + ' to ' + moveTokenActionParams.spaceId);
       })
 
@@ -237,9 +237,9 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
               pieceId: opponentTokensOnDestSpace[0].id,
               jailSpaceId: myRelId === 'p1' ? 'redJail' : 'blackJail'
             }
-            board.moveToken(knock.pieceId, spaceId, knock.jailSpaceId);
+            board.moveToken(spaceId, knock.jailSpaceId);
           }
-          board.moveToken(pieceIdClicked, spaceClicked, spaceId);
+          board.moveToken(spaceClicked, spaceId);
 
           spaceClicked = false;
           board.stopAllMoveLocationIndicators();

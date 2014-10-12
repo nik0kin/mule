@@ -249,7 +249,7 @@ define(['RenderHelper'], function (RenderHelper) {
       }
     };
 
-    that.moveToken = function (pieceId, currentSpaceId, destSpaceId) {
+    that.moveToken = function (currentSpaceId, destSpaceId) {
       var currentSpaceTokenBitmapArray = getTokenBitmapArray(currentSpaceId),
         aToken = currentSpaceTokenBitmapArray.pop();
 
