@@ -11,9 +11,16 @@ define(function () {
             backgammonBoard[spaceId1][pieceId] to  backgammonBoard[spaceId2][pieceId]
           but the piece.locationId will remain where it originally was. look at changePendingPieceOnBackgammonBoard()
         */
-      pendingTurn;
+      pendingTurn,
+
+      pendingScore,
+      myScore, //gets updated every Turn
+      myScoreSpaceId = (myRelId === 'p1') ? 'blackScoreSpace' : 'redScoreSpace';
 
     that.setNewTurnState = function (_gameState) {
+      myScore = 0;
+      pendingScore = 0;
+
       originalGameState = _gameState;
 
       // reset pendintTurn
@@ -33,6 +40,10 @@ define(function () {
       });
       _.each(originalGameState.pieces, function (piece) {
         backgammonBoard[piece.locationId][piece.id] = _.clone(piece);
+
+        if (piece.locationId === myScoreSpaceId) {
+          myScore++;
+        }
       });
 
     };
@@ -102,6 +113,20 @@ define(function () {
 
     //////////////////
 
+    // always the user
+    that.isPlayerReadyToScore = function () {
+      var gammonAreaPieces = that.getGammonAreaPieceArray(myRelId, myRelId),
+        count = 0;
+
+      _.each(gammonAreaPieces, function (gammonSpacePieces) {
+        count += gammonSpacePieces.length;
+      });
+
+      return (count + myScore + pendingScore) === 15;
+    };
+
+    ///////// PENDING STUFF /////////
+
     var changePendingPieceOnBackgammonBoard = function (fromSpaceId, toSpaceId, pieceId) {
       var piece = backgammonBoard[fromSpaceId][pieceId];
 
@@ -138,6 +163,10 @@ define(function () {
         var knockedPieceSpaceId = SDK.GameBoards.getPiecesFromId(originalGameState, knockedEnemyToken.pieceId).locationId;
         changePendingPieceOnBackgammonBoard(knockedPieceSpaceId, knockedEnemyToken.jailSpaceId, knockedEnemyToken.pieceId);
       }
+
+      if (subMoveAction.spaceId === myScoreSpaceId) {
+        pendingScore++;
+      }
     };
 
     // used all dice rolls
@@ -160,6 +189,9 @@ define(function () {
 
       return requiredActionsAmount === totalActions;
     };
+
+    /////////////////////////////////////
+
     that.setNewTurnState(gameState);
     return that;
   };
