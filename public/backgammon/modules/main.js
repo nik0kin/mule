@@ -105,6 +105,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       if (whosTurn !== nextWhosTurn) {
         if (nextWhosTurn === currentUser.relId) {
           console.log('beginPlayersTurn');
+          dontQuery = true;
         } else {
           console.log('beginOpponentTurn');
           setSubmitButtonEnabled(false);
@@ -113,8 +114,13 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       }
     };
 
-    var counter = 0, timerCount = 5, firstTime = true, refreshTime = 1000;
+    var counter = 0, timerCount = 5, firstTime = true, refreshTime = 1000, dontQuery = false;
     var refreshGame = function () {
+      if (dontQuery) {
+        setTimeout(refreshGame, refreshTime);
+        return;
+      }
+
       counter--;
       $('#refreshLabel').html('refresh...' + counter);
 
@@ -230,7 +236,9 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         .fail(function (err) {
           setSubmitButtonEnabled(true);
           alert(JSON.stringify(err));
-        })
+        });
+
+      dontQuery = false;
     };
 
     var parseTurn = function (turn) {

@@ -161,6 +161,103 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       board.showShaker(false);
     };
 
+    var unselection = function () {
+        board.stopAllMoveLocationIndicators();
+        spaceClicked = null;
+    };
+
+    var clickNewSelection = function (clickedSpaceId)  {
+      // selection
+      pieceIdClicked = getOneFriendlyPieceIdOnSpace(clickedSpaceId);
+      if (isNaN(pieceIdClicked) || clickedSpaceId === 'blackScoreSpace' || clickedSpaceId === 'redScoreSpace') {
+        return;
+      }
+
+      spaceClicked = clickedSpaceId;
+      console.log('clicked to move from ' + clickedSpaceId + ', piece: ' + pieceIdClicked);
+      board.showSelection(clickedSpaceId);
+
+      possibleMoveLocations = BackgammonLogic.getPossibleMoveLocations({
+        spaceId: clickedSpaceId,
+        rollsLeft: rollsLeft,
+        allTokensInGammonArea: currentBgState.isPlayerReadyToScore(),
+        blackOrRed: myRelId === 'p1' ? 'black' : 'red'
+      });
+
+      var knockLocationIds = [],
+        possibleMoveLocationsIds = _.filter(_.keys(possibleMoveLocations), function (pmlSpaceId) {
+          var opponentTokensCount = getEnemysCountOnSpace(pmlSpaceId);
+
+          if (opponentTokensCount === 1) { knockLocationIds.push(pmlSpaceId) };
+          return opponentTokensCount === 0;
+        });
+
+      board.showMoveLocationSpaces(possibleMoveLocationsIds);
+      if (knockLocationIds.length > 0) {
+        board.showKnockMoveLocationSpaces(knockLocationIds);
+      }
+    };
+
+    var clickWithSelection = function (clickedSpaceId) {
+      // unselection
+      if (spaceClicked === clickedSpaceId) {
+        console.log('unselecting');
+        unselection();
+        return;
+      }
+
+      // attempted movement
+      var isMoveAllowed = false,
+        rollsUsed;
+      _.each(possibleMoveLocations, function (_rollsUsed, moveLocationSpaceId) {
+        if (moveLocationSpaceId === clickedSpaceId) {
+          isMoveAllowed = true;
+          rollsUsed = _rollsUsed;
+        };
+      });
+      var opponentTokensOnDestSpace = currentBgState.getPiecesOnSpace(clickedSpaceId, opponentRelId),
+        knock;
+      if (isMoveAllowed && opponentTokensOnDestSpace.length <= 1) {
+        console.log('clicked to move to ' + clickedSpaceId);
+
+        if (opponentTokensOnDestSpace.length === 1) {
+          // knock opponent token to jail
+          console.log('knocking opponent');
+
+          knock = {
+            pieceId: opponentTokensOnDestSpace[0].id,
+            jailSpaceId: myRelId === 'p1' ? 'redJail' : 'blackJail'
+          };
+          board.moveToken(clickedSpaceId, knock.jailSpaceId);
+        }
+        board.moveToken(spaceClicked, clickedSpaceId);
+
+        unselection();
+
+        var rollUsed = rollsUsed[0]; // BackgammonState only allows adding one moveToken subAction at a time
+
+        // set pending turn
+        addPendingAction({
+          rollUsed: rollUsed,
+          pieceId: pieceIdClicked,
+          spaceId: clickedSpaceId
+        }, knock);
+        removeRolls(rollsUsed);
+
+        checkIfCantMove();
+
+        console.log('pendingTurn: ');
+        console.log(currentBgState.getPendingTurn());
+        console.log('rollsLeft: ');
+        console.log(rollsLeft);
+      } else {
+        // if its not a possible move, select that token (if available) or deselect
+        console.log('invalid spot');
+        unselection();
+        clickNewSelection(clickedSpaceId);
+      }
+    };
+
     var spaceClicked,
       pieceIdClicked,
       possibleMoveLocations;
@@ -178,91 +275,9 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       }
 
       if (!spaceClicked) {
-        // selection
-        pieceIdClicked = getOneFriendlyPieceIdOnSpace(spaceId);
-        if (isNaN(pieceIdClicked)) { return; }
-
-        spaceClicked = spaceId;
-        console.log('clicked to move from ' + spaceId + ', piece: ' + pieceIdClicked);
-        board.showSelection(spaceId);
-
-        possibleMoveLocations = BackgammonLogic.getPossibleMoveLocations({
-          spaceId: spaceId,
-          rollsLeft: rollsLeft,
-          allTokensInGammonArea: currentBgState.isPlayerReadyToScore(),
-          blackOrRed: myRelId === 'p1' ? 'black' : 'red'
-        });
-
-        var knockLocationIds = [],
-          possibleMoveLocationsIds = _.filter(_.keys(possibleMoveLocations), function (pmlSpaceId) {
-            var opponentTokensCount = getEnemysCountOnSpace(pmlSpaceId);
-
-            if (opponentTokensCount === 1) { knockLocationIds.push(pmlSpaceId) };
-            return opponentTokensCount === 0;
-          });
-
-        board.showMoveLocationSpaces(possibleMoveLocationsIds);
-        if (knockLocationIds.length > 0) {
-          board.showKnockMoveLocationSpaces(knockLocationIds);
-        }
-
+        clickNewSelection(spaceId);
       } else {
-        // unselection
-        if (spaceClicked === spaceId) {
-          console.log('unselecting');
-          board.stopAllMoveLocationIndicators();
-          spaceClicked = null;
-          return;
-        }
-
-        // attempted movement
-        var isMoveAllowed = false, 
-          rollsUsed;
-        _.each(possibleMoveLocations, function (_rollsUsed, moveLocationSpaceId) {
-          if (moveLocationSpaceId === spaceId) {
-            isMoveAllowed = true;
-            rollsUsed = _rollsUsed;
-          };
-        });
-        var opponentTokensOnDestSpace = currentBgState.getPiecesOnSpace(spaceId, opponentRelId),
-          knock;
-        if (isMoveAllowed && opponentTokensOnDestSpace.length <= 1) {
-          console.log('clicked to move to ' + spaceId);
-
-          if (opponentTokensOnDestSpace.length === 1) {
-            // knock opponent token to jail
-            console.log('knocking opponent');
-
-            knock = {
-              pieceId: opponentTokensOnDestSpace[0].id,
-              jailSpaceId: myRelId === 'p1' ? 'redJail' : 'blackJail'
-            }
-            board.moveToken(spaceId, knock.jailSpaceId);
-          }
-          board.moveToken(spaceClicked, spaceId);
-
-          spaceClicked = false;
-          board.stopAllMoveLocationIndicators();
-
-          var rollUsed = rollsUsed[0]; // BackgammonState only allows adding one moveToken subAction at a time
-
-          // set pending turn
-          addPendingAction({
-            rollUsed: rollUsed,
-            pieceId: pieceIdClicked,
-            spaceId: spaceId
-          }, knock);
-          removeRolls(rollsUsed);
-
-          checkIfCantMove();
-
-          console.log('pendingTurn: ');
-          console.log(currentBgState.getPendingTurn());
-          console.log('rollsLeft: ');
-          console.log(rollsLeft);
-        } else {
-          console.log('invalid spot');
-        }
+        clickWithSelection(spaceId);
       }
     };
 
