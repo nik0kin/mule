@@ -20,10 +20,16 @@ define(function () {
       return [];
     }
 
-    var addPossibleSpace = function (_spaceId, rolls) { possibleMoveLocations[_spaceId] = rolls; };
+    var addPossibleSpace = function (_spaceId, rolls) {
+      if (possibleMoveLocations[_spaceId] && rolls[0] > possibleMoveLocations[_spaceId][0]) {
+        // don't use a higher roll (applys when moving to the scorespace)
+      } else {
+        possibleMoveLocations[_spaceId] = rolls;
+      }
+    };
 
     var addNormalMoveToPossibleSpace = function (rolls) {
-      var roll = _.reduce(rolls, function (memo, num) {
+      var roll = _.reduce(rolls, function (memo, num) { // sum of rolls, not needed (rolls.length will always equal 1)
         return memo + num;
       }, 0);
       var possibleSpace = spaceIdInt + roll * rollModifier,
