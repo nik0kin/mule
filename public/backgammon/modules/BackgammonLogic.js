@@ -7,6 +7,7 @@ define(function () {
   that.getPossibleMoveLocations = function (params) {
     var spaceId = params.spaceId,
       rollsLeft = params.rollsLeft,
+      allTokensInGammonArea = params.allTokensInGammonArea,
       blackOrRed = params.blackOrRed,
 
       rollModifier = blackOrRed === 'black' ? -1 : 1,
@@ -26,10 +27,14 @@ define(function () {
         return memo + num;
       }, 0);
       var possibleSpace = spaceIdInt + roll * rollModifier,
-        possibleScoreSpace = that.toSpaceId(possibleSpace);
+        possibleScoreSpace = that.toScoreSpaceId(possibleSpace);
 
       if (possibleScoreSpace) {
-        possibleSpace = possibleScoreSpace;
+        if (allTokensInGammonArea) {
+          possibleSpace = possibleScoreSpace;
+        } else {
+          return;
+        }
       }
 
       addPossibleSpace(possibleSpace, rolls);
@@ -69,7 +74,7 @@ define(function () {
     return spaceNumber < 1 || spaceNumber > 24;
   };
 
-  that.toSpaceId = function (spaceNumber) {
+  that.toScoreSpaceId = function (spaceNumber) {
     if (spaceNumber < 1) {
       return 'blackScoreSpace';
     } else if (spaceNumber > 24) {

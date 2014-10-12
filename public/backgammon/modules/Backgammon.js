@@ -189,6 +189,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         possibleMoveLocations = BackgammonLogic.getPossibleMoveLocations({
           spaceId: spaceId,
           rollsLeft: rollsLeft,
+          allTokensInGammonArea: currentBgState.isPlayerReadyToScore(),
           blackOrRed: myRelId === 'p1' ? 'black' : 'red'
         });
 
