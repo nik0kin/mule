@@ -45,10 +45,10 @@ define(['RenderHelper'], function (RenderHelper) {
       undo: {x: .91, y: .54}
     },
     nonGameplayUiPositions = {
-      playerIcon: {x: .055 , y: .16},
-      playerUsername: {x: .065, y: .19},
-      opponentIcon: {x: .055 , y: .80},
-      opponentUsername: {x: .065, y: .83}
+      playerIcon: {x: .055 , y: .80},
+      playerUsername: {x: .065, y: .83},
+      opponentIcon: {x: .055 , y: .16},
+      opponentUsername: {x: .065, y: .19}
     };
 
 
@@ -148,7 +148,10 @@ define(['RenderHelper'], function (RenderHelper) {
 
       images.buttons = {
         brandLogo: loaderQueue.getItem('brand-logo').src,
-        next: loaderQueue.getItem('button-next-inactive').src,
+        nextBlack: loaderQueue.getItem('button-next-black').src,
+        nextRed: loaderQueue.getItem('button-next-red').src,
+        nextDisable: loaderQueue.getItem('button-next-inactive').src,
+        roll: loaderQueue.getItem('button-roll').src,
         undo: loaderQueue.getItem('button-undo-inactive').src
       };
 
@@ -195,7 +198,13 @@ define(['RenderHelper'], function (RenderHelper) {
 
       // other ui bitmaps
       buttonBitmaps.brandLogo = RenderHelper.createScaledBitmapAndAddChild(images.buttons.brandLogo, buttonPostions.brandLogo, that);
-      buttonBitmaps.next = RenderHelper.createScaledBitmapAndAddChild(images.buttons.next, buttonPostions.next, that);
+
+      buttonBitmaps.next = RenderHelper.createScaledBitmapAndAddChild(images.buttons.nextDisable, buttonPostions.next, that);
+      buttonBitmaps.next.on('click', function (evt) {
+        console.log('next clicked');
+        nextButtonClickedCallback();
+      });
+
       buttonBitmaps.undo = RenderHelper.createScaledBitmapAndAddChild(images.buttons.undo, buttonPostions.undo, that);
 
       // initialize tokenBitmaps
@@ -310,9 +319,9 @@ define(['RenderHelper'], function (RenderHelper) {
 
           // change sprite piece scored
           if (destSpaceId === 'redScoreSpace') {
-            aToken.image = images.pieces.red_piece_removed;
+            aToken.image.src = images.pieces.red_piece_removed;
           } else if (destSpaceId === 'blackScoreSpace') {
-            aToken.image = images.pieces.black_piece_removed;
+            aToken.image.src = images.pieces.black_piece_removed;
           }
         } else {
           throw 'CANT move no tokens';
@@ -452,6 +461,31 @@ define(['RenderHelper'], function (RenderHelper) {
       that.stopKnockMoveLocationSpaces();
     };
 
+
+    ///////// NEXT-ROLL BUTTON /////////
+
+    that.setDisabledNextButton = function () {
+      buttonBitmaps.next.image.src = images.buttons.nextDisable;
+    };
+
+    that.setEnabledNextButton = function (playerRel) {
+      if (playerRel === 'p1') {
+        buttonBitmaps.next.image.src = images.buttons.nextBlack;
+      } else {
+        buttonBitmaps.next.image.src = images.buttons.nextRed;
+      }
+    };
+
+    that.setRollNextButton = function () {
+      buttonBitmaps.next.image.src = images.buttons.roll;
+    };
+
+    var nextButtonClickedCallback;
+    that.setNextButtonClickedCallback = function (_nextButtonClickedCallback) {
+      nextButtonClickedCallback = _nextButtonClickedCallback;
+    };
+
+    ////////////////////////////////////
 
     init();
     return that;

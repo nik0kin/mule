@@ -50,7 +50,11 @@ define(function(){
         {src: path + 'icon-p1.png', id: 'red-icon'},
 
         {src: path + 'button-next-inactive.png', id: 'button-next-inactive'},
+        {src: path + 'button-next-active-p2.png', id: 'button-next-black'},
+        {src: path + 'button-next-active-p1.png', id: 'button-next-red'},
+        {src: path + 'button-roll.png', id: 'button-roll'},
         {src: path + 'button-undo-inactive.png', id: 'button-undo-inactive'},
+
 
 
         {src: 'assets/shaker.png', id: 'shaker'},

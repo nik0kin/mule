@@ -96,10 +96,6 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       refreshGame(callback);
     };
 
-    var setSubmitButtonEnabled = function (trueOrFalse) {
-      $('#submitButton').attr('disabled', !trueOrFalse);
-    };
-
     var updateWhosTurnIsIt = function () {
       var nextWhosTurn = SDK.Historys.getWhosTurnIsIt(currentHistory);
       if (whosTurn !== nextWhosTurn) {
@@ -108,7 +104,6 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           dontQuery = true;
         } else {
           console.log('beginOpponentTurn');
-          setSubmitButtonEnabled(false);
         }
         whosTurn = nextWhosTurn;
       }
@@ -122,7 +117,11 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       }
 
       counter--;
-      $('#refreshLabel').html('refresh...' + counter);
+      var counterString = '';
+      _(timerCount - counter).times(function () {
+        counterString += '.';
+      });
+      $('#refreshLabel').html(counterString);
 
       if (counter > 0) {
         setTimeout(refreshGame, refreshTime);
@@ -209,12 +208,9 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       }
     };
 
-    var clickSubmitTurn = function () {
-      console.log('clicked submit');
-      var pendingTurn = ourBackgammon.getPendingTurn();
+    var submitTurn = function (pendingTurn, successCallback) {
+      console.log('submitting turn');
       if (pendingTurn === null) return;
-
-      setSubmitButtonEnabled(false);
 
       var params = {
         playerId: currentUser.relId,
@@ -230,7 +226,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           console.log('Submitted turn');
           console.log(result);
           // refresh? - nah wait for us to fetch the turn
-
+          successCallback(); // makes unsubmittabled
           //TODO lock the submit & reset button
         })
         .fail(function (err) {
@@ -280,9 +276,13 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       GAME.stage.addChild(newBoardView);
       gameMap = newBoardView;
 
-      ourBackgammon = Backgammon(currentUser.relId,
+      ourBackgammon = Backgammon(
+        currentUser.relId,
         SDK.Historys.getWhosTurnIsIt(currentHistory),
-        currentGameState, newBoardView, setSubmitButtonEnabled);
+        currentGameState,
+        newBoardView,
+        submitTurn
+      );
     };
 
     GAME.resetGame = function(){
@@ -307,8 +307,6 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
 
       document.onkeydown = GAME.keyPressed;
       document.onkeyup = GAME.keyReleased;
-
-      $('#submitButton').on('click', clickSubmitTurn);
 
       //load!
       console.log("loading");

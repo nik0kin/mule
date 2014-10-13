@@ -1,6 +1,6 @@
 
 define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function (sdk, BackgammonLogic, BackgammonState) {
-  return function (myPlayerRel, whosTurn, gameState, boardDisplayObject, enableSubmitButtonCallback) {
+  return function (myPlayerRel, whosTurn, gameState, boardDisplayObject, submitTurnCallback) {
     var that = {},
       SDK = sdk('../../'),
       myRelId = myPlayerRel, opponentRelId = (myRelId === 'p1') ? 'p2' : 'p1',
@@ -19,12 +19,15 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       if (whosTurn === myRelId) {
         bgState = 'awaitingRoll';
         board.showShaker();
+        board.setRollNextButton();
         showPlayerRoll();
         setPlayerRoll();
       } else {
         bgState = 'waitingOnOpponent';
         showOpponentRoll();
       }
+
+      board.setNextButtonClickedCallback(nextButtonClicked);
     };
 
     var isDoubles = function () {
@@ -102,7 +105,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       if (jailedTokensCount > 0 && moveableCount === 0) {
         console.log('cannot unjail..');
         unjailBlocked = true;
-        enableSubmitButtonCallback(true);
+        submittable = true;
+        board.setEnabledNextButton(myRelId);
       } else { unjailBlocked = false; }
     };
 
@@ -130,6 +134,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       // it was their turn, so now its your turn, show the move then show shaker and allow rolling
       bgState = 'awaitingRoll';
       board.showShaker();
+      board.setRollNextButton();
 
       lastRoll = currentBgState.getCurrentRoll();;
       setPlayerRoll();
@@ -141,7 +146,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
 
       if (currentBgState.isPendingTurnComplete(isDoubles())) {
         // enable submit button
-        enableSubmitButtonCallback(true);
+        submittable = true;
+        board.setEnabledNextButton(myRelId);
       }
     };
 
@@ -159,6 +165,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
 
       bgState = 'rolled';
       board.showShaker(false);
+      board.setDisabledNextButton();
     };
 
     var unselection = function () {
@@ -318,6 +325,21 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         turnSubmittedIsOpponents(turn);
       }
     }
+
+    var submittable = true;
+    var nextButtonClicked = function () {
+      if (bgState === 'rolled' && submittable) {
+        submitTurnCallback(that.getPendingTurn(), function () {
+          submittable = false;
+          board.setDisabledNextButton();
+        });
+      }
+
+      if (bgState === 'awaitingRoll') {
+        clickShaker();
+      }
+    };
+
     init();
     return that;
   };
