@@ -63,10 +63,10 @@ define(['RenderHelper'], function (RenderHelper) {
       },
 
       'blackScoreSpace': {
-        x: .96, y: .65
+        x: .96, y: .885
       },
       'redScoreSpace': {
-        x: .96, y: .243
+        x: .96, y: .39
       },
 
       1: {x: .8835, y: .84}, // using .6575 as x seperator value
@@ -97,7 +97,8 @@ define(['RenderHelper'], function (RenderHelper) {
       23: {x: .827, y: .17},
       24: {x: .8835, y: .17}
     },
-    pieceSeperationY = .05,
+    pieceSeperationY = .06,
+    scoredPieceSeperationY = .017,
     maxMoveLocationsForOneToken = 4;
 
   var Board = function (params) {
@@ -142,6 +143,8 @@ define(['RenderHelper'], function (RenderHelper) {
 
       images.pieces.black_piece = loaderQueue.getItem('black_piece').src;
       images.pieces.red_piece = loaderQueue.getItem('red_piece').src;
+      images.pieces.black_piece_removed = loaderQueue.getItem('black_piece_removed').src;
+      images.pieces.red_piece_removed = loaderQueue.getItem('red_piece_removed').src;
 
       images.buttons = {
         brandLogo: loaderQueue.getItem('brand-logo').src,
@@ -231,6 +234,10 @@ define(['RenderHelper'], function (RenderHelper) {
 
     // tokensOnSpot is how many tokens were on the space before adding a new one.
     var getTokenPixelPosition = function (spaceId, tokensOnSpot) {
+      if (spaceId === 'blackScoreSpace' || spaceId === 'redScoreSpace') {
+        return RenderHelper.getScaledPos(pieceStartLocations[spaceId].x - tokenOffset.x, pieceStartLocations[spaceId].y + scoredPieceSeperationY * tokensOnSpot - .27);
+      }
+
       var normalizedStartLocation = {
           x: pieceStartLocations[spaceId].x - tokenOffset.x,
           y: pieceStartLocations[spaceId].y - tokenOffset.y
@@ -268,7 +275,15 @@ define(['RenderHelper'], function (RenderHelper) {
       var i;
 
       for (i=0; i<amt; i++) {
-        var newBitmap = RenderHelper.createScaledBitmap(images.pieces[color === 'red' ? 'red_piece' : 'black_piece']),
+        var src = images.pieces[color === 'red' ? 'red_piece' : 'black_piece'];
+
+        if (loc === 'redScoreSpace') {
+          src = images.pieces.red_piece_removed;
+        } else if (loc === 'blackScoreSpace') {
+          src = images.pieces.black_piece_removed;
+        }
+
+        var newBitmap = RenderHelper.createScaledBitmap(src),
           pos = getTokenPixelPosition(loc, i);
 
         newBitmap.x = pos.x;
@@ -292,6 +307,13 @@ define(['RenderHelper'], function (RenderHelper) {
           aToken.y = pos.y;
           nextSpaceTokenBitmapArray.push(aToken);
           that.setChildIndex(aToken, that.getNumChildren() - 1);  // ensure tokens don't display under other tokens
+
+          // change sprite piece scored
+          if (destSpaceId === 'redScoreSpace') {
+            aToken.image = images.pieces.red_piece_removed;
+          } else if (destSpaceId === 'blackScoreSpace') {
+            aToken.image = images.pieces.black_piece_removed;
+          }
         } else {
           throw 'CANT move no tokens';
         }

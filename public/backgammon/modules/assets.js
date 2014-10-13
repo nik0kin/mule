@@ -42,6 +42,8 @@ define(function(){
 
         {src: path + 'checker-p1.png', id: 'red_piece'},
         {src: path + 'checker-p2.png', id: 'black_piece'},
+        {src: path + 'checker-p1-removed.png', id: 'red_piece_removed'},
+        {src: path + 'checker-p2-removed.png', id: 'black_piece_removed'},
 
         {src: path + 'brand-logo.png', id: 'brand-logo'},
         {src: path + 'icon-p2.png', id: 'black-icon'},
