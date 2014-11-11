@@ -66,3 +66,9 @@ or
 ```
     node server.js
 ```
+
+TESTS:
+=======
+```
+NODE_ENV=test grunt test
+```
