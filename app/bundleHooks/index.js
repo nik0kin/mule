@@ -1,3 +1,4 @@
+var Q = require('q');
 
 var MuleRules = require('mule-rules');
 
@@ -12,4 +13,13 @@ exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, rul
   console.log('generating for: ' + ruleBundleName);
   
   return generateFunctionQ(customBoardSettings, ruleBundleRules);
+};
+
+exports.gameStartHookQ = function (ruleBundleName, gameState) {
+  var ruleBundleGameStartQ = MuleRules.getBundleCode(ruleBundleName).gameStart;
+  if (ruleBundleGameStartQ) {
+    return ruleBundleGameStartQ(gameState);
+  } else {
+    return Q(gameState);
+  }
 };

@@ -22,6 +22,7 @@ exports.joinGame = function(req, res){
       responseJSON.gameID = value._id;
       return res.status(200).send(responseJSON);
     }, function (err) {
+      err = err.toString();
       winston.log('info', 'join failed', err); //TODO if joinQ has a undefined error, it will not  put err as statusMsg (change winston to logger in gameServicesHelper to jog your memory)
       return responseUtils.sendForbiddenError(res, err);
     });

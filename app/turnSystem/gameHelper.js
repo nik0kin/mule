@@ -4,7 +4,20 @@ var Q = require('q'),
 var GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
-  MuleRules = require('mule-rules');
+  MuleRules = require('mule-rules'),
+  startGameQ = require('./startGame').startGameQ;
+
+exports.joinGameQ = function (game, player) {
+  return game.joinGameQ(player)
+    .then(function (savedGame) {
+      // if game full, start game
+      if (savedGame.full) {
+        return startGameQ(savedGame);
+      }
+      // always return the savedGame
+      return savedGame;
+    });
+};
 
 exports.checkWinConditionQ = function (gso) {
   var gameObject = gso.game,

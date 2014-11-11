@@ -10,7 +10,7 @@
   "scripts": {
     "start": "pm2 start server.js --name \"mule\"",
     "stop": "pm2 stop server.js",
-    "test": "grunt",
+    "test": "NODE_ENV=test grunt test",
     "debug": "node-debug server.js"
   },
   "dependencies": {

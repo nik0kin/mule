@@ -4,6 +4,7 @@ var _ = require('lodash'),
 
 var utils = require('mule-utils/jsonUtils'),
   Game = require('mule-models').Game.Model,
+  gameHelper = require('../../../turnSystem/gameHelper'),
   RuleBundleUtils = require('mule-models/models/RuleBundle/util'),
   integerUtils = require('mule-utils/integerUtils'),
   gameBoardHelper = require('../../gameBoards/crud/helper');
@@ -56,16 +57,12 @@ module.exports = function (params) {    //TODO this is starting to look ugly
                           .done(resolve, reject);
                       } else {
                         winston.info('creating game with creator: ', creator._doc);
-                        newGameRR.joinGameQ(creator)
-                          .done(function () {
-                            newGameRR.saveQ()
-                              .done(resolve, reject);
-                          }, reject);
+                        gameHelper.joinGameQ(newGameRR, creator)
+                          .done(resolve, reject);
                       }
                     });
-                  })
-                  .fail(reject);
                   }, reject);
+                }, reject);
           })
           .fail(reject);
       }, function (err) {
