@@ -1,6 +1,7 @@
 var Q = require('q');
 
-var MuleRules = require('mule-rules');
+var MuleRules = require('mule-rules'),
+  GameState = require('mule-models').GameState.Model;
 
 exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, ruleBundleRules) {
   
@@ -21,5 +22,16 @@ exports.gameStartHookQ = function (ruleBundleName, gameState) {
     return ruleBundleGameStartQ(gameState);
   } else {
     return Q(gameState);
+  }
+};
+
+//returns winner
+exports.winConditionHookQ = function (gso) {
+  var bundleCode = MuleRules.getBundleCode(gso.ruleBundle.name),
+    bundleWinConditionQ;
+
+  if (bundleCode && typeof (bundleWinConditionQ = bundleCode.winCondition) === 'function') {
+    console.log('calling bundleProgressTurnQ');
+    return bundleWinConditionQ(GameState, gso);
   }
 };

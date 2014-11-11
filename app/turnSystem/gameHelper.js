@@ -4,8 +4,8 @@ var Q = require('q'),
 var GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
-  MuleRules = require('mule-rules'),
-  startGameQ = require('./startGame').startGameQ;
+  startGameQ = require('./startGame').startGameQ,
+  bundleHooks = require('../bundleHooks');
 
 exports.joinGameQ = function (game, player) {
   return game.joinGameQ(player)
@@ -44,21 +44,15 @@ exports.checkWinConditionQ = function (gso) {
       });
   }
 
-  var bundleCode = MuleRules.getBundleCode(gso.ruleBundle.name),
-    bundleWinConditionQ;
-
-  if (bundleCode && typeof (bundleWinConditionQ = bundleCode.winCondition) === 'function') {
-    console.log('calling bundleProgressTurnQ');
-    return bundleWinConditionQ(GameState, gso)
-      .then(function (winner) {
-        if (winner) {
-          return gameObject.setWinnerAndSaveQ(winner)
-            .then(function () {
-              return History.setWinnerAndSaveQ(gso.history._id, winner);
-            });
-        }
-      });
-  }
+  return bundleHooks.winConditionHookQ(gso)
+    .then(function (winner) {
+      if (winner) {
+        return gameObject.setWinnerAndSaveQ(winner)
+          .then(function () {
+            return History.setWinnerAndSaveQ(gso.history._id, winner);
+          });
+      }
+    });
 };
 
 var checkTicTacToeWinQ = function (gameBoardObjectId) {

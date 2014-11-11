@@ -106,12 +106,7 @@ exports.progressTurnQ = function (gso, player) {
     .then(function () {
       return gameHelper.checkWinConditionQ(gso);
     })
-    .then(function (savedHistoryObject) {
-      if (savedHistoryObject) {
-        // savedHistoryObject will exist if checkWinCondition had a wincondition and it resaved its History and Game objects
-        _savedHistoryObject = savedHistoryObject;
-      }
-
+    .then(function () {
       return gso.game.setTurnTimerQ();
     })
     .then(function () {

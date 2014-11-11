@@ -69,6 +69,7 @@ describe('API: ', function () {
       });
 
       it('gameStatus should change if two more people join a three player game', function (done) {
+        this.timeout(10000);
         loginHelper.registerAndLoginQ({username: 'anohterUser', password : 'poklitar'})
           .done(function (newUserAgent) {
             gameHelper.joinGameQ({agent : newUserAgent, gameID : createdGameID})
