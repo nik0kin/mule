@@ -3,9 +3,9 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
-  MuleRules = require('mule-rules'),
   gameHelper = require('./../gameHelper'),
   actionsHelper = require('./../actionsHelper'),
+  bundleHooks = require('../../bundleHooks'),
   brain = require('./../brain');
 
 
@@ -34,7 +34,6 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
     .then(function (historyObject) {
       console.log('successfully submitted turn (roundRobin)');
       gso.history = historyObject;
-
       // check if all turns are submitted
       return gso.history.getCanAdvanceRoundRobinTurnQ();
     })
@@ -84,29 +83,29 @@ exports.progressTurnQ = function (gso, player) {
       _savedHistoryObject = savedHistoryObject;
 
       console.log('bundleProgressTurnQ: ' + gso.ruleBundle.name);
-      var bundleCode = MuleRules.getBundleCode(gso.ruleBundle.name),
-        bundleProgressTurnQ,
-        _metaData;
-      if (bundleCode && typeof (bundleProgressTurnQ = bundleCode.progressTurn) === 'function') {
-        console.log('calling bundleProgressTurnQ');
-        actionsHelper.initActions(gso.ruleBundle);
-        return bundleProgressTurnQ(GameBoard, gso)
-          .then(function (metaData) {
+      var metaData;
+      // TODO this really needs to go before "Turn successful"
+      return bundleHooks.progressTurnHookQ(gso)
+        .then(function (metaData) {
+          if (metaData) {
             _metaData = metaData;
-            return History.findByIdQ(gso.history._id);
-          })
-          .then(function (fHistory) {
-            //TODO where should progressTurn's meta data go? (in players actions?)
-            return fHistory.addRoundRobinMetaAndSaveQ({actions:[{type: 'metadata', metadata: _metaData}] });
-          });
-      } else {
-        return Q(historyObject);
-      }
+            return History.findByIdQ(gso.history._id)
+              .then(function (fHistory) {
+                //TODO where should progressTurn's meta data go? (in players actions?)
+                return fHistory.addRoundRobinMetaAndSaveQ({actions:[{type: 'metadata', metadata: _metaData}] });
+              });
+          }
+        });
     })
     .then(function () {
       return gameHelper.checkWinConditionQ(gso);
     })
-    .then(function () {
+    .then(function (savedHistoryObject) {
+      if (savedHistoryObject) {
+        // savedHistoryObject will exist if checkWinCondition had a wincondition and it resaved its History and Game objects
+        _savedHistoryObject = savedHistoryObject;
+      }
+
       return gso.game.setTurnTimerQ();
     })
     .then(function () {

@@ -332,6 +332,9 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         submitTurnCallback(that.getPendingTurn(), function () {
           submittable = false;
           board.setDisabledNextButton();
+        }, function (err) {
+          submittable = true;
+          board.setEnabledNextButton();
         });
       }
 

@@ -4,9 +4,8 @@ var _ = require('lodash'),
 var GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
-  MuleRules = require('mule-rules'),
-  actionsHelper = require('./../actionsHelper'),
-  brain = require('./../brain');
+  bundleHooks = require('../../bundleHooks'),
+  actionsHelper = require('./../actionsHelper');
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
@@ -78,24 +77,18 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
       return Q.all(promises);
     })
     .then(function () {
-      var bundleCode = MuleRules.getBundleCode(ruleBundle.name),
-        bundleProgressRoundQ;
-      if (bundleCode && typeof (bundleProgressRoundQ = bundleCode.progressRound) === 'function') {
-        return brain.loadGameStateObjectQ(game)
-          .then(function (result) {
-            console.log('calling bundleProgreesQ');
-            actionsHelper.initActions(game.ruleBundle);
-            return bundleProgressRoundQ(GameState, result)
-              .then(function (metaData) {
-                _metaData = metaData;
-                return History.findByIdQ(result.history._id);
-              })
-              .then(function (fHistory) {
-                return fHistory.addPlayByMailMetaAndSaveQ({
-                  actions:[{type: 'metadata', metadata: _metaData}]
-                });
-              });
-          });
+      // Call ProgressRound Hook and save metadata
+      return bundleHooks.progressRoundHookQ(ruleBundle, game);
+    })
+    .then(function (progressRoundMetadata) {console.log('4')
+      if (progressRoundMetadata) {console.log('5')
+        // Not sure why I'm refetching history, (history doesnt change? in the bundle hook, so why not use historyObject) - 11/13 bundle API refactor
+        return History.findByIdQ(historyObject._id)
+          .then(function (fHistory) {
+            return fHistory.addPlayByMailMetaAndSaveQ({
+              actions:[{type: 'metadata', metadata: progressRoundMetadata}]
+            });
+          })
       } else {
         return Q(historyObject);
       }

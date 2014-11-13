@@ -2,6 +2,7 @@ var _ = require('lodash'),
   Q = require('q');
 
 var muleRules = require('mule-rules'),
+  bundleHooks = require('../bundleHooks'),
   GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
   PieceState = require('mule-models').PieceState.Model;
@@ -54,21 +55,7 @@ exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle
 
   return Q.all(promiseArray)
     .then(function () {
-      var bundleCode = muleRules.getBundleCode(ruleBundle.name),
-        validateActionsQ;
-      if (bundleCode && (validateActionsQ = bundleCode.validateActions)) {
-        return GameState.findByIdWithPopulatedStatesQ(_gameStateId)
-          .then(function (gameState) {
-            return validateActionsQ({
-              gameState: gameState,
-              ruleBundle: ruleBundle,
-              playerRel: playerRel,
-              actions: actions
-            });
-          });
-      } else {
-        return Q(actions);
-      }
+      return bundleHooks.validateActionsHookQ(_gameStateId, ruleBundle, playerRel, actions);
     });
 };
 

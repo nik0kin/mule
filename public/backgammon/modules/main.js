@@ -208,7 +208,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       }
     };
 
-    var submitTurn = function (pendingTurn, successCallback) {
+    var submitTurn = function (pendingTurn, successCallback, failureCallback) {
       console.log('submitting turn');
       if (pendingTurn === null) return;
 
@@ -230,7 +230,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           //TODO lock the submit & reset button
         })
         .fail(function (err) {
-          setSubmitButtonEnabled(true);
+          if (failureCallback) { failureCallback(err); }
           alert(JSON.stringify(err));
         });
 
