@@ -16,6 +16,7 @@ var loggedInAgent;
 describe('API', function () {
   describe('Games: ', function () {
     before(function (done) {
+      this.timeout(3000);
       loginHelper.registerAndLoginQ()
         .then(function (agent) {
           loggedInAgent = agent;

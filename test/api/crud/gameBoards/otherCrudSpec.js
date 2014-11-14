@@ -18,8 +18,9 @@ var loggedInAgent;
 var createdGameID;
 
 describe('API: ', function () {
-  describe('Games ', function () {
+  describe('GameBoards ', function () {
     before(function (done) {
+      this.timeout(5000)
       loginHelper.registerAndLoginQ()
         .then(function (agent) {
           loggedInAgent = agent;

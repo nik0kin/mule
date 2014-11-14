@@ -31,7 +31,7 @@ describe('API: ', function () {
       });
 
       it('basic should work',function (done) {
-        this.timeout(10000);
+        this.timeout(15000);
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig : createGameParams})
           .done(function (result) {

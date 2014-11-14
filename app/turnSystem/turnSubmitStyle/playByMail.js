@@ -80,8 +80,8 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
       // Call ProgressRound Hook and save metadata
       return bundleHooks.progressRoundHookQ(ruleBundle, game);
     })
-    .then(function (progressRoundMetadata) {console.log('4')
-      if (progressRoundMetadata) {console.log('5')
+    .then(function (progressRoundMetadata) {
+      if (progressRoundMetadata) {
         // Not sure why I'm refetching history, (history doesnt change? in the bundle hook, so why not use historyObject) - 11/13 bundle API refactor
         return History.findByIdQ(historyObject._id)
           .then(function (fHistory) {

@@ -14,8 +14,9 @@ var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://lo
 var loggedInAgent;
 
 describe('API: ', function () {
-  describe('Games ', function () {
+  describe('GameBoards ', function () {
     before(function (done) {
+      this.timeout(3000);
       loginHelper.registerAndLoginQ()
         .then(function (agent) {
           loggedInAgent = agent;

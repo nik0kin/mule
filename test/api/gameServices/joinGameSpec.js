@@ -121,6 +121,7 @@ describe('API: ', function () {
             }, testHelper.mochaError(done));
         });
         it('should reject if its full' , function (done) {
+          this.timeout(5000);
           loginHelper.registerAndLoginQ({username: 'anohterUser', password : 'poklitar'})
             .done(function (newUserAgent) {
               gameHelper.joinGameQ({agent : newUserAgent, gameID : createdGameID})

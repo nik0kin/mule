@@ -4,6 +4,7 @@ var MuleRules = require('mule-rules'),
   GameBoard = require('mule-models').GameBoard.Model,
   actionsHelper = require('../turnSystem/actionsHelper'), //TODO not use these requires
   brain = require('../turnSystem/brain');
+  createMQ = require('./M'),
   GameState = require('mule-models').GameState.Model;
 
 // returns a boardDef
@@ -20,13 +21,14 @@ exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, rul
   return generateFunctionQ(customBoardSettings, ruleBundleRules);
 };
 
-// returns gameState
-exports.gameStartHookQ = function (ruleBundleName, gameState) {
+
+exports.gameStartHookQ = function (gameId, ruleBundleName) {
   var ruleBundleGameStartQ = MuleRules.getBundleCode(ruleBundleName).gameStart;
   if (ruleBundleGameStartQ) {
-    return ruleBundleGameStartQ(gameState);
-  } else {
-    return Q(gameState);
+    return createMQ(gameId)
+      .then (function (M) {
+        return ruleBundleGameStartQ(M);
+      });
   }
 };
 
@@ -37,7 +39,10 @@ exports.winConditionHookQ = function (gso) {
 
   if (bundleCode && typeof (bundleWinConditionQ = bundleCode.winCondition) === 'function') {
     console.log('calling bundleProgressTurnQ');
-    return bundleWinConditionQ(GameState, gso);
+    return createMQ(gso.game._id)
+      .then (function (M) {
+        return bundleWinConditionQ(M);
+      });
   }
 };
 
@@ -84,4 +89,4 @@ exports.progressTurnHookQ = function (gso) {
     actionsHelper.initActions(gso.ruleBundle);
     return bundleProgressTurnQ(GameBoard, gso);
   }
-}
+};

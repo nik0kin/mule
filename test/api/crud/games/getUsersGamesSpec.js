@@ -27,6 +27,7 @@ describe('API: ', function () {
       var ourOtherUserAgent;
 
       beforeEach(function (done) {
+        this.timeout(3000);
         loginHelper.registerAndLoginQ()
           .then(function (agent) {
             ourUserAgent = agent;

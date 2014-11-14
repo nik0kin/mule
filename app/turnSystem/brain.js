@@ -3,6 +3,7 @@ var _ = require('lodash'),
 
 var roundRobinTurnSystem = require('./turnSubmitStyle/roundRobin'),
   playByMailTurnSystem = require('./turnSubmitStyle/playByMail'),
+  Game = require('mule-models').Game.Model,
   GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
@@ -25,6 +26,7 @@ exports.forceTurnProgress = function (game) {
   exports.loadGameStateObjectQ(game)
     .done(function (gameStateObject) {
       console.log('try forcing for ' + gameStateObject.game._id);
+      var startTime = Date.now();
       var playerRel;
       if (gameStateObject.ruleBundle.turnSubmitStyle === 'roundRobin') {
         playerRel = gameStateObject.game.getRoundRobinNextPlayerRel(); // player that needs to play
@@ -34,7 +36,7 @@ exports.forceTurnProgress = function (game) {
             return roundRobinTurnSystem.progressTurnQ(gameStateObject, playerRel);
           })
           .done(function () {
-            console.log('force complete');
+            console.log('force complete ' + (Date.now() - startTime) + 'ms');
           });
       } else if (gameStateObject.ruleBundle.turnSubmitStyle === 'playByMail') {
         gameStateObject.history.getPlayersThatHaveNotPlayedTheCurrentTurnQ()
@@ -48,7 +50,7 @@ exports.forceTurnProgress = function (game) {
             return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, gameStateObject.gameBoard, gameStateObject.gameState, gameStateObject.history, gameStateObject.ruleBundle);
           })
           .done(function () {
-            console.log('force complete');
+            console.log('force complete ' + (Date.now() - startTime) + 'ms');
           }, function () {
             console.log('force failed');
           });
@@ -83,15 +85,22 @@ exports.loadGameStateObjectQ = function (game) {
 
       return GameState.findByIdWithPopulatedStatesQ(_board.gameState);
     })
-    .then(function (foundGameState) {
+    .then(function (maybeGameState) {
       var gso = {
         game: game,
         ruleBundle: _ruleBundle,
         gameBoard: _board,
-        gameState: foundGameState,
+        gameState: maybeGameState,
         history: _history
       };
       console.log('loaded gso');
       return Q(gso);
+    });
+};
+
+exports.loadGameStateObjectByIdQ = function (gameId) {
+  return Game.findByIdQ(gameId)
+    .then(function (foundGame) {
+      return exports.loadGameStateObjectQ(foundGame);
     });
 };

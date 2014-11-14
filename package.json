@@ -14,16 +14,17 @@
     "debug": "node-debug server.js"
   },
   "dependencies": {
+    "connect-flash": "~0.1.1",
+    "connect-mongo": "~0.4.1",
     "express": "4.x",
-    "q": "~0.9.7",
+    "lodash": "~2.4.1",
+    "mkdirp": "0.5.0",
     "notifier": "~0.1.1",
     "passport": "0.2.0",
     "passport-local": "1.0.0",
-    "connect-mongo": "~0.4.1",
-    "connect-flash": "~0.1.1",
-    "winston": "~0.7.3",
-    "lodash": "~2.4.1",
-    "mkdirp": "0.5.0"
+    "q": "~0.9.7",
+    "request": "^2.48.0",
+    "winston": "~0.7.3"
   },
   "devDependencies": {
     "mocha": "*",

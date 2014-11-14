@@ -133,10 +133,6 @@ exports.startGameQ = function (game) {
         return _gameState.saveQ();
       })
       .then(function (savedGameState) {
-        console.log('calling gameStart ' + _gameBoard.ruleBundle.name)
-        return bundleHooks.gameStartHookQ(_gameBoard.ruleBundle.name, savedGameState);
-      })
-      .then(function (savedGameState) {
         return History.createQ(game, currentRuleBundle.turnSubmitStyle);
       })
       .then(function (newHistory) {
@@ -145,6 +141,10 @@ exports.startGameQ = function (game) {
         return _gameBoard.saveQ();
       })
       .then(function (savedGameBoardState) {
+        console.log('calling gameStart ' + _gameBoard.ruleBundle.name)
+        return bundleHooks.gameStartHookQ(game._id, _gameBoard.ruleBundle.name);
+      })
+      .then(function () {
         return game.setTurnTimerQ();
       })
       .then(function (savedGame) {

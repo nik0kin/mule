@@ -71,5 +71,15 @@ var port = process.env.PORT || config.port;
 app.listen(port);
 console.log('The Mule has started his journey ('+port+')');
 
+// dumb hack to avoid mongodb session-collection race condition for first rest call
+/*setTimeout(function () {
+  require('request')('localhost:' + port + '/' + config.routesPrefix + '/alive', function (error, response, body) {
+    console.log('PINGED');
+  });
+}, 500);*/
+var i, x=10000;
+for(i=0;i<x;i++);
+
+
 //expose app
 exports = module.exports = app;
