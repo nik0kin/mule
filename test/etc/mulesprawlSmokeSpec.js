@@ -86,7 +86,7 @@ describe('ETC: ', function () {
       });
 
       it(' should place a castle and wait til 3rd round', function (done) {
-        this.timeout(60000);
+        this.timeout(80000);
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
           .then(function (result) {
