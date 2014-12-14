@@ -85,7 +85,7 @@ describe('ETC: ', function () {
           .fail(testHelper.mochaError(done));
       });
 
-      it(' should place a castle and wait til 3rd round', function (done) {
+      it(' should place a castle and wait til 2nd round and check for 5house/10farmer', function (done) {
         this.timeout(80000);
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
@@ -145,7 +145,7 @@ describe('ETC: ', function () {
               var restartQ = function () {
                 return gameHelper.sendRestRequest({
                   agent: gameCreatorUserAgent,
-                  endpoint: '/games/' + validTurn.gameId + '/history/3',
+                  endpoint: '/games/' + validTurn.gameId + '/history/2',
                   verb: 'get'
                 })
                 .then(function (turn2Result) {
@@ -167,6 +167,31 @@ describe('ETC: ', function () {
           .then(function (result) {
             console.log('getTurn2Q result:')
             console.log(result);
+
+            return gameHelper.readGameStateQ({
+              gameId: createdGameId,
+              agent: gameCreatorUserAgent
+            })
+          })
+          .then(function (result) {
+            // look at all pieces for 5 houses and 10 farmers
+            var expectedHouseCount = 5,
+              expectedFarmerCount = 10,
+              totalHouseCount = 0,
+              totalFarmerCount = 0;
+
+            _.each(result.pieces, function (piece) {
+              if (piece.class === 'House') {
+                totalHouseCount++;
+              }
+              if (piece.class === 'Farmer') {
+                totalFarmerCount++;
+              }
+            });
+
+            should(totalHouseCount).eql(expectedHouseCount);
+            should(totalFarmerCount).eql(expectedFarmerCount);
+
             done();
           })
           .fail(testHelper.mochaError(done));

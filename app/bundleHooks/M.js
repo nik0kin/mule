@@ -23,7 +23,19 @@ var createHelper = function (gso) {
   var gameStateChanged = false;
 
   var newPieceStates = [],
-    savedPieceStates = [];
+    savedNewPieceStates = [],
+
+    modifiedPieceStateIds = [];
+
+  var piecesById,
+    pieceMongoIdsById = {};
+
+  if (gameState && gameState.pieces) {
+    piecesById = _.indexBy(gameState.pieces, 'id');
+    _.each(gameState.pieces, function (piece) { // EFF there might be better underscore function for this
+      pieceMongoIdsById[piece.id] = piece._id;
+    });
+  }
 
   ////// private functions //////
 
@@ -101,19 +113,27 @@ var createHelper = function (gso) {
   that.addPiece = function (pieceObject) {
     var randomId = Math.floor((Math.random() * 9999999) + 1); //TODO BAD
 
-    var newPieceState = new PieceState(_.clone(pieceObject));
-    newPieceState.id = randomId;
+    var pieceObjectClone = _.clone(pieceObject); // doesn't have mongo properties on it
+    pieceObjectClone.id = randomId;
 
+    var newPieceState = new PieceState(poClone);
     newPieceStates.push(newPieceState);
+
+    piecesById[newPieceState.id] = pieceObjectClone;
   };
 
-  that.getPiece = function (pieceId) {};
+  that.getPiece = function (pieceId) { // UNTESTED
+    /*return _.find(gameState.pieces, function (piece) {
+      return pieceId == piece.id;
+    });*/
+    return piecesById[pieceId];
+  };
   that.getPieces = function (searchArgs) {
     var ownerId = searchArgs.ownerId,
       spaceId = searchArgs.spaceId,
       className = searchArgs.className;
 
-    var pieces = _.filter(gameState.pieces, function (piece) {
+    var pieces = _.filter(piecesById, function (piece) {
       if (!_.isUndefined(ownerId) && piece.ownerId != ownerId) {
         return false;
       }
@@ -129,41 +149,70 @@ var createHelper = function (gso) {
       return true;
     });
 
+    // take off _v, _t, _id properties
+    _.each(pieces, function (piece) {
+      piece._v = undefined;
+      piece._t = undefined;
+      piece._id = undefined;
+    });
+
     return pieces;
   };
-  that.setPiece = function (pieceId, object) {};
+  that.setPiece = function (pieceId, pieceObject) { // UNTESTED
+    if (!pieceObject.attributes) {
+      pieceObject.attributes = {};
+    }
+
+    piecesById[pieceId] = pieceObject;
+
+    var pieceStateMongoId = pieceMongoIdsById[pieceId];
+    modifiedPieceStateIds.push(pieceStateMongoId);
+
+    // TODO what if the piece has been modified already
+  };
 
 
   ///  M  ///
   that.persistQ = function () {
-    var newPiecesPromises = [];
+    var pieceStatePromises = [];
 
     if (newPieceStates.length > 0) {
       _.each(newPieceStates, function (newPiece) {
         var promise = newPiece.saveQ()
           .then(function (savedPieceState) {
-            savedPieceStates.push(savedPieceState);
+            savedNewPieceStates.push(savedPieceState);
           });
 
-        newPiecesPromises.push(promise);
+        pieceStatePromises.push(promise);
       });
 
       gameState.markModified('pieces');
-
       gameStateChanged = true;
     }
 
-    return Q.all(newPiecesPromises)
+    _.each(modifiedPieceStateIds, function (pieceStateId) {
+      var promise = PieceState.findByIdQ(pieceStateId)
+        .then(function (foundPieceState) {
+          if (!foundPieceState) {
+            throw 'persistQ: invalid pieceStateId' + pieceStateId;
+          }
+
+          foundPieceState.updateQ(piecesById[foundPieceState.id]);
+        });
+
+      pieceStatePromises.push(promise);
+    })
+
+    return Q.all(pieceStatePromises)
       .then(function () {
         var savePromises = [];
         // save big objects
 
         if (gameStateChanged) {
 
-          _.each(savedPieceStates, function (pieceState) {
+          _.each(savedNewPieceStates, function (pieceState) {
             // EFF this is a dumb hack.
             var pieceStateId = JSON.stringify(pieceState._id).substring(1,24);
-            //console.log(JSON.stringify(pieceStateId).substring(1,41))
             console.log("this: " + pieceStateId)
             gameState.pieces.push(pieceStateId);
           });
@@ -178,7 +227,8 @@ var createHelper = function (gso) {
         resetM();
       });
   };
-  //reject() - alias for throw, to make people feel better
+
+  that.reject; // alias for throw, to make people feel better
 
   ////////////////////////////////
 
