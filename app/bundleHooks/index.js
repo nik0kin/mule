@@ -3,7 +3,7 @@ var Q = require('q');
 var MuleRules = require('mule-rules'),
   GameBoard = require('mule-models').GameBoard.Model,
   actionsHelper = require('../turnSystem/actionsHelper'), //TODO not use these requires
-  brain = require('../turnSystem/brain');
+  brain = require('../turnSystem/brain'),
   createMQ = require('./M'),
   GameState = require('mule-models').GameState.Model;
 
@@ -90,3 +90,5 @@ exports.progressTurnHookQ = function (gso) {
     return bundleProgressTurnQ(GameBoard, gso);
   }
 };
+
+exports.createMQ = createMQ;

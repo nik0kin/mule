@@ -54,7 +54,7 @@ describe('ETC: ', function () {
     var gameCreatorUserAgent;
     var createdGameId;
 
-    afterEach(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
+    afterEach(dbHelper.clearUsersAndGamesCollection);
 
     describe('Create MuleSprawl Game: ', function () {
       beforeEach(function (done) {

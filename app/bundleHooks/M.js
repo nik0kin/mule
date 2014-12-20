@@ -23,7 +23,7 @@ var createHelper = function (gso) {
   var gameStateChanged = false;
 
   var newPieceStates = [],
-    savedNewPieceStates = [],
+    savedNewPieceStateIds = [],
 
     modifiedPieceStateIds = [];
 
@@ -40,7 +40,8 @@ var createHelper = function (gso) {
   ////// private functions //////
 
   var resetM = function () {
-
+    savedNewPieceStateIds = [];
+    newPieceStates = [];
   };
 
   ////// public functions //////
@@ -116,10 +117,12 @@ var createHelper = function (gso) {
     var pieceObjectClone = _.clone(pieceObject); // doesn't have mongo properties on it
     pieceObjectClone.id = randomId;
 
-    var newPieceState = new PieceState(poClone);
+    var newPieceState = new PieceState(pieceObjectClone);
     newPieceStates.push(newPieceState);
 
     piecesById[newPieceState.id] = pieceObjectClone;
+
+    return newPieceState.id;
   };
 
   that.getPiece = function (pieceId) { // UNTESTED
@@ -177,16 +180,16 @@ var createHelper = function (gso) {
     var pieceStatePromises = [];
 
     if (newPieceStates.length > 0) {
+      console.log('persistQ: newPieceStates: ' + newPieceStates.length);
       _.each(newPieceStates, function (newPiece) {
         var promise = newPiece.saveQ()
           .then(function (savedPieceState) {
-            savedNewPieceStates.push(savedPieceState);
+            savedNewPieceStateIds.push(savedPieceState._id);
           });
 
         pieceStatePromises.push(promise);
       });
 
-      gameState.markModified('pieces');
       gameStateChanged = true;
     }
 
@@ -209,14 +212,10 @@ var createHelper = function (gso) {
         // save big objects
 
         if (gameStateChanged) {
-
-          _.each(savedNewPieceStates, function (pieceState) {
-            // EFF this is a dumb hack.
-            var pieceStateId = JSON.stringify(pieceState._id).substring(1,24);
-            console.log("this: " + pieceStateId)
+          _.each(savedNewPieceStateIds, function (pieceStateId) {
             gameState.pieces.push(pieceStateId);
           });
-
+          gameState.markModified('pieces');
           savePromises.push(gameState.saveQ());
         }
 

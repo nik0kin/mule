@@ -41,7 +41,7 @@ exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle
         _gameStateId = foundGameBoard.gameState;
         return Action.validateQ(foundGameBoard, _gameStateId, playerRel, action.params, ruleBundle);
       })
-        .then(function (gameState) {
+      .then(function (gameState) {
         console.log('valid move action ' + key + ': ');
         console.log(action.params);
       })
@@ -66,7 +66,10 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
 
   _.each(actions, function (action, actionKey) {
     var Action = getAction(action.type, ruleBundle);
-    var promise = Action.doQ(objs.gameState, action.params, playerRel)
+    var promise = bundleHooks.createMQ(objs.game._id)
+      .then(function (M) {
+        return Action.doQ(objs.gameState, action.params, playerRel, M);
+      })
       .then(function (resultActionMetaData) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey);
 

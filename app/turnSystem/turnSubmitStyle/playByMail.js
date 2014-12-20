@@ -68,6 +68,7 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
         promises = [];
       _.each(turnObject.playerTurns, function (turn, player) {
         var promise = actionsHelper.doActionsQ({
+          game: game,
           gameState: gameStateObject,
           gameBoard: gameBoardObject,
           history: historyObject

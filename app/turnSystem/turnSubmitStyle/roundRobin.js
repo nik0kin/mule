@@ -66,6 +66,7 @@ exports.progressTurnQ = function (gso, player) {
       var playerOrder = gso.history.getPlayersOrderNumber(player);
       var playerTurn = roundTurns[playerOrder].playerTurns[player];
       return actionsHelper.doActionsQ({
+          game: gso.game,
           gameState: gso.gameState,
           gameBoard: gso.gameBoard,
           history: gso.history
