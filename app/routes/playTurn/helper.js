@@ -41,7 +41,7 @@ exports.playTurn = function (req, res) {
       return RuleBundle.findByIdQ(game.ruleBundle.id)
         .then(function (ruleBundle) {
           _ruleBundle = ruleBundle;
-          return actionsHelper.validateActionsQ(game.gameBoard, playerId, req.body.actions, _ruleBundle);
+          return actionsHelper.validateActionsQ(game._id, _ruleBundle, playerId, req.body.actions);
         })
         .then(function (validatedActions) {
           console.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')');

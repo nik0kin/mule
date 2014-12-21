@@ -12,21 +12,11 @@ var Actions = {
   BasicMove: require('./tempActions/basicMove')
 };
 
-exports.initActions = function (ruleBundle) {
-  console.log('init bundle Actions');
-  _.each(muleRules.getActions(ruleBundle.name), function (value) {
-    value.init({GameState: GameState, PieceState: PieceState});
-  });
-};
-
 var getAction = function (actionType, ruleBundle) {
   return Actions[actionType] || muleRules.getActions(ruleBundle.name)[actionType];
 };
 
-
-exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle) {
-  exports.initActions(ruleBundle);
-
+exports.validateActionsQ = function (gameId, ruleBundle, playerRel, actions) {
   var promiseArray = [],
     _gameStateId;
   _.each(actions, function (action, key) {
@@ -36,12 +26,8 @@ exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle
       console.log('wow that action doesnt exist')
     }
 
-    var promise = GameBoard.findByIdQ(gameBoardId)
-      .then(function (foundGameBoard) {
-        _gameStateId = foundGameBoard.gameState;
-        return Action.validateQ(foundGameBoard, _gameStateId, playerRel, action.params, ruleBundle);
-      })
-      .then(function (gameState) {
+    var promise = bundleHooks.actionValidateQ(Action, gameId, playerRel, action.params)
+      .then(function () {
         console.log('valid move action ' + key + ': ');
         console.log(action.params);
       })
@@ -55,21 +41,16 @@ exports.validateActionsQ = function (gameBoardId, playerRel, actions, ruleBundle
 
   return Q.all(promiseArray)
     .then(function () {
-      return bundleHooks.validateActionsHookQ(_gameStateId, ruleBundle, playerRel, actions);
+      return bundleHooks.validateTurnHookQ(gameId, ruleBundle, playerRel, actions);
     });
 };
 
 exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
   var promiseArray = [];
 
-  exports.initActions(ruleBundle);
-
   _.each(actions, function (action, actionKey) {
     var Action = getAction(action.type, ruleBundle);
-    var promise = bundleHooks.createMQ(objs.game._id)
-      .then(function (M) {
-        return Action.doQ(objs.gameState, action.params, playerRel, M);
-      })
+    var promise = bundleHooks.actionDoQ(Action, objs.game._id, playerRel, action.params)
       .then(function (resultActionMetaData) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey);
 

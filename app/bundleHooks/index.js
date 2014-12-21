@@ -2,10 +2,11 @@ var Q = require('q');
 
 var MuleRules = require('mule-rules'),
   GameBoard = require('mule-models').GameBoard.Model,
-  actionsHelper = require('../turnSystem/actionsHelper'), //TODO not use these requires
   brain = require('../turnSystem/brain'),
   createMQ = require('./M'),
   GameState = require('mule-models').GameState.Model;
+
+exports.createMQ = createMQ;
 
 // returns a boardDef
 exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, ruleBundleRules) {
@@ -47,19 +48,14 @@ exports.winConditionHookQ = function (gso) {
 };
 
 // returns actions
-exports.validateActionsHookQ = function (gameStateId, ruleBundle, playerRel, actions) {
+exports.validateTurnHookQ = function (gameId, ruleBundle, playerRel, actions) {
   var bundleCode = MuleRules.getBundleCode(ruleBundle.name),
-    validateActionsQ;
+    validateTurnQ;
 
-  if (bundleCode && (validateActionsQ = bundleCode.validateActions)) {
-    return GameState.findByIdWithPopulatedStatesQ(gameStateId)
-      .then(function (gameState) {
-        return validateActionsQ({
-          gameState: gameState,
-          ruleBundle: ruleBundle,
-          playerRel: playerRel,
-          actions: actions
-        });
+  if (bundleCode && (validateTurnQ = bundleCode.validateTurn)) {
+    return createMQ(gameId)
+      .then(function (M) {
+        return validateTurnQ(M, playerRel, actions);
       });
   } else {
     return Q(actions);
@@ -74,7 +70,6 @@ exports.progressRoundHookQ = function (ruleBundle, game) {
     return brain.loadGameStateObjectQ(game)
       .then(function (resultGso) {
         console.log('calling bundleProgreesQ');
-        actionsHelper.initActions(game.ruleBundle); // PLEASE KILL THIS LINE
         return bundleProgressRoundQ(GameState, resultGso)
       });
   }
@@ -86,9 +81,20 @@ exports.progressTurnHookQ = function (gso) {
     bundleProgressTurnQ;
   if (bundleCode && typeof (bundleProgressTurnQ = bundleCode.progressTurn) === 'function') {
     console.log('calling bundleProgressTurnQ');
-    actionsHelper.initActions(gso.ruleBundle);
     return bundleProgressTurnQ(GameBoard, gso);
   }
 };
 
-exports.createMQ = createMQ;
+exports.actionValidateQ = function (Action, gameId, playerRel, actionParams) {
+  return createMQ(gameId)
+    .then(function (M) {
+      return Action.validateQ(M, playerRel, actionParams);
+    })
+};
+
+exports.actionDoQ = function (Action, gameId, playerRel, actionParams) {
+  return createMQ(gameId)
+    .then(function (M) {
+      return Action.doQ(M, playerRel, actionParams);
+    })
+};

@@ -58,7 +58,7 @@ describe('ETC: ', function () {
 
     describe('Create MuleSprawl Game: ', function () {
       beforeEach(function (done) {
-        this.timeout(3000);
+        this.timeout(5000);
         loginHelper.registerAndLoginQ({username: 'gameCreator89', password : 'OWWOWOWOAKDAS9'})
           .done(function (user1) {
             gameCreatorUserAgent = user1;
@@ -86,7 +86,7 @@ describe('ETC: ', function () {
       });
 
       it(' should place a castle and wait til 2nd round and check for 5house/10farmer', function (done) {
-        this.timeout(80000);
+        this.timeout(40000);
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
           .then(function (result) {

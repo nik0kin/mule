@@ -12,15 +12,10 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
   console.log('Submitting turn (playByMail) for ' + player)
   console.log(turn)
 
-  var _gameBoard, _gameState, _historyObject, turnNumber;
+  var _historyObject, turnNumber;
   return GameBoard.findByIdQ(gameBoardId)
     .then(function (gameBoard) {
-      _gameBoard = gameBoard;
-      return GameState.findByIdQ(gameBoard.gameState);
-    })
-    .then(function (foundGameState) {
-      _gameState = foundGameState;
-      return History.findByIdQ(_gameBoard.history);
+      return History.findByIdQ(gameBoard.history);
     })
     .then(function (historyObject) {
       turnNumber = historyObject.currentTurn;
@@ -38,7 +33,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
       if (canAdvance) {
         console.log('advancing round');
         // progress turn if they are
-        return exports.progressRoundQ(game, player, _gameBoard, _gameState, _historyObject, ruleBundle);
+        return exports.progressRoundQ(game, player, _historyObject, ruleBundle);
       } else {
         console.log('all turns not in: not progressing');
       }
@@ -53,7 +48,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
     });
 };
 
-exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObject, historyObject, ruleBundle) {
+exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
 
   if (historyObject.currentRound > 1500) {
     // do nothing
@@ -69,8 +64,6 @@ exports.progressRoundQ = function (game, player, gameBoardObject, gameStateObjec
       _.each(turnObject.playerTurns, function (turn, player) {
         var promise = actionsHelper.doActionsQ({
           game: game,
-          gameState: gameStateObject,
-          gameBoard: gameBoardObject,
           history: historyObject
         }, turn.actions, player, ruleBundle);
         promises.push(promise);

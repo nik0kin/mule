@@ -30,11 +30,15 @@ var createHelper = function (gso) {
   var piecesById,
     pieceMongoIdsById = {};
 
+  var spacesByLocationId;
+
   if (gameState && gameState.pieces) {
     piecesById = _.indexBy(gameState.pieces, 'id');
     _.each(gameState.pieces, function (piece) { // EFF there might be better underscore function for this
       pieceMongoIdsById[piece.id] = piece._id;
     });
+
+    spacesByLocationId = _.indexBy(gameState.spaces, 'boardSpaceId');
   }
 
   ////// private functions //////
@@ -42,6 +46,7 @@ var createHelper = function (gso) {
   var resetM = function () {
     savedNewPieceStateIds = [];
     newPieceStates = [];
+    gameStateChanged = false;
   };
 
   ////// public functions //////
@@ -104,7 +109,9 @@ var createHelper = function (gso) {
   that.setPlayerVariables = function (playerRel, keyValueObject) {};
 
 
-  that.getSpace = function (spaceId) {};
+  that.getSpace = function (locationId) {
+    return spacesByLocationId[locationId];
+  };
 
   that.getSpaces = function (searchArgs) {};
 
@@ -185,6 +192,7 @@ var createHelper = function (gso) {
         var promise = newPiece.saveQ()
           .then(function (savedPieceState) {
             savedNewPieceStateIds.push(savedPieceState._id);
+            pieceMongoIdsById[savedPieceState.id] = savedPieceState.id;
           });
 
         pieceStatePromises.push(promise);
@@ -216,7 +224,9 @@ var createHelper = function (gso) {
             gameState.pieces.push(pieceStateId);
           });
           gameState.markModified('pieces');
-          savePromises.push(gameState.saveQ());
+          savePromises.push(gameState.saveQ().then(function (savedGameState) {
+            gameState = savedGameState;
+          }));
         }
 
         return Q.all(savePromises);
