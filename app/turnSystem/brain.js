@@ -47,12 +47,13 @@ exports.forceTurnProgress = function (game) {
             return gameStateObject.history.addPlayByMailPlayerTurnAndSaveQ(notPlayedPlayerRels, undefined);
           })
           .then(function () {
-            return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, gameStateObject.gameBoard, gameStateObject.gameState, gameStateObject.history, gameStateObject.ruleBundle);
+            return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, gameStateObject.history, gameStateObject.ruleBundle);
           })
           .done(function () {
             console.log('force complete ' + (Date.now() - startTime) + 'ms');
-          }, function () {
-            console.log('force failed');
+          }, function (err) {
+            console.log('force failed:');
+            console.log(err);
           });
       }
     }, function (err) {

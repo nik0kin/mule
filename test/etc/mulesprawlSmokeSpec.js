@@ -66,8 +66,10 @@ describe('ETC: ', function () {
           }, testHelper.mochaError(done))
       });
 
+      afterEach(dbHelper.clearGamesCollections);
+
       it(' should be able to take a empty turn', function (done) {
-        this.timeout(30000);
+        this.timeout(20000);
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
           .then(function (result) {
@@ -86,7 +88,8 @@ describe('ETC: ', function () {
       });
 
       it(' should place a castle and wait til 2nd round and check for 5house/10farmer', function (done) {
-        this.timeout(40000);
+        var waitTilRound = 2;
+        this.timeout(60000);
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
           .then(function (result) {
@@ -145,7 +148,7 @@ describe('ETC: ', function () {
               var restartQ = function () {
                 return gameHelper.sendRestRequest({
                   agent: gameCreatorUserAgent,
-                  endpoint: '/games/' + validTurn.gameId + '/history/2',
+                  endpoint: '/games/' + validTurn.gameId + '/history/' + waitTilRound,
                   verb: 'get'
                 })
                 .then(function (turn2Result) {

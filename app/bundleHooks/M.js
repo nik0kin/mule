@@ -17,8 +17,9 @@ var createHelper = function (gso) {
     that = {};
 
   // private variables
-  var gameState = GSO.gameState;
-  var history = GSO.history;
+  var game = GSO.game,
+    gameState = GSO.gameState,
+    history = GSO.history;
 
   var gameStateChanged = false;
 
@@ -26,6 +27,8 @@ var createHelper = function (gso) {
     savedNewPieceStateIds = [],
 
     modifiedPieceStateIds = [];
+
+  var markedForDeletePieceIds = [];
 
   var piecesById,
     pieceMongoIdsById = {};
@@ -47,6 +50,8 @@ var createHelper = function (gso) {
     savedNewPieceStateIds = [];
     newPieceStates = [];
     gameStateChanged = false;
+    markedForDeletePieceIds = [];
+    modifiedPieceStateIds = [];
   };
 
   ////// public functions //////
@@ -58,10 +63,14 @@ var createHelper = function (gso) {
   that.getBoardInfo; // P2
   that.getBoardDefinition; // P2
 
+  that.getCustomBoardSettings = function () {
+    return game.ruleBundleGameSettings.customBoardSettings;
+  };
+
   ///  History (static)  ///
 
   that.getCurrentTurnNumber = function () {
-    return history.currentRound;
+    return history.currentTurn;
   };
 
   that.getCurrentRoundNumber = function () {
@@ -92,6 +101,12 @@ var createHelper = function (gso) {
   };
   that.setGlobalVariables = function (keyValueObject) {};
 
+  that.addToGlobalVariable = function (key, additionValue) {
+    if (!additionValue) return;
+    var newTotal = that.getGlobalVariable(key) + additionValue;
+    that.setGlobalVariable(key, newTotal);
+  };
+
 
   that.getPlayerVariable = function (playerRel, key) {
     return gameState.playerVariables[playerRel][key];
@@ -108,6 +123,11 @@ var createHelper = function (gso) {
   };
   that.setPlayerVariables = function (playerRel, keyValueObject) {};
 
+  that.addToPlayerVariable = function (playerRel, key, additionValue) {
+    if (!additionValue) return;
+    var newTotal = that.getPlayerVariable(playerRel, key) + additionValue;
+    that.setPlayerVariable(playerRel, key, newTotal);
+  };
 
   that.getSpace = function (locationId) {
     return spacesByLocationId[locationId];
@@ -140,8 +160,9 @@ var createHelper = function (gso) {
   };
   that.getPieces = function (searchArgs) {
     var ownerId = searchArgs.ownerId,
-      spaceId = searchArgs.spaceId,
-      className = searchArgs.className;
+      spaceId = searchArgs.spaceId || searchArgs.locationId,
+      className = searchArgs.className || searchArgs.class,
+      attrs = searchArgs.attrs;
 
     var pieces = _.filter(piecesById, function (piece) {
       if (!_.isUndefined(ownerId) && piece.ownerId != ownerId) {
@@ -152,8 +173,20 @@ var createHelper = function (gso) {
         return false;
       }
 
-      if (!_.isUndefined(className) && piece.className != className) {
+      if (!_.isUndefined(className) && piece.class != className) {
         return false;
+      }
+
+      if (!_.isUndefined(attrs)) {
+        var matchesAttrs = true;
+        _.each(attrs, function (value, key) {
+          if (piece.attributes[key] != value) {
+            matchesAttrs = false;
+          }
+        });
+        if (!matchesAttrs) {
+          return false;
+        }
       }
 
       return true;
@@ -161,14 +194,14 @@ var createHelper = function (gso) {
 
     // take off _v, _t, _id properties
     _.each(pieces, function (piece) {
-      piece._v = undefined;
-      piece._t = undefined;
-      piece._id = undefined;
+      delete piece._v;
+      delete piece._t;
+      delete piece._id;
     });
 
     return pieces;
   };
-  that.setPiece = function (pieceId, pieceObject) { // UNTESTED
+  that.setPiece = function (pieceId, pieceObject) {
     if (!pieceObject.attributes) {
       pieceObject.attributes = {};
     }
@@ -176,21 +209,32 @@ var createHelper = function (gso) {
     piecesById[pieceId] = pieceObject;
 
     var pieceStateMongoId = pieceMongoIdsById[pieceId];
-    modifiedPieceStateIds.push(pieceStateMongoId);
 
-    // TODO what if the piece has been modified already
+    if (!_.contains(modifiedPieceStateIds, pieceStateMongoId)) {
+      modifiedPieceStateIds.push(pieceStateMongoId);
+    }
   };
-
+  that.deletePiece = function (pieceId) {
+    // TODO throw if pieceId doesnt exist (but what does a throw do in ever hook case, investigate that)
+    that.deletePieces([pieceId]);
+  };
+  that.deletePieces = function (pieceIds) {
+    if (pieceIds.length === 0) return;
+    markedForDeletePieceIds = _.union(markedForDeletePieceIds, pieceIds);
+    gameStateChanged = true;
+  };
 
   ///  M  ///
   that.persistQ = function () {
-    var pieceStatePromises = [];
+    var dbObjectsChanged = 0,
+      pieceStatePromises = [];
 
     if (newPieceStates.length > 0) {
       console.log('persistQ: newPieceStates: ' + newPieceStates.length);
       _.each(newPieceStates, function (newPiece) {
         var promise = newPiece.saveQ()
           .then(function (savedPieceState) {
+            dbObjectsChanged++;
             savedNewPieceStateIds.push(savedPieceState._id);
             pieceMongoIdsById[savedPieceState.id] = savedPieceState.id;
           });
@@ -208,11 +252,24 @@ var createHelper = function (gso) {
             throw 'persistQ: invalid pieceStateId' + pieceStateId;
           }
 
-          foundPieceState.updateQ(piecesById[foundPieceState.id]);
+          // EFF this prob could be better
+          _.each(piecesById[foundPieceState.id], function (value, key) {
+            foundPieceState[key] = value;
+          })
+
+          foundPieceState.markModified('attributes');
+
+          delete foundPieceState._id;
+
+          return foundPieceState.saveQ()
+            .then(function (updatedPieceState) {
+              //console.log('updatedPieceState: ' + updatedPieceState._id)
+              dbObjectsChanged++;
+            });
         });
 
       pieceStatePromises.push(promise);
-    })
+    });
 
     return Q.all(pieceStatePromises)
       .then(function () {
@@ -220,19 +277,40 @@ var createHelper = function (gso) {
         // save big objects
 
         if (gameStateChanged) {
+          if (markedForDeletePieceIds.length > 0) {
+            // TODO some checking if new pieces are about to be deleted, since the piecestateId wont be known til persistQ
+            var deletePositions = [];
+            _.each(gameState.pieces, function (pieceState, key) {
+              _.each(markedForDeletePieceIds, function (markedPieceId) {
+                var markedPieceStateId = pieceMongoIdsById[markedPieceId];
+                if (('' + markedPieceStateId) === ('' + pieceState._id)) {
+                  deletePositions.push(key);
+                }
+              });
+            });
+            deletePositions = _.sortBy(deletePositions, function(num){ return num; });
+            deletePositions.reverse();
+            _.each(deletePositions,function (value) {
+              // delete them in reverse order
+              gameState.pieces.splice(value, 1);
+            });
+          }
+
           _.each(savedNewPieceStateIds, function (pieceStateId) {
             gameState.pieces.push(pieceStateId);
           });
+
           gameState.markModified('pieces');
           savePromises.push(gameState.saveQ().then(function (savedGameState) {
             gameState = savedGameState;
+            dbObjectsChanged++;
           }));
         }
 
         return Q.all(savePromises);
       })
       .then(function () {
-        console.log('Persist Successful');
+        console.log('Persist Successful (' + dbObjectsChanged + ')');
         resetM();
       });
   };

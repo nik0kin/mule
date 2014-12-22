@@ -67,10 +67,10 @@ exports.progressRoundHookQ = function (ruleBundle, game) {
   var bundleCode = MuleRules.getBundleCode(ruleBundle.name),
     bundleProgressRoundQ;
   if (bundleCode && typeof (bundleProgressRoundQ = bundleCode.progressRound) === 'function') {
-    return brain.loadGameStateObjectQ(game)
-      .then(function (resultGso) {
-        console.log('calling bundleProgreesQ');
-        return bundleProgressRoundQ(GameState, resultGso)
+    return createMQ(game._id)
+      .then(function (M) {
+        console.log('calling bundleProgressQ');
+        return bundleProgressRoundQ(M)
       });
   }
 };
