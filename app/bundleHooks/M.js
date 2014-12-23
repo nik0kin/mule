@@ -159,7 +159,8 @@ var createHelper = function (gso) {
     return piecesById[pieceId];
   };
   that.getPieces = function (searchArgs) {
-    var ownerId = searchArgs.ownerId,
+    var searchArgs = searchArgs || {},
+      ownerId = searchArgs.ownerId,
       spaceId = searchArgs.spaceId || searchArgs.locationId,
       className = searchArgs.className || searchArgs.class,
       attrs = searchArgs.attrs;

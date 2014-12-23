@@ -14,7 +14,15 @@ module.exports = {
         }
       },
       'VIKINGS': {},
-      'tictactoe': {},
+      'tictactoe': {
+        autoCreateGame: {
+          name: 'TicTacToe4Tots',
+          maxPlayers: 2, // TODO dont require putting properties for properties that are static via the rulebundle (must have 2 players in backgammon)
+          turnProgressStyle: 'waitprogress', // also dont let them override it
+          turnTimeLimit: 99999,
+          ruleBundleGameSettings: {customBoardSettings: {}}
+        }
+      },
       'monopoly': {},
       'mulesprawl': {
         autoCreateGame: {

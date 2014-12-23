@@ -10,7 +10,6 @@ exports.createMQ = createMQ;
 
 // returns a boardDef
 exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, ruleBundleRules) {
-  
   var generateFunctionQ = MuleRules.getBundleCode(ruleBundleName).boardGenerator;
 
   if (!generateFunctionQ || typeof generateFunctionQ !== 'function') {
@@ -30,10 +29,12 @@ exports.gameStartHookQ = function (gameId, ruleBundleName) {
       .then (function (M) {
         return ruleBundleGameStartQ(M);
       });
+  } else {
+    return Q();
   }
 };
 
-//returns winner
+//returns winner or null
 exports.winConditionHookQ = function (gso) {
   var bundleCode = MuleRules.getBundleCode(gso.ruleBundle.name),
     bundleWinConditionQ;
@@ -44,6 +45,8 @@ exports.winConditionHookQ = function (gso) {
       .then (function (M) {
         return bundleWinConditionQ(M);
       });
+  } else {
+    return Q();
   }
 };
 
@@ -72,6 +75,8 @@ exports.progressRoundHookQ = function (ruleBundle, game) {
         console.log('calling bundleProgressQ');
         return bundleProgressRoundQ(M)
       });
+  } else {
+    return Q();
   }
 };
 
@@ -82,6 +87,8 @@ exports.progressTurnHookQ = function (gso) {
   if (bundleCode && typeof (bundleProgressTurnQ = bundleCode.progressTurn) === 'function') {
     console.log('calling bundleProgressTurnQ');
     return bundleProgressTurnQ(GameBoard, gso);
+  } else {
+    return Q();
   }
 };
 

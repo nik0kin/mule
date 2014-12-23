@@ -7,13 +7,8 @@ var muleRules = require('mule-rules'),
   GameState = require('mule-models').GameState.Model,
   PieceState = require('mule-models').PieceState.Model;
 
-var Actions = {
-  BasicCreate: require('./tempActions/basicCreate'),
-  BasicMove: require('./tempActions/basicMove')
-};
-
 var getAction = function (actionType, ruleBundle) {
-  return Actions[actionType] || muleRules.getActions(ruleBundle.name)[actionType];
+  return muleRules.getActions(ruleBundle.name)[actionType];
 };
 
 exports.validateActionsQ = function (gameId, ruleBundle, playerRel, actions) {

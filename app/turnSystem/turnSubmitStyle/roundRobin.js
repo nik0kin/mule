@@ -25,6 +25,9 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
         return gso.history.addRoundRobinPlayerTurnAndSaveQ(player, turn)
           .then(function () {
             return exports.progressTurnQ(gso, player);
+          })
+          .then(function (progressTurnMetaData) {
+            return gso.history.addMetaToLastAddedTurnAndSaveQ(progressTurnMetaData);
           });
       } else {
         console.log('Not your turn!');
