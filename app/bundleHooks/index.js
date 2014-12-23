@@ -56,9 +56,19 @@ exports.validateTurnHookQ = function (gameId, ruleBundle, playerRel, actions) {
     validateTurnQ;
 
   if (bundleCode && (validateTurnQ = bundleCode.validateTurn)) {
-    return createMQ(gameId)
+    return createMQ(gameId, 'validateTurnHookQ')
       .then(function (M) {
+        console.log('[START] validateTurnHookQ');
         return validateTurnQ(M, playerRel, actions);
+      })
+      .then(function (_actions) {
+        console.log('[END] validateTurnHookQ');
+        return Q(_actions);
+      })
+      .fail(function (err) {
+        var errorMsg = '[ERROR] validateTurnHookQ: ' + err;
+        console.log(errorMsg);
+        throw errorMsg;
       });
   } else {
     return Q(actions);
@@ -86,7 +96,10 @@ exports.progressTurnHookQ = function (gso) {
     bundleProgressTurnQ;
   if (bundleCode && typeof (bundleProgressTurnQ = bundleCode.progressTurn) === 'function') {
     console.log('calling bundleProgressTurnQ');
-    return bundleProgressTurnQ(GameBoard, gso);
+    return createMQ(gso.game._id)
+      .then(function (M) {
+        return bundleProgressTurnQ(M);
+      });
   } else {
     return Q();
   }

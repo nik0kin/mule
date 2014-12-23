@@ -5,21 +5,25 @@ var brain = require('../turnSystem/brain'),
   PieceState = require('mule-models').PieceState.Model;
 
 
-var createMObjectQ = function (gameId) {
+var createMObjectQ = function (gameId, debugPrefix) {
   return brain.loadGameStateObjectByIdQ(gameId)
     .then(function (gameStateObject) {
-      return createHelper(gameStateObject);
+      return createHelper(gameStateObject, debugPrefix);
     });
 };
 
-var createHelper = function (gso) {
+var createHelper = function (gso, _debugPrefix) {
   var GSO = gso,
     that = {};
 
   // private variables
   var game = GSO.game,
+    ruleBundle = GSO.ruleBundle,
+    gameBoard = GSO.gameBoard,
     gameState = GSO.gameState,
     history = GSO.history;
+
+  var debugPrefix = _debugPrefix;
 
   var gameStateChanged = false;
 
@@ -61,7 +65,13 @@ var createHelper = function (gso) {
 
   ///  GameBoard (static)  ///
   that.getBoardInfo; // P2
-  that.getBoardDefinition; // P2
+  that.getBoardDefinition = function () {
+    if (gameBoard.boardType == 'static') {
+      return ruleBundle.rules.board;
+    } else {
+      return gameBoard.board;
+    }
+  }
 
   that.getCustomBoardSettings = function () {
     return game.ruleBundleGameSettings.customBoardSettings;
@@ -152,10 +162,7 @@ var createHelper = function (gso) {
     return newPieceState.id;
   };
 
-  that.getPiece = function (pieceId) { // UNTESTED
-    /*return _.find(gameState.pieces, function (piece) {
-      return pieceId == piece.id;
-    });*/
+  that.getPiece = function (pieceId) {
     return piecesById[pieceId];
   };
   that.getPieces = function (searchArgs) {
@@ -317,6 +324,14 @@ var createHelper = function (gso) {
   };
 
   that.reject; // alias for throw, to make people feel better
+
+  that.log = function (string) {
+    if (debugPrefix) {
+      console.log(debugPrefix + ': ' + string);
+    } else {
+      console.log(string);
+    }
+  };
 
   ////////////////////////////////
 

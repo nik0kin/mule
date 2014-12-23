@@ -1,10 +1,7 @@
 var Q = require('q'),
   _ = require('lodash');
 
-var GameBoard = require('mule-models').GameBoard.Model,
-  GameState = require('mule-models').GameState.Model,
-  History = require('mule-models').History.Model,
-  startGameQ = require('./startGame').startGameQ,
+var startGameQ = require('./startGame').startGameQ,
   bundleHooks = require('../bundleHooks');
 
 exports.joinGameQ = function (game, player) {

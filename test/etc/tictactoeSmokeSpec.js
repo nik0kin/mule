@@ -6,7 +6,6 @@ var should = require('should'),
 require('../../server.js');
 
 var dbHelper = require('mule-models/test/dbHelper'),
-  restHelper = require('mule-utils/lib/testUtils/api/restHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
   multiplayerHelper = require('./multiplayerHelper'),
