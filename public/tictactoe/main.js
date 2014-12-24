@@ -6,10 +6,12 @@
 define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRenderer, sdk, dumbLib) {
   var SDK = sdk('../../'),
     currentUser = {},
+    opponentRel,
     playerMap,
     currentGameBoard,
     currentGame,
     currentHistory,
+    currentTurn,
     isGameOver = false,
     firstLoad = true;
 
@@ -17,6 +19,7 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     dumbLib.loadGameIdAndPlayerRelFromURL(function (result) {
       currentGame = {_id: result.gameId };
       currentUser.playerRel = result.playerRel;
+      opponentRel = currentUser.playerRel === 'p1' ? 'p2' : 'p1';
 
       refreshGame();
     });
@@ -43,6 +46,7 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
         SDK.Historys.readGamesHistoryQ(currentGame._id)
           .done(function(history) {
             currentHistory = history;
+            currentTurn = currentHistory.currentTurn;
 
             SDK.Games.getPlayersMapQ(currentGame)
               .then(function (_playerMap) {
@@ -62,15 +66,24 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
                 currentGameBoard = gameBoard;
 
                 if (firstLoad) {
-                  populateBoard(gameBoard);
-                  firstLoad = false;
-                  SDK.Historys.markAllTurnsRead(currentHistory);
+                  SDK.GameStates.readGamesStateQ(currentGame._id)
+                    .then(function (gameState) {
+                      populateBoard(gameState);
+                      firstLoad = false;
+                      SDK.Historys.markAllTurnsRead(currentHistory);
+                    });
                 } else {
                   //look at last turn
-                  var t = SDK.Historys.getLastUnreadTurn(currentHistory);
-                  if (t) {
+                  //var t = SDK.Historys.getLastUnreadTurn(currentHistory);
+                  SDK.Turns.readGamesTurnQ(currentGame._id, currentTurn - 1)
+                  .then(function (turn) {
+                    if (turn.playerTurns[opponentRel]) {
+                      receiveOpponentTurn(turn.playerTurns[opponentRel]);
+                    }
+                  });
+                  /*if (t) {
                     receiveOpponentTurn(t);
-                  }
+                  }*/
                 }
 
                 console.log('refreshed');
@@ -95,8 +108,8 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     '2_2': 'bottomRight'
   }, invertWhereMap = _.invert(whereMap);
 
-  var populateBoard = function (fullBoard) {
-    var tttPieces = fullBoard.pieces.map(function (p) {
+  var populateBoard = function (gameState) {
+    var tttPieces = gameState.pieces.map(function (p) {
       var l = invertWhereMap[p.locationId].split('_');
 
       return {
