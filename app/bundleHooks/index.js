@@ -63,6 +63,7 @@ exports.validateTurnHookQ = function (gameId, ruleBundle, playerRel, actions) {
       })
       .then(function (_actions) {
         console.log('[END] validateTurnHookQ');
+        _actions = _actions || actions;
         return Q(_actions);
       })
       .fail(function (err) {

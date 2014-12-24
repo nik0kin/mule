@@ -67,7 +67,7 @@ module.exports = function (params) {    //TODO this is starting to look ugly
           .fail(reject);
       }, function (err) {
         winston.error(err);
-        reject('invalid ruleBundle id or name')
+        reject('invalid ruleBundle id or name: ' + err);
       });
   });
 };

@@ -2,6 +2,7 @@ var Q = require('q'),
   _ = require('lodash');
 
 var brain = require('../turnSystem/brain'),
+  SpaceState = require('mule-models').SpaceState.Model,
   PieceState = require('mule-models').PieceState.Model;
 
 
@@ -29,23 +30,28 @@ var createHelper = function (gso, _debugPrefix) {
 
   var newPieceStates = [],
     savedNewPieceStateIds = [],
+    modifiedPieceStateIds = [],
+    markedForDeletePieceIds = [];
 
-    modifiedPieceStateIds = [];
-
-  var markedForDeletePieceIds = [];
+  var modifiedSpaceStateIds = [];
 
   var piecesById,
     pieceMongoIdsById = {};
 
-  var spacesByLocationId;
+  var spacesByLocationId,
+    spaceMongoIdsByLocationId = {};
 
-  if (gameState && gameState.pieces) {
+  if (gameState && gameState.pieces && gameState.spaces) {
     piecesById = _.indexBy(gameState.pieces, 'id');
     _.each(gameState.pieces, function (piece) { // EFF there might be better underscore function for this
       pieceMongoIdsById[piece.id] = piece._id;
     });
 
     spacesByLocationId = _.indexBy(gameState.spaces, 'boardSpaceId');
+    _.each(gameState.spaces, function (space) { // EFF there might be better underscore function for this
+      spaceMongoIdsByLocationId[space.boardSpaceId] = space._id;
+    });
+
   }
 
   ////// private functions //////
@@ -56,6 +62,7 @@ var createHelper = function (gso, _debugPrefix) {
     gameStateChanged = false;
     markedForDeletePieceIds = [];
     modifiedPieceStateIds = [];
+    modifiedSpaceStateIds = [];
   };
 
   ////// public functions //////
@@ -145,7 +152,19 @@ var createHelper = function (gso, _debugPrefix) {
 
   that.getSpaces = function (searchArgs) {};
 
-  that.setSpace = function (spaceId, spaceObject) {};
+  that.setSpace = function (spaceId, spaceObject) {
+    if (!spaceObject.attributes) {
+      spaceObject.attributes = {};
+    }
+
+    spacesByLocationId[spaceId] = spaceObject;
+
+    var spaceStateMongoId = spaceMongoIdsByLocationId[spaceId];
+
+    if (!_.contains(modifiedSpaceStateIds, spaceStateMongoId)) {
+      modifiedSpaceStateIds.push(spaceStateMongoId);
+    }
+  };
 
 
   that.addPiece = function (pieceObject) {
@@ -235,7 +254,7 @@ var createHelper = function (gso, _debugPrefix) {
   ///  M  ///
   that.persistQ = function () {
     var dbObjectsChanged = 0,
-      pieceStatePromises = [];
+      statePromises = [];
 
     if (newPieceStates.length > 0) {
       console.log('persistQ: newPieceStates: ' + newPieceStates.length);
@@ -247,7 +266,7 @@ var createHelper = function (gso, _debugPrefix) {
             pieceMongoIdsById[savedPieceState.id] = savedPieceState.id;
           });
 
-        pieceStatePromises.push(promise);
+        statePromises.push(promise);
       });
 
       gameStateChanged = true;
@@ -276,10 +295,35 @@ var createHelper = function (gso, _debugPrefix) {
             });
         });
 
-      pieceStatePromises.push(promise);
+      statePromises.push(promise);
     });
 
-    return Q.all(pieceStatePromises)
+    _.each(modifiedSpaceStateIds, function (spaceStateId) {
+      var promise = SpaceState.findByIdQ(spaceStateId)
+        .then(function (foundSpaceState) {
+          if (!foundSpaceState) {
+            throw 'persistQ: invalid spaceStateId' + spaceStateId;
+          }
+
+          var newSpace = spacesByLocationId[foundSpaceState.boardSpaceId];
+
+          foundSpaceState.boardSpaceId = newSpace.boardSpaceId;
+          foundSpaceState.attributes = newSpace.attributes;
+
+          foundSpaceState.markModified('attributes');
+
+          delete foundSpaceState._id;
+
+          return foundSpaceState.saveQ()
+            .then(function (updatedSpaceState) {
+              dbObjectsChanged++;
+            });
+        });
+
+      statePromises.push(promise);
+    });
+
+    return Q.all(statePromises)
       .then(function () {
         var savePromises = [];
         // save big objects

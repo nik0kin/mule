@@ -24,6 +24,7 @@ module.exports = {
         }
       },
       'monopoly': {},
+      'connectX': {},
       'mulesprawl': {
         autoCreateGame: {
           name: 'auto mulesprawl game',
