@@ -11,14 +11,14 @@ var gamesCrudHelper = require('../crud/helper'),
   gameHelper = require('../../../turnSystem/gameHelper');
 
 exports.joinQ = function(params){
-  var gameID = params.gameID;
+  var gameId = params.gameId;
   var joiner = params.joiner;//expecting a user
 
   winston.log('info', "User attempting to join Game: ", params);
 
-  return gamesCrudHelper.readQ(gameID)
+  return gamesCrudHelper.readQ(gameId)
     .then(function (thatGame) {
-      winston.info('game id='+gameID + ' valid');
+      winston.info('game id='+gameId + ' valid');
 
       return gameHelper.joinGameQ(thatGame, joiner);
     })

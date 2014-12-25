@@ -18,8 +18,8 @@ exports.indexQ = function () {
 
 exports.createQ = createGameHelper;
 
-exports.readQ = function (gameID){
-  return Game.findByIdQ(gameID);
+exports.readQ = function (gameId){
+  return Game.findByIdQ(gameId);
 };
 
 exports.update = function (parameters, callback) {

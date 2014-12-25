@@ -18,7 +18,7 @@ var params = require('./joinGameParams'),
 describe('API: ', function () {
   describe('Game Services: ', function () {
     var gameCreatorUserAgent;
-    var createdGameID;
+    var createdGameId;
 
     var ourUserAgent;
 
@@ -43,22 +43,22 @@ describe('API: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig : params.validGameConfig})
           .done(function (result) {
-            createdGameID = result.gameID;
-            should(createdGameID).ok;
+            createdGameId = result.gameId;
+            should(createdGameId).ok;
             done();
           }, testHelper.mochaError(done));
       });
 
       it('should return json' , function (done) {
-        restHelper.expectJson({ done: done, userAgent: ourUserAgent, endpoint: '/games/' + createdGameID + '/join', verb: 'post' });
+        restHelper.expectJson({ done: done, userAgent: ourUserAgent, endpoint: '/games/' + createdGameId + '/join', verb: 'post' });
       });
 
       it('basic should work' , function (done) {
-        gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID})
+        gameHelper.joinGameQ({agent : ourUserAgent, gameId : createdGameId})
           .done(function (result) {
             should(result).ok;
             should(result.status).eql(0);
-            gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+            gameHelper.readGameQ({agent : ourUserAgent, gameId : createdGameId})
               .done(function (game) {
                 should(game).ok;
                 should(game.players).ok;
@@ -72,15 +72,15 @@ describe('API: ', function () {
         this.timeout(10000);
         loginHelper.registerAndLoginQ({username: 'anohterUser', password : 'poklitar'})
           .done(function (newUserAgent) {
-            gameHelper.joinGameQ({agent : newUserAgent, gameID : createdGameID})
+            gameHelper.joinGameQ({agent : newUserAgent, gameId : createdGameId})
               .done(function (result) {
                 should(result).ok;
                 should(result.status).eql(0);
-                gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID, expectedStatusCode : 200})
+                gameHelper.joinGameQ({agent : ourUserAgent, gameId : createdGameId, expectedStatusCode : 200})
                   .done(function (result) {
                     should(result).ok;
                     should(result.status).eql(0);
-                    gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+                    gameHelper.readGameQ({agent : ourUserAgent, gameId : createdGameId})
                       .done( function (result2) {
                         should(result2.players).ok
                         should(_.size(result2.players)).eql(3);
@@ -93,12 +93,12 @@ describe('API: ', function () {
       });
 
       describe('reject if' , function () {
-        it('should reject an invalid gameID' , function (done) {
-          gameHelper.joinGameQ({agent : ourUserAgent, gameID : 'THISWONTWORK', expectedStatusCode : 403})
+        it('should reject an invalid gameId' , function (done) {
+          gameHelper.joinGameQ({agent : ourUserAgent, gameId : 'THISWONTWORK', expectedStatusCode : 403})
             .done(function (result) {
               should(result).ok;
               should(result.status).eql(-1);
-              gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+              gameHelper.readGameQ({agent : ourUserAgent, gameId : createdGameId})
                 .done( function (result) {
                   should(result.players).ok
                   should(_.size(result.players)).eql(1);
@@ -108,11 +108,11 @@ describe('API: ', function () {
         });
         it('should reject if you are already the game' , function (done) {
           //just gonna use the 'gameCreatorUserAgent' here for less code
-          gameHelper.joinGameQ({agent : gameCreatorUserAgent, gameID : createdGameID, expectedStatusCode : 403})
+          gameHelper.joinGameQ({agent : gameCreatorUserAgent, gameId : createdGameId, expectedStatusCode : 403})
             .done(function (result) {
               should(result).ok;
               should(result.status).eql(-1);
-              gameHelper.readGameQ({agent : gameCreatorUserAgent, gameID : createdGameID})
+              gameHelper.readGameQ({agent : gameCreatorUserAgent, gameId : createdGameId})
                 .done( function (result2) {
                   should(result2.players).ok
                   should(_.size(result2.players)).eql(1);
@@ -124,21 +124,21 @@ describe('API: ', function () {
           this.timeout(5000);
           loginHelper.registerAndLoginQ({username: 'anohterUser', password : 'poklitar'})
             .done(function (newUserAgent) {
-              gameHelper.joinGameQ({agent : newUserAgent, gameID : createdGameID})
+              gameHelper.joinGameQ({agent : newUserAgent, gameId : createdGameId})
                 .done(function (result) {
                   should(result).ok;
                   should(result.status).eql(0);
                   loginHelper.registerAndLoginQ({username: 'anohterUser2', password : 'wowzers13'})
                     .done(function (newUserAgent2) {
-                      gameHelper.joinGameQ({agent : newUserAgent2, gameID : createdGameID})
+                      gameHelper.joinGameQ({agent : newUserAgent2, gameId : createdGameId})
                         .done(function (result) {
                           should(result).ok;
                           should(result.status).eql(0);
-                          gameHelper.joinGameQ({agent : ourUserAgent, gameID : createdGameID, expectedStatusCode : 403})
+                          gameHelper.joinGameQ({agent : ourUserAgent, gameId : createdGameId, expectedStatusCode : 403})
                             .done(function (result) {
                               should(result).ok;
                               should(result.status).eql(-1);
-                              gameHelper.readGameQ({agent : ourUserAgent, gameID : createdGameID})
+                              gameHelper.readGameQ({agent : ourUserAgent, gameId : createdGameId})
                                 .done( function (result2) {
                                   should(result2.players).ok
                                   should(_.size(result2.players)).eql(3);

@@ -50,7 +50,7 @@ describe('API', function () {
           .expect(200)
           .end(function(err, res){
             if (err) return done(err);
-            should(res.body.userID).ok;
+            should(res.body.userId).ok;
             done()
           });
       });
@@ -76,12 +76,12 @@ describe('API', function () {
           .expect(200)
           .end(function(err, res){
             if (err) return done(err);
-            should(res.body.userID).ok;
-            var userID = res.body.userID;
+            should(res.body.userId).ok;
+            var userId = res.body.userId;
 
             //look for the user
             request(app)
-              .get('/users/' + userID)
+              .get('/users/' + userId)
               .expect(200)
               .end(function(err, res){
                 if (err) return done(err);
@@ -95,7 +95,7 @@ describe('API', function () {
               });
           });
       });
-      it('should respond a 404 for a invalid userID', function (done) {
+      it('should respond a 404 for a invalid userId', function (done) {
         request(app)
           .get('/users/adsfdsdfNOTREAL')
           .expect(404)

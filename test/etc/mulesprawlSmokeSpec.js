@@ -73,7 +73,7 @@ describe('ETC: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
           .then(function (result) {
-            createdGameId = result.gameID;
+            createdGameId = result.gameId;
             should(createdGameId).ok;
             
             emptyTurn.gameId = createdGameId;
@@ -93,7 +93,7 @@ describe('ETC: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
           .then(function (result) {
-            createdGameId = result.gameID;
+            createdGameId = result.gameId;
             should(createdGameId).ok;
             
             // fetch board

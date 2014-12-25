@@ -26,30 +26,30 @@ define(['./Users', '../q'], function (Users, Q) {
       });
     };
 
-    that.readQ = function (gameID) {
+    that.readQ = function (gameId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"games/" + gameID
+        url: contextPath+"games/" + gameId
       });
     };
 
-    that.readUsersGamesQ = function (userID) {
+    that.readUsersGamesQ = function (userId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"users/" + userID + '/games'
+        url: contextPath+"users/" + userId + '/games'
       });
     };
 
     that.readMyGamesQ = function () {
-      return that.readUsersGamesQ(Users.getLoggedInUserID());
+      return that.readUsersGamesQ(Users.getLoggedInUserId());
     };
 
     ////// GAME SERVICES //////
 
-    that.joinGameQ = function (gameID) {
+    that.joinGameQ = function (gameId) {
       return $.ajax({
         type: "POST",
-        url: contextPath+"games/" + gameID + '/join'
+        url: contextPath+"games/" + gameId + '/join'
       });
     };
 
@@ -60,7 +60,7 @@ define(['./Users', '../q'], function (Users, Q) {
         promiseArray = [];
 
       _.each(map, function (player, playerRel) {
-        promiseArray.push(Users.readCacheQ(player.playerID)
+        promiseArray.push(Users.readCacheQ(player.playerId)
           .then(function (user) {
             map[playerRel].name = user.username;
           })

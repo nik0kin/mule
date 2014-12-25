@@ -90,7 +90,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
     };
 
     GAME.loadGame = function (callback) {
-      currentGame = {_id: dumbLib.getUrlParameter('gameID') };
+      currentGame = {_id: dumbLib.getUrlParameter('gameId') };
       currentUser.relId = dumbLib.getUrlParameter('playerRel');
 
       refreshGame(callback);

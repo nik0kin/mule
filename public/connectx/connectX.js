@@ -58,14 +58,14 @@ define(['connectRenderer'], function (connectRenderer) {
   };
 
   var showClickableColumns = function () {
-    var availableXSpaces = [];
+    var availableSpaces = [];
     var i;
     for (i=0; i<customBoardSettings.width; i++) {
       if (!board[i][0].occupied) {
-        availableXSpaces.push(i + 1);
+        availableSpaces.push({x: i + 1, y: getLowestYInColumn(i+1)});
       }
     }
-    connectRenderer.readyForDrop(availableXSpaces);
+    connectRenderer.readyForDrop(availableSpaces);
   };
 
   var clickTopSpace = function (x, y) {
@@ -77,16 +77,22 @@ define(['connectRenderer'], function (connectRenderer) {
       };
   };
 
-  var tryToDrop = function (x) {
+  var getLowestYInColumn = function (x) {
     var y = 1;
     if (board[x-1][y-1].occupied) {
-      return;
+      return 0;
     }
 
     // determine final location
     while (y+1 <= customBoardSettings.height && !board[x-1][y].occupied) {
       y++;
     }
+
+    return y;
+  };
+
+  var tryToDrop = function (x) {
+    var y = getLowestYInColumn(x);
     console.log('dropped to ' + x + '_' + y);
 
     board[x-1][y-1].occupied = myPlayerRel;

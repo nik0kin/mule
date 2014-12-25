@@ -9,10 +9,10 @@ exports.indexQ = function () {
   return History.find().execQ();
 };
 
-exports.readQ = function (historyID){
+exports.readQ = function (historyId){
   var _history;
 
-  return History.findByIdQ(historyID)
+  return History.findByIdQ(historyId)
     .then(function (history) {
       var h = history._doc;
       _history = h;
@@ -24,10 +24,10 @@ exports.readQ = function (historyID){
     });
 };
 
-exports.readFullQ = function (historyID){
+exports.readFullQ = function (historyId){
   var _history;
 
-  return History.findFullByIdQ(historyID)
+  return History.findFullByIdQ(historyId)
     .then(function (history) {
       var h = history._doc;
       _history = h;

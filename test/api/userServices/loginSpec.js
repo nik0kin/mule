@@ -18,13 +18,13 @@ describe('API: ', function () {
     describe('POST /LoginAuth: ', function () {
       var validAccountCredentials = {username: 'validuser', password : 'validpw'};
 
-      var ourUserID;
+      var ourUserId;
 
       before(function (done) {
         //make one valid user
         loginHelper.registerAndLoginQ(validAccountCredentials)
           .done(function (agent) {
-            ourUserID = agent.userID;
+            ourUserId = agent.userId;
             done();
           }, testHelper.mochaError(done));
       });
@@ -89,8 +89,8 @@ describe('API: ', function () {
           .end(function(err, res){
             if (err) return done(err);
             should(res.body.status).eql(0);
-            should(res.body.userID).ok;
-            should(res.body.userID).eql(ourUserID);
+            should(res.body.userId).ok;
+            should(res.body.userId).eql(ourUserId);
             done();
           });
       });

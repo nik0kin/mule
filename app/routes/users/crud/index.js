@@ -29,7 +29,7 @@ var userParamSpec = {
 
 exports.create = function (req, res){
   var responseJSON = responseUtils.getNewResponseJSON();
-  responseJSON.userID = "";
+  responseJSON.userId = "";
 
   jsonUtils.validateJSONBody(req.body, userParamSpec, function (validatedParams) {
     winston.log('info', "User attempting to register: params: ", validatedParams );
@@ -42,7 +42,7 @@ exports.create = function (req, res){
             return next(err); //TODO change this to... ???
         });
 
-        responseJSON.userID = user._id;
+        responseJSON.userId = user._id;
         responseJSON.username = user.username;
         winston.info('\'' + user.username +'\' created and logged in');
         return res.status(200).send(responseJSON);

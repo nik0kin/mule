@@ -41,14 +41,14 @@ exports.create = function (req, res) {
   var responseJSON = {
     status: 0,
     statusMsg: "Success",
-    gameID: ""
+    gameId: ""
   };
 
   //gameConfigUtils.promiseToValidate(req.body.gameConfig)
   //  .done(function (result) {
       gameHelper.createQ({validatedParams: req.body.gameConfig, creator : req.user})
         .done(function (value) {
-          responseJSON.gameID = value._id;
+          responseJSON.gameId = value._id;
           return res.status(200).send(responseJSON);
         },  responseUtils.sendNotAcceptableErrorCallback(res));
   //  }, responseUtils.sendNotAcceptableErrorCallback(res) );

@@ -5,13 +5,13 @@
  */
 
 define(['../q'], function (Q) {
-  var userID;
+  var userId;
 
   return function (contextPath) {
     var that = {};
 
-    that.getLoggedInUserID = function () {
-      return userID;
+    that.getLoggedInUserId = function () {
+      return userId;
     };
 
     that.indexQ = function () {
@@ -28,16 +28,16 @@ define(['../q'], function (Q) {
         data: params
       })
         .then(function (result) {
-          userID = result.userID;
-          that.fakeCacheWrite({_id: result.userID, username: params.username});
+          userId = result.userId;
+          that.fakeCacheWrite({_id: result.userId, username: params.username});
           return result;
         });
     };
 
-    that.readQ = function (userID) {
+    that.readQ = function (userId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"users/" + userID
+        url: contextPath+"users/" + userId
       });
     };
 
@@ -50,8 +50,8 @@ define(['../q'], function (Q) {
         data: params
       })
         .then(function (result) {
-          userID = result.userID;
-          that.fakeCacheWrite({_id: result.userID, username: params.username});
+          userId = result.userId;
+          that.fakeCacheWrite({_id: result.userId, username: params.username});
           return result;
         });
     };
@@ -63,12 +63,12 @@ define(['../q'], function (Q) {
       that.usersCache[result._id] = result;
     };
 
-    that.readCacheQ = function lol1(userID) {
+    that.readCacheQ = function lol1(userId) {
       return Q.promise(function (resolve, reject) {
-        if (that.usersCache[userID]) {
-          resolve(that.usersCache[userID]);
+        if (that.usersCache[userId]) {
+          resolve(that.usersCache[userId]);
         } else {
-          that.readQ(userID)
+          that.readQ(userId)
             .then(function (result) {
                 that.usersCache[result._id] = result;
                 resolve(result);

@@ -21,10 +21,10 @@ define([], function () {
       })
     };
 
-    that.readGamesHistoryQ = function (gameID) {
+    that.readGamesHistoryQ = function (gameId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"games/" + gameID + '/history'
+        url: contextPath+"games/" + gameId + '/history'
       });
     };
 

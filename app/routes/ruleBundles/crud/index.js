@@ -30,12 +30,12 @@ exports.create = function (req, res) {
   var responseJSON = {
     status: 0,
     statusMsg: "Success",
-    ruleBundleID: ""
+    ruleBundleId: ""
   };
 
   ruleBundleHelper.createQ(req.body.ruleBundleConfig)
     .done(function (value) {
-      responseJSON.ruleBundleID = value._id;
+      responseJSON.ruleBundleId = value._id;
       return res.status(200).send(responseJSON);
     },  responseUtils.sendNotAcceptableErrorCallback(res));
 };

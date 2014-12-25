@@ -26,8 +26,8 @@ exports.createQ = function (params) {
   });
 };
 
-exports.readQ = function (roleBundleID){
-  return RuleBundle.findByIdQ(roleBundleID);
+exports.readQ = function (ruleBundleId){
+  return RuleBundle.findByIdQ(ruleBundleId);
 };
 
 exports.update = function (parameters, callback) {

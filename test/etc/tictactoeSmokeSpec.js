@@ -103,12 +103,12 @@ describe('ETC: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent1, gameConfig: createGameParams})
           .then(function (result) {
-            createdGameId = result.gameID;
+            createdGameId = result.gameId;
             should(createdGameId).ok;
 
             player1Turns[0].gameId = createdGameId;
             player2Turns[0].gameId = createdGameId;
-            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameID: createdGameId});
+            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameId: createdGameId});
           })
           .then (function () {
             console.log('Players joined Game');
@@ -137,12 +137,12 @@ describe('ETC: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent1, gameConfig: createGameParams})
           .then(function (result) {
-            createdGameId = result.gameID;
+            createdGameId = result.gameId;
             should(createdGameId).ok;
 
             player1Turns[0].gameId = createdGameId;
             player2Turns[0].gameId = createdGameId;
-            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameID: createdGameId});
+            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameId: createdGameId});
           })
           .then (function () {
             console.log('Players joined Game');
@@ -187,14 +187,14 @@ describe('ETC: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent1, gameConfig: createGameParams})
           .then(function (result) {
-            createdGameId = result.gameID;
+            createdGameId = result.gameId;
             should(createdGameId).ok;
 
             _(3).times(function (i) {
               player1Turns[i].gameId = createdGameId;
               player2Turns[i].gameId = createdGameId;
             });
-            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameID: createdGameId});
+            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameId: createdGameId});
           })
           .then (function () {
             console.log('Players joined Game');
@@ -214,7 +214,7 @@ describe('ETC: ', function () {
 
             return multiplayerHelper.waitForTurnQ({agent: gameCreatorUserAgent1, gameId: createdGameId, waitTilTurn: 6})
               .then(function () {
-                return gameHelper.readGameQ({agent: gameCreatorUserAgent1, gameID: createdGameId})
+                return gameHelper.readGameQ({agent: gameCreatorUserAgent1, gameId: createdGameId})
               })
           })
           .then(function (game) {

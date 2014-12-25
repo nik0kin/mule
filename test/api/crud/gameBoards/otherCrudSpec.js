@@ -15,7 +15,7 @@ var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://lo
 
 var loggedInAgent;
 
-var createdGameID;
+var createdGameId;
 
 describe('API: ', function () {
   describe('GameBoards ', function () {
@@ -26,8 +26,8 @@ describe('API: ', function () {
           loggedInAgent = agent;
           gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validCheckersGameConfig}, 200)
             .done(function (result) {
-              should(result.gameID).is.ok;
-              createdGameID = result.gameID;
+              should(result.gameId).is.ok;
+              createdGameId = result.gameId;
               done();
             }, testHelper.mochaError(done));
         }, testHelper.mochaError(done));
@@ -55,16 +55,16 @@ describe('API: ', function () {
         gameAPIHelper.sendRestRequest({
           agent : loggedInAgent,
           verb: 'get',
-          endpoint: '/games/' + createdGameID,
+          endpoint: '/games/' + createdGameId,
           expectedStatusCode: 200
         })
           .done(function (result) {
-            var boardID = result.gameBoard;
+            var gameboardId = result.gameBoard;
 
             gameAPIHelper.sendRestRequest({
               agent : loggedInAgent,
               verb: 'get',
-              endpoint: '/gameBoards/' + boardID,
+              endpoint: '/gameBoards/' + gameboardId,
               expectedStatusCode: 200
             })
               .done(function (result) {
@@ -82,7 +82,7 @@ describe('API: ', function () {
         gameAPIHelper.sendRestRequest({
           agent : loggedInAgent,
           verb: 'get',
-          endpoint: '/games/' + createdGameID + '/board',
+          endpoint: '/games/' + createdGameId + '/board',
           expectedStatusCode: 200
         })
           .done(function (result) {

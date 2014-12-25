@@ -54,7 +54,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
           alert("createUser failed: "+data.statusMsg);
           return;
         }
-        currentUserId = data.userID;
+        currentUserId = data.userId;
         that.registerSuccessAlert();
       }).fail(function(res){
         that.registerFailAlert();
@@ -74,7 +74,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     })
       .then(function(data ) {
         console.log( "Data Recieved: " + JSON.stringify(data) );
-        currentUserId = data.userID;
+        currentUserId = data.userId;
         that.loginSuccessAlert();
       })
       .fail(function(res){
@@ -120,7 +120,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
         //reset create game fields
         that.generateStartGameDOM(that.selectedRuleBundle);
 
-        that.tryViewGame(data.gameID);
+        that.tryViewGame(data.gameId);
       }).fail(function(res){
         alert("Fail " + res.responseText);
       });
@@ -154,7 +154,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
   };
 
   that.tryGetMyGames = function () {
-    if (!SDK.Users.getLoggedInUserID()) {
+    if (!SDK.Users.getLoggedInUserId()) {
       alert('You are not logged in!')
       return;
     }
@@ -186,14 +186,14 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
   };
 
   // 'View Game Info'
-  that.tryViewGame = function (gameID) {
-    if (!gameID) {
-      alert("Invalid gameID");
+  that.tryViewGame = function (gameId) {
+    if (!gameId) {
+      alert("Invalid gameId");
       return;
     }
 
-    console.log('trying to get ' + gameID)
-    SDK.Games.readQ(gameID)
+    console.log('trying to get ' + gameId)
+    SDK.Games.readQ(gameId)
       .done(function(game ){
         console.log("Data Recieved: ");
         console.log(game);
@@ -210,14 +210,14 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
         }
 
 
-        that.renderGameBoard(gameID);
+        that.renderGameBoard(gameId);
 
-        dumbLib.addGameIdURL(gameID);
+        dumbLib.addGameIdURL(gameId);
       });
   };
 
-  that.tryJoinGame = function (gameID) {
-    SDK.Games.joinGameQ(gameID)
+  that.tryJoinGame = function (gameId) {
+    SDK.Games.joinGameQ(gameId)
       .done(function(data) {
         console.log( "Data Recieved: " + JSON.stringify(data) );
 
@@ -226,7 +226,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
           return;
         }
 
-        alert('you joined gameID[' + data.gameID + ']')
+        alert('you joined gameId[' + data.gameId + ']')
 
       }).fail(function(msg){
         alert("JoinGame Fail Response:" + JSON.stringify(msg));
@@ -234,8 +234,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
   };
 
 
-  that.viewBoard = function (gameID) {
-    window.open("board.html?gameID="+gameID)
+  that.viewBoard = function (gameId) {
+    window.open("board.html?gameId="+gameId)
   };
 
   ////////////////// OTHER STUFF //////////////////////
@@ -247,8 +247,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
       };
     };
 
-    var buttonID = idHelp + '' + parameter;
-    var newButton = $("<input type=\"button\" id=\"" + buttonID + "\" value=\"" + buttonLabel + "\" "+disOnOff+">");
+    var buttonId = idHelp + '' + parameter;
+    var newButton = $("<input type=\"button\" id=\"" + buttonId + "\" value=\"" + buttonLabel + "\" "+disOnOff+">");
     newButton.click(makeCallback(parameter));
 
     return newButton;
@@ -365,7 +365,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
         playerListDOM.append(key+").     " + result.username + " ["+result._id+"]  :  "+value.playerStatus+"<br>");
       };
 
-      SDK.Users.readCacheQ(value.playerID)
+      SDK.Users.readCacheQ(value.playerId)
         .then(updateFunct, updateFunct);
     });
 
@@ -377,7 +377,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
           .addClass("text")
           .append($('<tr></tr>')
             .append("<td>name: <h3>"+gameInfo.name+"</h3></td>")
-            .append("<td>ID: "+gameInfo._id+"<br>RuleBundle: "+gameInfo.ruleBundle.name+"<br> Status: <b><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></b></td>")
+            .append("<td>Id: "+gameInfo._id+"<br>RuleBundle: "+gameInfo.ruleBundle.name+"<br> Status: <b><FONT COLOR=\'"+color+"\'>"+statusMsg+"</FONT></b></td>")
           )
           .append($('<tr></tr>')
             .append("<td>Round: "+roundNumber+"<br>"+playersString)
@@ -452,8 +452,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
         console.log('wut2: ' + JSON.stringify(value));
       }
 
-      var inputID = 'startG_custom_' + key;
-      $('#customBoardSettingsDiv').append("<input id=\"" + inputID + "\" type=\"text\" name=\"" + key + "\"><br>");
+      var inputId = 'startG_custom_' + key;
+      $('#customBoardSettingsDiv').append("<input id=\"" + inputId + "\" type=\"text\" name=\"" + key + "\"><br>");
     });
 
   };
@@ -521,8 +521,8 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     that.alertHelper('alert-danger', 'Register Failed');
   };
 
-  that.renderGameBoard = function (gameID) {
-    SDK.GameBoards.readGamesBoardQ(gameID)
+  that.renderGameBoard = function (gameId) {
+    SDK.GameBoards.readGamesBoardQ(gameId)
       .done(function(gameBoard) {
         myD3Lib.renderSmallBoardHelper(gameBoard.ruleBundle.name, gameBoard.board);
       });
@@ -531,7 +531,7 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
   var playGame = function (gameData) {
     var currentPlayerRel;
     _.each(gameData.players, function (playerInfo, playerRel) {
-      if (playerInfo.playerID === currentUserId) {
+      if (playerInfo.playerId === currentUserId) {
         currentPlayerRel = playerRel;
       }
     });
@@ -542,11 +542,11 @@ define(["mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib', 'dumbLib'], function (s
     }
 
     if (gameData.ruleBundle.name === 'TicTacToe')
-      window.open("tictactoe/?gameID="+gameData._id + '&playerRel=' + currentPlayerRel);
+      window.open("tictactoe/?gameId="+gameData._id + '&playerRel=' + currentPlayerRel);
     else if (gameData.ruleBundle.name === 'MuleSprawl')
-      window.open("mulesprawl/?gameID="+gameData._id);
+      window.open("mulesprawl/?gameId="+gameData._id);
     else if (gameData.ruleBundle.name === 'Backgammon')
-      window.open("backgammon/?gameID="+gameData._id + '&playerRel=' + currentPlayerRel);
+      window.open("backgammon/?gameId="+gameData._id + '&playerRel=' + currentPlayerRel);
   };
 
   return that;

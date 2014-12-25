@@ -70,10 +70,10 @@ describe('Bundles: ', function () {
       gameHelper.createGameQ({agent: gameCreatorUserAgent1, gameConfig: createGameParams})
         .then(function (result) {
           console.log('Created Game');
-          createdGameId = result.gameID;
+          createdGameId = result.gameId;
           should(createdGameId).ok;
 
-          return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameID: createdGameId});
+          return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameId: createdGameId});
         })
         .then(function () {
           return gameHelper.readGameBoardQ({agent: gameCreatorUserAgent1, gameId: createdGameId})
@@ -89,10 +89,10 @@ describe('Bundles: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent1, gameConfig: createGameParams})
           .then(function (result) {
-            createdGameId = result.gameID;
+            createdGameId = result.gameId;
             firstTurn.gameId = createdGameId;
 
-            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameID: createdGameId});
+            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameId: createdGameId});
           })
           .then (function () {
             console.log('Players joined Game');

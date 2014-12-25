@@ -14,7 +14,7 @@ var dbHelper = require('mule-models/test/dbHelper'),
 describe('API: ', function () {
   describe('Game Services: ', function () {
     var gameCreatorUserAgent;
-    var createdGameID;
+    var createdGameId;
 
 
 
@@ -35,8 +35,8 @@ describe('API: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig : createGameParams})
           .done(function (result) {
-            createdGameID = result.gameID;
-            should(createdGameID).ok;
+            createdGameId = result.gameId;
+            should(createdGameId).ok;
             done();
           }, testHelper.mochaError(done));
       });

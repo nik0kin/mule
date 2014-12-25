@@ -23,10 +23,10 @@ define([], function () {
       });
     };
 
-    that.readQ = function (ruleBundleID) {
+    that.readQ = function (ruleBundleId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"ruleBundles/" + ruleBundleID
+        url: contextPath+"ruleBundles/" + ruleBundleId
       });
     };
 

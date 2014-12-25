@@ -39,9 +39,9 @@ exports.createQ = function (params) {
   });
 };
 
-exports.readQ = function (gameBoardID){
+exports.readQ = function (gameBoardId){
   return Q.promise(function (resolve, reject) {
-    GameBoard.findByIdQ(gameBoardID)
+    GameBoard.findByIdQ(gameBoardId)
       .done(function (gameBoard) {
 
         if (gameBoard.boardType == 'static') {

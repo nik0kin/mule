@@ -30,7 +30,7 @@ define(['demoLib', 'dumbLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], 
                   if (currentUser) {
 
                     _.each(_playerMap, function (value, key) {
-                      if (('' +value.playerID) === ('' +currentUser._id)) {
+                      if (('' +value.playerId) === ('' +currentUser._id)) {
                         currentUser.playerRel = key;
                         _playerMap[key].currentUser = true;
                         console.log(currentUser.playerRel);
@@ -80,7 +80,7 @@ define(['demoLib', 'dumbLib', "mule-js-sdk/sdk", 'boardRenderLibs/d3/myD3Lib'], 
   $('#loginUser').click(function () {
     demoLib.tryLogin()
       .then (function () {
-      currentUser = { _id: SDK.Users.getLoggedInUserID() };
+      currentUser = { _id: SDK.Users.getLoggedInUserId() };
       initGame();
     });
   });

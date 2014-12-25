@@ -22,7 +22,7 @@ describe('API: ', function () {
   describe('Games: ', function () {
     describe('GET /users/:id/games : ', function () {
       var ourUserAgent;
-      var ourUserID;
+      var ourUserId;
 
       var ourOtherUserAgent;
 
@@ -31,7 +31,7 @@ describe('API: ', function () {
         loginHelper.registerAndLoginQ()
           .then(function (agent) {
             ourUserAgent = agent;
-            ourUserID = agent.userID;
+            ourUserId = agent.userId;
             loginHelper.registerAndLoginQ()
               .then(function (agent) {
                 ourOtherUserAgent = agent;
@@ -47,12 +47,12 @@ describe('API: ', function () {
           done : done,
           userAgent : ourUserAgent,
           verb : 'GET',
-          endpoint : '/users/' + ourUserID + '/games'});
+          endpoint : '/users/' + ourUserId + '/games'});
       });
 
       it('should return an array', function (done) {
         ourUserAgent
-          .get('/users/' + ourUserID + '/games')
+          .get('/users/' + ourUserId + '/games')
           .send({})
           .set('Accept', 'application/json')
           .expect(200)
@@ -73,18 +73,18 @@ describe('API: ', function () {
         gameAPIHelper.createGameQ({agent: ourUserAgent, gameConfig : randomGameConfig, expectedStatusCode : 200})
           .done(function (resultBody) {
             should(resultBody).ok;
-            should(resultBody.gameID).ok
-            var ourGameID = resultBody.gameID;
+            should(resultBody.gameId).ok
+            var ourGameId = resultBody.gameId;
 
-            gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userID : ourUserID, expectedStatusCode : 200})
+            gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userId : ourUserId, expectedStatusCode : 200})
               .done(function (resultBody2) {
                 //check if its the same id
                 should(resultBody2[0]).ok;
                 var resultGame = resultBody2[0];
-                should(resultGame._id).eql(ourGameID);
+                should(resultGame._id).eql(ourGameId);
 
                 //and that the player is in it
-                should(gameUtils.doesGameContainPlayerID(ourUserID, resultBody2[0])).ok;
+                should(gameUtils.doesGameContainPlayerId(ourUserId, resultBody2[0])).ok;
 
                 done();
               }, testHelper.mochaError(done));
@@ -98,25 +98,25 @@ describe('API: ', function () {
         gameAPIHelper.createGameQ({agent: ourUserAgent, gameConfig : randomGameConfig, expectedStatusCode : 200})
           .done(function (resultBody) {
             should(resultBody).ok;
-            should(resultBody.gameID).ok
-            var ourGameID = resultBody.gameID;
+            should(resultBody.gameId).ok
+            var ourGameId = resultBody.gameId;
 
             gameAPIHelper.createGameQ({agent: ourOtherUserAgent, gameConfig : randomGameConfig2, expectedStatusCode : 200})
               .done(function (resultBody) {
                 should(resultBody).ok;
-                should(resultBody.gameID).ok;
+                should(resultBody.gameId).ok;
 
-                gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userID : ourUserID, expectedStatusCode : 200})
+                gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userId : ourUserId, expectedStatusCode : 200})
                   .done(function (resultBody2) {
                     //check if its the same id
                     should(resultBody2[0]).ok;
                     var resultGame = resultBody2[0];
-                    should(resultGame._id).eql(ourGameID);
+                    should(resultGame._id).eql(ourGameId);
 
                     should(resultBody2[1]).not.ok;
 
                     //and that the player is in it
-                    should(gameUtils.doesGameContainPlayerID(ourUserID, resultBody2[0])).ok;
+                    should(gameUtils.doesGameContainPlayerId(ourUserId, resultBody2[0])).ok;
 
                     done();
                   }, testHelper.mochaError(done));
@@ -124,8 +124,8 @@ describe('API: ', function () {
           },testHelper.mochaError(done));
       });
 
-      it('should return 404 if invalid userID', function (done) {
-        gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userID : "lolaodlasodl1998", expectedStatusCode : 404});
+      it('should return 404 if invalid userId', function (done) {
+        gameAPIHelper.readUsersGamesQ({agent : ourUserAgent, userId : "lolaodlasodl1998", expectedStatusCode : 404});
         done();
       });
     });

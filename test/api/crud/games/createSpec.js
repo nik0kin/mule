@@ -64,11 +64,11 @@ describe('API', function () {
           .end(function(err, res){
             if (err) return done(err);
 
-            var gameID = res.body.gameID;
-            should(gameID).ok;
+            var gameId = res.body.gameId;
+            should(gameId).ok;
             //now check if we can GET it
             loggedInAgent
-              .get('/games/'+gameID)
+              .get('/games/'+gameId)
               .send()
               .set('Accept', 'application/json')
               .expect(200)
@@ -97,10 +97,10 @@ describe('API', function () {
           .end(function(err, res){
             if (err) return done(err);
 
-            var gameID = res.body.gameID;
-            should(gameID).ok;
+            var gameId = res.body.gameId;
+            should(gameId).ok;
             loggedInAgent
-              .get('/games/'+gameID)
+              .get('/games/'+gameId)
               .send()
               .set('Accept', 'application/json')
               .expect(200)
@@ -137,7 +137,7 @@ describe('API', function () {
       it('should ignore (extra, non-rulebundle) customBoardSettings, backgammon with a width parameter', function (done) {
         gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validBackgammonWithExtras}, 200)
           .done(function (result) {
-            gameAPIHelper.readGameQ({gameID: result.gameID, agent: loggedInAgent})
+            gameAPIHelper.readGameQ({gameId: result.gameId, agent: loggedInAgent})
               .done(function (gameResult) {
                 should(gameResult.ruleBundleGameSettings).not.ok;
                 done();

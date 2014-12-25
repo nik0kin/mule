@@ -14,10 +14,10 @@ define([], function () {
       });
     };
 
-    that.readQ = function (gameBoardID) {
+    that.readQ = function (gameBoardId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"gameBoards/" + gameBoardID
+        url: contextPath+"gameBoards/" + gameBoardId
       })
         .then(function (result) {
           that.fakeCacheWrite(result);
@@ -25,10 +25,10 @@ define([], function () {
         });
     };
 
-    that.readGamesBoardQ = function (gameID) {
+    that.readGamesBoardQ = function (gameId) {
       return $.ajax({
         type: "GET",
-        url: contextPath+"games/" + gameID + '/board'
+        url: contextPath+"games/" + gameId + '/board'
       });
     };
 
@@ -39,12 +39,12 @@ define([], function () {
       that.gameBoardsCache[result._id] = result;
     };
 
-    that.readCacheQ = function (gameBoardID) {
+    that.readCacheQ = function (gameBoardId) {
       return Q.promise(function (reject, resolve) {
-        if (that.gameBoardsCache[gameBoardID]) {
-          resolve(that.gameBoardsCache[gameBoardID]);
+        if (that.gameBoardsCache[gameBoardId]) {
+          resolve(that.gameBoardsCache[gameBoardId]);
         } else {
-          that.readQ(gameBoardID)
+          that.readQ(gameBoardId)
             .done(function (result) {
               that.gameBoardsCache[result._id] = result;
               resolve(result);

@@ -26,9 +26,9 @@ exports.createQ = function (validatedParams) {
   });
 };
 
-exports.readQ = function (userID){
-  winston.info('reading User: ' + userID);
-  return User.findByIdQ(userID, 'username _id');
+exports.readQ = function (userId){
+  winston.info('reading User: ' + userId);
+  return User.findByIdQ(userId, 'username _id');
 };
 
 exports.updateQ = function () {

@@ -12,7 +12,7 @@ var login = function (req, res) {
   res.status(200).send({
     status : 0,
     statusMsg : 'Logged in Successfully',
-    userID : req.user._id,
+    userId : req.user._id,
     username: req.user.username
   });
   winston.info(req.user.username + "login result: " + redirectTo);

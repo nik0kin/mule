@@ -27,10 +27,10 @@ describe('API', function () {
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
     describe('POST /games', function () {
-      var invalidGameID = '53030c89296d98e92a9b2635' // but valid mongodb id
+      var invalidGameId = '53030c89296d98e92a9b2635' // but valid mongodb id
 
       it('return 404 to non existant gameid (but valid mongodb id)', function (done) {
-        gameAPIHelper.readGameQ({gameID: invalidGameID, agent: loggedInAgent, expectedStatusCode: 404})
+        gameAPIHelper.readGameQ({gameId: invalidGameId, agent: loggedInAgent, expectedStatusCode: 404})
           .done(function (result) {
             console.log(result);
             done();

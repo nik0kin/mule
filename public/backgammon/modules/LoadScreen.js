@@ -18,7 +18,7 @@ define(["assets"], function (ourAssets) {
     // Public Functions
 
     ////////  update load bar //////////
-    that.progressByOneResource = function(resourceID){
+    that.progressByOneResource = function(resourceId){
       var gap = GAME.SIZE.y / totalResources;
       var rectangle = new createjs.Shape();
 
@@ -27,7 +27,7 @@ define(["assets"], function (ourAssets) {
 
       currentResourcesLoaded++;
 
-      //text.text = currentResourcesLoaded+"/"+totalResources+"   "+resourceID;
+      //text.text = currentResourcesLoaded+"/"+totalResources+"   "+resourceId;
     };
     ////////////////////////////////////
 

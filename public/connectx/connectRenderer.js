@@ -25,10 +25,10 @@ define(function () {
   // show flashing for available spaces
   var currentRotation = [],
     currentIndex = 0;
-  that.readyForDrop = function (availableXSpaces) {
-    console.log(availableXSpaces);
-    _.each(availableXSpaces, function (x) {
-      $('#' + x + '_1').toggleClass('flashing');
+  that.readyForDrop = function (availableSpaces) {
+    console.log(availableSpaces);
+    _.each(availableSpaces, function (position) {
+      $('#' + position.x + '_' + position.y).toggleClass('flashing');
     });
   };
 

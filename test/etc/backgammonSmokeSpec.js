@@ -58,10 +58,10 @@ describe('ETC: ', function () {
         //create the game with the first user
         gameHelper.createGameQ({agent: gameCreatorUserAgent1, gameConfig: createGameParams})
           .then(function (result) {
-            createdGameId = result.gameID;
+            createdGameId = result.gameId;
             should(createdGameId).ok;
 
-            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameID: createdGameId});
+            return gameHelper.joinGameQ({agent: gameCreatorUserAgent2, gameId: createdGameId});
           })
           .then (function () {
             console.log('Players joined Game');

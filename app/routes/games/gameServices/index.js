@@ -17,9 +17,9 @@ exports.joinGame = function(req, res){
     statusMsg: "Success"
   };
 
-  gameServicesHelper.joinQ({gameID : req.params.id, joiner : req.user})
+  gameServicesHelper.joinQ({gameId : req.params.id, joiner : req.user})
     .done(function (value) {
-      responseJSON.gameID = value._id;
+      responseJSON.gameId = value._id;
       return res.status(200).send(responseJSON);
     }, function (err) {
       err = err.toString();
