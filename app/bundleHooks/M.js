@@ -9,11 +9,14 @@ var brain = require('../turnSystem/brain'),
 var createMObjectQ = function (gameId, debugPrefix) {
   return brain.loadGameStateObjectByIdQ(gameId)
     .then(function (gameStateObject) {
-      return createHelper(gameStateObject, debugPrefix);
+      return gameStateObject.history.getLastAddedTurnQ()
+        .then(function (lastTurn) {
+          return createHelper(gameStateObject, lastTurn, debugPrefix);
+        });
     });
 };
 
-var createHelper = function (gso, _debugPrefix) {
+var createHelper = function (gso, _lastTurn, _debugPrefix) {
   var GSO = gso,
     that = {};
 
@@ -23,6 +26,8 @@ var createHelper = function (gso, _debugPrefix) {
     gameBoard = GSO.gameBoard,
     gameState = GSO.gameState,
     history = GSO.history;
+
+  var lastTurn = _lastTurn;
 
   var debugPrefix = _debugPrefix;
 
@@ -95,7 +100,9 @@ var createHelper = function (gso, _debugPrefix) {
   };
 
   that.getPreviousTurn; // P3
-  that.getCurrentTurn; // P3
+  that.getCurrentTurn = function () {
+    return lastTurn;
+  };
   that.getTurnByNumberQ; // P4
   that.getTurnsByRoundQ; // P4
 
