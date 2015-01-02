@@ -9,11 +9,11 @@ define(['connectX', "../mule-js-sdk/sdk", "../dumbLib"],
     currentGame,
     currentHistory,
     currentTurn,
-    isGameOver = false,
     firstLoad = true;
 
   var current = {
-    whosTurn: undefined
+    whosTurn: undefined,
+    isGameOver: false
   };
 
   var initGame = function (selectSpaceId) {
@@ -92,7 +92,7 @@ define(['connectX', "../mule-js-sdk/sdk", "../dumbLib"],
           });
       });
 
-    if (!isGameOver) {
+    if (!current.isGameOver) {
       setTimeout(refreshGame, 1000);
     }
   };
@@ -157,10 +157,10 @@ define(['connectX', "../mule-js-sdk/sdk", "../dumbLib"],
       if (playerRel === currentUser.playerRel) {
         if (playerInfo.playerStatus === 'won') {
           populateWinConditionLabel(true);
-          isGameOver = true;
+          current.isGameOver = true;
         } else if (playerInfo.playerStatus === 'lost') {
           populateWinConditionLabel(false);
-          isGameOver = true;
+          current.isGameOver = true;
         }
       }
     });

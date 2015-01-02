@@ -58,6 +58,10 @@ define(['connectRenderer'], function (connectRenderer) {
   };
 
   var showClickableColumns = function () {
+    if (Current.isGameOver) {
+      return;
+    }
+
     var availableSpaces = [];
     var i;
     for (i=0; i<customBoardSettings.width; i++) {
@@ -70,7 +74,7 @@ define(['connectRenderer'], function (connectRenderer) {
 
   var clickTopSpace = function (x, y) {
     return function () {
-        if (myPlayerRel != Current.whosTurn) {
+        if (myPlayerRel != Current.whosTurn || Current.isGameOver) {
           return;
         }
         tryToDrop(x);

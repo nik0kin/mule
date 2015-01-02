@@ -3,11 +3,28 @@ define(function () {
   var that = {};
 
   that.init = function (clickTopSpaceCallback, customBoardSettings) {
-    _(customBoardSettings.width).times(function (x) {
-      _(customBoardSettings.height).times(function (y) {
+    var tableString = '';
+
+    // init dom
+    _(customBoardSettings.height).times(function (y) {
+      tableString += '<tr>';
+      _(customBoardSettings.width).times(function (x) {
+        var id = (x+1) + '_' + (y+1),
+          isTop = y === 0 ? ' top' : '';
+        $('#' + id).click(clickTopSpaceCallback(x+1, y+1));
+        tableString += '<td id="' + id + '" class="empty' + isTop + '"></td>';
+      });
+      tableString += '</tr>';
+    });
+    $('#connectXtable').html(tableString);
+
+    // init buttons
+    _(customBoardSettings.height).times(function (y) {
+      _(customBoardSettings.width).times(function (x) {
         $('#' + (x+1) + '_' + (y+1)).click(clickTopSpaceCallback(x+1, y+1));
       });
     });
+
     console.log('its inited');
   };
 
@@ -17,8 +34,8 @@ define(function () {
         if (space.occupied) {
           that.dropPiece(x+1, y+1, space.occupied);
         }
-      })
-    })
+      });
+    });
   };
 
 
@@ -33,7 +50,7 @@ define(function () {
   };
 
   that.stopReady = function () {
-    $('.top').toggleClass('flashing', false);
+    $('.empty').toggleClass('flashing', false);
   };
 
 
