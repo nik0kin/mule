@@ -99,7 +99,6 @@ define(['connectX', "../mule-js-sdk/sdk", "../dumbLib"],
 
   var submitTurn = function (whereX) {
     var params = {
-      gameId: currentGame._id,
       actions: [{
         type: 'DropToken',
         params: {
@@ -108,14 +107,12 @@ define(['connectX', "../mule-js-sdk/sdk", "../dumbLib"],
       }]
     };
 
-    SDK.PlayTurn.sendQ(params)
+    SDK.PlayTurn.sendGameTurnQ(currentGame._id, params)
       .then(function (result) {
         console.log('Submitted turn');
         console.log(result);
         // refresh?
         counter = 0;
-
-        //connectRenderer.dropPiece();
       })
       .fail(function (err) {
         alert(JSON.stringify(err));

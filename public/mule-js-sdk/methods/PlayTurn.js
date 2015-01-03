@@ -11,6 +11,15 @@ define([], function () {
       });
     };
 
+    that.sendGameTurnQ = function (gameId, params) {
+      return $.ajax({
+        type: 'POST',
+        url: contextPath + 'games/' + gameId + '/playTurn',
+        contentType: 'application/json',
+        data: JSON.stringify(params)
+      });
+    };
+
     return that;
   };
 });
