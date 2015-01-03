@@ -18,48 +18,45 @@ exports.indexQ = function () {
 
 // should only be called by Games.create
 exports.createQ = function (params) {
-  return Q.promise( function (resolve, reject) {
-    winston.info("User attempting to create new GameBoard: params: ", params );
+  winston.info("User attempting to create new GameBoard: params: ", params );
 
-    var newGameBoard = new GameBoard({});
+  var newGameBoard = new GameBoard({});
 
-    newGameBoard.ruleBundle = params.ruleBundle;
+  newGameBoard.ruleBundle = params.ruleBundle;
 
-    if (params.rules.dynamicBoard) { //hacky for right now
-      newGameBoard.boardType = 'built';
+  if (params.rules.dynamicBoard) { //hacky for right now
+    newGameBoard.boardType = 'built';
 
-      boardGen.saveGeneratedGameBoardQ(newGameBoard, {ruleBundle: newGameBoard.ruleBundle, customBoardSettings : params.customBoardSettings, rules: params.rules})
-        .done(resolve, reject);
-    } else {
-      newGameBoard.boardType = 'static';
+    return boardGen.saveGeneratedGameBoardQ(newGameBoard, {
+      ruleBundle: newGameBoard.ruleBundle,
+      customBoardSettings: params.customBoardSettings,
+      rules: params.rules
+    });
+  } else {
+    newGameBoard.boardType = 'static';
 
-      newGameBoard.saveQ()
-        .done(resolve, reject);
-    }
-  });
+    return newGameBoard.saveQ();
+  }
 };
 
 exports.readQ = function (gameBoardId){
-  return Q.promise(function (resolve, reject) {
-    GameBoard.findByIdQ(gameBoardId)
-      .done(function (gameBoard) {
+  return GameBoard.findByIdQ(gameBoardId)
+    .then(function (gameBoard) {
+      if (gameBoard.boardType == 'static') {
+        return ruleBundleHelper.readQ(gameBoard.ruleBundle.id)
+          .then(function (foundRuleBundle) {
+            //TODO temporary if?: , RuleBundle.rules should always exist
+            gameBoard.board = foundRuleBundle.rules ? foundRuleBundle.rules.board : undefined;
 
-        if (gameBoard.boardType == 'static') {
-          ruleBundleHelper.readQ(gameBoard.ruleBundle.id)
-            .done(function (foundRuleBundle) {
-              //TODO temporary if?: , RuleBundle.rules should always exist
-              gameBoard.board = foundRuleBundle.rules ? foundRuleBundle.rules.board : undefined;
-
-              resolve(gameBoard);
-            }, reject);
-        } else if (gameBoard.boardType == 'built') {
-          console.log('custom map!');
-          resolve(gameBoard);
-        } else {
-          reject('wtf boardType:' + gameBoard.boardType)
-        }
-      }, reject);
-  });
+            return gameBoard;
+          });
+      } else if (gameBoard.boardType == 'built') {
+        console.log('custom map!');
+        return gameBoard;
+      } else {
+        throw 'wtf boardType:' + gameBoard.boardType;
+      }
+    });
 };
 
 exports.update = function (parameters, callback) {

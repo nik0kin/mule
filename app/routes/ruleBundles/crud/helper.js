@@ -15,15 +15,10 @@ exports.indexQ = function () {
 };
 
 exports.createQ = function (params) {
+  winston.info("User attempting to create new RuleBundle: params: ", params );
 
-  return Q.promise( function (resolve, reject) {
-    winston.info("User attempting to create new RuleBundle: params: ", params );
-
-    var newRoleBundle = new RuleBundle(params);
-    newRoleBundle.saveQ()
-      .done(resolve, reject);
-
-  });
+  var newRoleBundle = new RuleBundle(params);
+  return newRoleBundle.saveQ();
 };
 
 exports.readQ = function (ruleBundleId){

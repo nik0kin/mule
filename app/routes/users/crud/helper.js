@@ -1,7 +1,5 @@
 /**
  * Controllers->Users-> helper.js
- *
- * Created by niko on 2/4/14.
  */
 
 var _ = require('lodash'),
@@ -15,15 +13,12 @@ exports.indexQ = function () {
 };
 
 exports.createQ = function (validatedParams) {
-  return Q.promise( function (resolve, reject) {
-    winston.info( "Attempting to create user: params: ", validatedParams );
+  winston.info('Attempting to create user: params: ', validatedParams);
 
-    var newUser = new User(validatedParams);
-    newUser.provider = 'local';
+  var newUser = new User(validatedParams);
+  newUser.provider = 'local';
 
-    newUser.saveQ()
-      .done(resolve, reject);
-  });
+  return newUser.saveQ();
 };
 
 exports.readQ = function (userId){
