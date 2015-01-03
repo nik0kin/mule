@@ -152,18 +152,25 @@ define(['connectX', "../mule-js-sdk/sdk", "../dumbLib"],
   var checkWin = function () {
     _.each(currentGame.players, function (playerInfo, playerRel) {
       if (playerRel === currentUser.playerRel) {
-        if (playerInfo.playerStatus === 'won') {
+        if (playerInfo.playerStatus === 'tie') {
+          populateWinConditionLabel(false, true);
+          isGameOver = true;
+        } else if (playerInfo.playerStatus === 'won') {
           populateWinConditionLabel(true);
-          current.isGameOver = true;
+          isGameOver = true;
         } else if (playerInfo.playerStatus === 'lost') {
           populateWinConditionLabel(false);
-          current.isGameOver = true;
+          isGameOver = true;
         }
       }
     });
   };
 
-  var populateWinConditionLabel = function (didWin) {
+  var populateWinConditionLabel = function (didWin, didTie) {
+    if (didTie) {
+      $('#winConditionLabel').html('<b>TIE</b>');
+      return;
+    }
     if (didWin) {
       $('#winConditionLabel').html('<b>WINNER</b>');
     } else {

@@ -201,7 +201,10 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
   var checkWin = function () {
     _.each(currentGame.players, function (playerInfo, playerRel) {
       if (playerRel === currentUser.playerRel) {
-        if (playerInfo.playerStatus === 'won') {
+        if (playerInfo.playerStatus === 'tie') {
+          populateWinConditionLabel(false, true);
+          isGameOver = true;
+        } else if (playerInfo.playerStatus === 'won') {
           populateWinConditionLabel(true);
           isGameOver = true;
         } else if (playerInfo.playerStatus === 'lost') {
@@ -212,7 +215,11 @@ define(['tttRenderer', "../mule-js-sdk/sdk", "../dumbLib"], function (tttRendere
     });
   };
 
-  var populateWinConditionLabel = function (didWin) {
+  var populateWinConditionLabel = function (didWin, didTie) {
+    if (didTie) {
+      $('#winConditionLabel').html('<b>TIE</b>');
+      return;
+    }
     if (didWin) {
       $('#winConditionLabel').html('<b>WINNER</b>');
     } else {
