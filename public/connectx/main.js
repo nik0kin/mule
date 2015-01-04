@@ -154,13 +154,13 @@ define(['connectX', "../mule-js-sdk/sdk", "../dumbLib"],
       if (playerRel === currentUser.playerRel) {
         if (playerInfo.playerStatus === 'tie') {
           populateWinConditionLabel(false, true);
-          isGameOver = true;
+          current.isGameOver = true;
         } else if (playerInfo.playerStatus === 'won') {
           populateWinConditionLabel(true);
-          isGameOver = true;
+          current.isGameOver = true;
         } else if (playerInfo.playerStatus === 'lost') {
           populateWinConditionLabel(false);
-          isGameOver = true;
+          current.isGameOver = true;
         }
       }
     });
