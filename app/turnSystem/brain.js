@@ -41,9 +41,9 @@ exports.forceTurnProgress = function (game) {
       } else if (gameStateObject.ruleBundle.turnSubmitStyle === 'playByMail') {
         gameStateObject.history.getPlayersThatHaveNotPlayedTheCurrentTurnQ()
           .then(function (notPlayedPlayerRels) {
-            if (notPlayedPlayerRels.length === 0) return;
+            if (notPlayedPlayerRels.length === 0) { return; }
             playerRel = undefined; // only affects a log message, maybe shouldnt exist in progressRoundQ ?
-            console.log('forcing round progress on ' + JSON.stringify(notPlayedPlayerRels) +' (round ' + gameStateObject.history.currentRound + ')');
+            console.log('forcing round progress on ' + JSON.stringify(notPlayedPlayerRels) + ' (round ' + gameStateObject.history.currentRound + ')');
             return gameStateObject.history.addPlayByMailPlayerTurnAndSaveQ(notPlayedPlayerRels, undefined);
           })
           .then(function () {

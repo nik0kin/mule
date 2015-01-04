@@ -74,5 +74,5 @@ exports.readGamesBoard = function (req, res) {
           .fail(responseUtils.sendBadRequestCallback(res))
           .done();
       }
-    }, responseUtils.sendNotFoundErrorCallback(res))
+    }, responseUtils.sendNotFoundErrorCallback(res));
 };

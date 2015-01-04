@@ -10,8 +10,8 @@ var GameBoard = require('mule-models').GameBoard.Model,
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
-  console.log('Submitting turn (roundRobin) for ' + player)
-  console.log(turn)
+  console.log('Submitting turn (roundRobin) for ' + player);
+  console.log(turn);
 
   var gso, turnNumber;
   return brain.loadGameStateObjectQ(game)

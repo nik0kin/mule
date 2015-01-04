@@ -12,5 +12,5 @@ module.exports = function (app){
   app.put ('/gameBoards/:id', gameBoardController.update);
   app.delete ('/gameBoards/:id', gameBoardController.destroy);
 
-  app.get('/games/:id/board', gameBoardController.readGamesBoard)
+  app.get('/games/:id/board', gameBoardController.readGamesBoard);
 };

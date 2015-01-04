@@ -83,7 +83,7 @@ exports.startGameQ = function (game) {
             attributes: pieceDef.attributes
           };
 
-          switch(startingPiecesTypeKey) {
+          switch (startingPiecesTypeKey) {
             case 'each':
               //make one for each player (gotta check how many players)
               _.each(newGameState.playerVariables, function (value, key) {
@@ -139,7 +139,7 @@ exports.startGameQ = function (game) {
       return _gameBoard.saveQ();
     })
     .then(function (savedGameBoardState) {
-      console.log('calling gameStart ' + _gameBoard.ruleBundle.name)
+      console.log('calling gameStart ' + _gameBoard.ruleBundle.name);
       return bundleHooks.gameStartHookQ(game._id, _gameBoard.ruleBundle.name);
     })
     .then(function () {

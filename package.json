@@ -34,7 +34,7 @@
     "grunt-simple-mocha": "~0.4.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-jshint": "~0.7.1",
-    "grunt-shell": "*",
+    "grunt-shell": "0.7.0",
     "supertest": "0.8.2",
     "random-words": "*",
     "express-session": "~1.7.5",

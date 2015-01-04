@@ -1,6 +1,6 @@
-**(Abstract) Asyncronous Strategy (Multiplayer Game) Server**
-
-Asyncronous Turn-based Game Platform?
+Mule
+=======
+**Turn-Based Game Platform featuring Multiplayer Asyncronous Gameplay**
 
 Roadmap to 0.0.1 / Milestones:
 - I - Users/Games
@@ -10,12 +10,12 @@ Roadmap to 0.0.1 / Milestones:
 - V - Action System Experiments (TicTacToe, MuleSprawl, Backgammon)  <--CURRENT
 - VI - Huge Cleanup / Refactor Month
 - VII - RuleBundle API
-- VIII - Efficiency and ??? http://itch.io/jam/procjam ???
+- VIII - Efficiency
 - IX - AI
 
 Latest commit on master hosted at (CI staging):
 - MuleFrontend: http://zion.tgp.io:313/
-- Old/Debug: http://zion.tgp.io:3130/webservices/public/
+- Old/Debug: http://zion.tgp.io:313/webservices/public/
 
 INSTALL:
 =======
@@ -33,7 +33,13 @@ Node (Ubuntu):
 Grunt, forever:
 -----------
 ```
-    sudo npm install -g grunt-cli forever
+    sudo npm install -g grunt-cli pm2
+```
+
+Dev Tools:
+-----------
+```
+    sudo npm install -g node-inspector mocha jscs jshint
 ```
 
 MongoDB:
@@ -70,5 +76,5 @@ or
 TESTS:
 =======
 ```
-NODE_ENV=test grunt test
+npm test
 ```

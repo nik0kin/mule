@@ -42,14 +42,14 @@ exports.checkForNoOpenGames = function () {
   });
 
   timeoutId = setTimeout(exports.checkForNoOpenGames, minTimerCheck * MS_PER_SEC);
-}
+};
 
 exports.checkForNoOpenRuleBundleGames = function (config, rulebundleName) {
   var conditions = {
     'gameStatus': {
       $regex: 'open'
     }
-  }
+  };
 
   Game.findQ(conditions)
     .then(function (results) {
@@ -58,7 +58,7 @@ exports.checkForNoOpenRuleBundleGames = function (config, rulebundleName) {
         return _.isEqual(resultGame.ruleBundle.id + '', config.ruleBundle.id + '');
       });
 
-      if (results && results.length == 0) {
+      if (results && results.length === 0) {
         // create new game
         winston.info('creating new game: ' + rulebundleName + '[' + config.id + ']');
         createGameQ({validatedParams: config})
@@ -66,7 +66,7 @@ exports.checkForNoOpenRuleBundleGames = function (config, rulebundleName) {
             winston.info('autogame created successfully: gameId=' + result._id);
           }, function (err) {
             winston.error('error creating autogame');
-            winston.error(err)
+            winston.error(err);
           });
       }
     });

@@ -16,7 +16,7 @@ exports.initTurnTimerChecks = function (minimumTimerCheck) {
     minTimerCheck = minimumTimerCheck;
     return exports.checkForExpiredTurns();
   }
-  timeoutId = setTimeout(exports.checkForExpiredTurns, minimumTimerCheck * MS_PER_SEC)
+  timeoutId = setTimeout(exports.checkForExpiredTurns, minimumTimerCheck * MS_PER_SEC);
 };
 
 exports.checkForExpiredTurns = function () {
@@ -26,8 +26,9 @@ exports.checkForExpiredTurns = function () {
 
       var promiseArray = [];
       _.each(result, function (game) {
-        if (game.turnProgressStyle === 'autoprogress')
+        if (game.turnProgressStyle === 'autoprogress') {
           promiseArray.push(turnBrain.forceTurnProgress(game));
+        }
       });
       console.log('amt: ' + promiseArray.length);
       return Q.all(promiseArray);

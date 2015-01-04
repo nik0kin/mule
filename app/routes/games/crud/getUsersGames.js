@@ -17,7 +17,7 @@ var getUsersGamesQ = function (userId) {
   return User.findByIdQ(userId)
     .then(function () {
       //check every game
-      return GameCrud.indexQ()
+      return GameCrud.indexQ();
     })
     .then(function (games) {
       //and make an array
@@ -25,7 +25,7 @@ var getUsersGamesQ = function (userId) {
 
       _.each(games, function (value) {
         if (gameUtils.doesGameContainPlayerId(userId, value)) {
-          usersGamesArray.push(value)
+          usersGamesArray.push(value);
         }
       });
 

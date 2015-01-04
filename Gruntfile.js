@@ -35,9 +35,9 @@ module.exports = function (grunt) {
           stdout: true
         },
         command: 'rm -rf node_modules/mule* || npm install'
-          + ' && git clone http://github.com/nik0kin/mule-utils.git node_modules/mule-utils'
-          + ' && git clone http://github.com/nik0kin/mule-models.git node_modules/mule-models'
-          + ' && git clone http://github.com/nik0kin/mule-rules.git node_modules/mule-rules'
+          + ' && git clone git@github.com:nik0kin/mule-utils.git node_modules/mule-utils'
+          + ' && git clone git@github.com:nik0kin/mule-models.git node_modules/mule-models'
+          + ' && git clone git@github.com:nik0kin/mule-rules.git node_modules/mule-rules'
 
           + ' && cd node_modules/mule-utils && npm install'
           + ' && cd ../mule-models && npm install'
@@ -55,6 +55,17 @@ module.exports = function (grunt) {
           + ' && cp -rf node_modules/mule-utils/* node_modules/mule-rules/node_modules/mule-utils'
           + ' && rm -rf node_modules/mule-models/node_modules/mule-rules/node_modules/mule-utils/*'
           + ' && cp -rf node_modules/mule-utils/* node_modules/mule-models/node_modules/mule-rules/node_modules/mule-utils'
+      },
+      gstatus: {
+        options: { stdout: true },
+        command: 'echo `pwd` && git status ' 
+          + ' && cd node_modules/mule-models && echo `pwd` && git status'
+          + ' && cd ../mule-rules && echo `pwd` && git status '
+          + ' && cd ../mule-utils && echo `pwd` && git status'
+          + ' && cd ../..'
+      },
+      style: {
+        command: 'jshint app/ ; jscs app/'
       },
       clear_logs : {
         command: 'rm logs/mule*.log'
@@ -92,6 +103,8 @@ module.exports = function (grunt) {
   grunt.registerTask('updateMule', ['shell:mule_update']);
   grunt.registerTask('updateRules', ['shell:updateRules']);
   grunt.registerTask('updateUtils', ['shell:updateUtils']);
+  grunt.registerTask('gstatus', ['shell:gstatus']);
+  grunt.registerTask('style', ['shell:style']);
   grunt.registerTask('clearLogs', ['shell:clear_logs']);
 
   grunt.registerTask('monGO', ['shell:monGO']);

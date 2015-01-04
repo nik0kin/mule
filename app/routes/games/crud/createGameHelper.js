@@ -32,7 +32,7 @@ module.exports = function (params) {    //TODO this is starting to look ugly
         if (!foundRuleBundle.canAutoProgress) {
           // dont allow autoprogress
           if (newGame.turnProgressStyle == 'autoprogress') {
-            reject({err: '\'autoprogress\' not allowed on this RuleBundle(' + foundRuleBundle.name + ')'})
+            reject({err: '\'autoprogress\' not allowed on this RuleBundle(' + foundRuleBundle.name + ')'});
           }
         }
 
@@ -80,7 +80,7 @@ var parseMaxPlayersQ = function (foundRuleBundle, newGame) {
       if (integerUtils.isIntegerMinMaxValid(newGame.maxPlayers, foundRuleBundle.gameSettings.playerLimit)) {
         //valid maxPlayers
       } else
-        return reject('playerMax not within RoleBundle min-max playerLimit')
+        return reject('playerMax not within RoleBundle min-max playerLimit');
     } else if (_.isArray(foundRuleBundle.gameSettings.playerLimit)) {
       if(!_.contains(foundRuleBundle.gameSettings.playerLimit, newGame.maxPlayers))
         return reject('playerMax not in RoleBundle playerLimit array');

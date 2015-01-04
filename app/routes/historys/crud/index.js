@@ -74,4 +74,4 @@ exports.readGamesFullHistory = function (req, res) {
   winston.info('GET /games/:id/history/all', req.params.id);
 
   readGamesHistoryHelper(req, res, historyHelper.readFullQ);
-}
+};

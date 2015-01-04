@@ -1,7 +1,5 @@
 /**
  * Controllers->Users-> index.js
- *
- * Created by niko on 2/4/14.
  */
 
 var _ = require('lodash'),
@@ -15,7 +13,7 @@ var jsonUtils = require('mule-utils/jsonUtils'),
   helper = require('./helper');
 
 
-exports.index = function (req, res){
+exports.index = function (req, res) {
   helper.indexQ()
     .done(function (users) {
       return res.status(200).send(users);
@@ -27,7 +25,7 @@ var userParamSpec = {
   password : {required : true, type: 'string'}
 };
 
-exports.create = function (req, res){
+exports.create = function (req, res) {
   var responseJSON = responseUtils.getNewResponseJSON();
   responseJSON.userId = "";
 
@@ -37,7 +35,7 @@ exports.create = function (req, res){
     helper.createQ(validatedParams)
       .done(function (user) {
         // manually login the user once successfully signed up
-        req.logIn(user, function(err) {
+        req.logIn(user, function (err) {
           if (err)
             return next(err); //TODO change this to... ???
         });
@@ -50,27 +48,28 @@ exports.create = function (req, res){
         winston.info('register failed');
         return responseUtils.sendInternalServerError(res, err);
       });
-  }, function(missingKey) {
+  }, function (missingKey) {
     responseJSON.status = -1;
     responseJSON.statusMsg = "Missing: " + JSON.stringify(missingKey) + " parameter";
     return res.status(406).send(responseJSON);
   });
 };
 
-exports.read = function (req, res){
+exports.read = function (req, res) {
   helper.readQ(req.params.id)
     .done(function (foundUser) {
       if (!foundUser) {
         responseUtils.sendNotFoundError(res, 'Not Found');
-      } else
+      } else {
         return res.status(200).send(foundUser);
+      }
     }, responseUtils.sendNotFoundErrorCallback(res));
 };
 
-exports.update = function (req, res){
+exports.update = function (req, res) {
   responseUtils.sendNotYetImplemented(res, "update");
 };
 
-exports.destroy = function (req, res){
+exports.destroy = function (req, res) {
   responseUtils.sendNotYetImplemented(res, "destroy");
 };

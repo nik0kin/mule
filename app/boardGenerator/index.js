@@ -14,6 +14,6 @@ exports.saveGeneratedGameBoardQ = function (newGameBoard, params) {
   return bundleHooks.boardGeneratorHookQ(ruleBundleName, params.customBoardSettings, ruleBundleRules)
     .then(function (result) {
       newGameBoard.board = result;
-      return newGameBoard.saveQ()
+      return newGameBoard.saveQ();
     });
 };

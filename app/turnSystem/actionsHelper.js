@@ -18,7 +18,7 @@ exports.validateActionsQ = function (gameId, ruleBundle, playerRel, actions) {
     var Action = getAction(action.type, ruleBundle);
     if (!Action) {
       //TODO correct error handling
-      console.log('wow that action doesnt exist')
+      console.log('wow that action doesnt exist');
     }
 
     var promise = bundleHooks.actionValidateQ(Action, gameId, playerRel, action.params)
@@ -49,8 +49,9 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
       .then(function (resultActionMetaData) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey);
 
-        if (resultActionMetaData)
+        if (resultActionMetaData) {
           return objs.history.saveMetaDataToActionQ(playerRel, actionKey, resultActionMetaData);
+        }
       })
       .fail(function (err) {
         console.log('R' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + actionKey);

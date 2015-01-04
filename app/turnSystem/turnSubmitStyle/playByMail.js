@@ -9,8 +9,8 @@ var GameBoard = require('mule-models').GameBoard.Model,
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
-  console.log('Submitting turn (playByMail) for ' + player)
-  console.log(turn)
+  console.log('Submitting turn (playByMail) for ' + player);
+  console.log(turn);
 
   var _historyObject, turnNumber;
   return GameBoard.findByIdQ(gameBoardId)
@@ -82,7 +82,7 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
             return fHistory.addPlayByMailMetaAndSaveQ({
               actions:[{type: 'metadata', metadata: progressRoundMetadata}]
             });
-          })
+          });
       } else {
         return Q(historyObject);
       }

@@ -84,7 +84,7 @@ exports.progressRoundHookQ = function (ruleBundle, game) {
     return createMQ(game._id)
       .then(function (M) {
         console.log('calling bundleProgressQ');
-        return bundleProgressRoundQ(M)
+        return bundleProgressRoundQ(M);
       });
   } else {
     return Q();
@@ -110,12 +110,12 @@ exports.actionValidateQ = function (Action, gameId, playerRel, actionParams) {
   return createMQ(gameId)
     .then(function (M) {
       return Action.validateQ(M, playerRel, actionParams);
-    })
+    });
 };
 
 exports.actionDoQ = function (Action, gameId, playerRel, actionParams) {
   return createMQ(gameId)
     .then(function (M) {
       return Action.doQ(M, playerRel, actionParams);
-    })
+    });
 };

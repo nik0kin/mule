@@ -83,7 +83,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
     } else {
       return gameBoard.board;
     }
-  }
+  };
 
   that.getCustomBoardSettings = function () {
     return game.ruleBundleGameSettings.customBoardSettings;
@@ -191,8 +191,8 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
   that.getPiece = function (pieceId) {
     return piecesById[pieceId];
   };
-  that.getPieces = function (searchArgs) {
-    var searchArgs = searchArgs || {},
+  that.getPieces = function (_searchArgs) {
+    var searchArgs = _searchArgs || {},
       ownerId = searchArgs.ownerId,
       spaceId = searchArgs.spaceId || searchArgs.locationId,
       className = searchArgs.className || searchArgs.class,
@@ -289,7 +289,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
           // EFF this prob could be better
           _.each(piecesById[foundPieceState.id], function (value, key) {
             foundPieceState[key] = value;
-          })
+          });
 
           foundPieceState.markModified('attributes');
 
