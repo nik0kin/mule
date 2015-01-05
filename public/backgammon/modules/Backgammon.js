@@ -3,7 +3,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
   return function (myPlayerRel, whosTurn, gameState, boardDisplayObject, submitTurnCallback) {
     var that = {},
       SDK = sdk('../../'),
-      myRelId = myPlayerRel, opponentRelId = (myRelId === 'p1') ? 'p2' : 'p1',
+      myRelId = myPlayerRel,
+      opponentRelId = (myRelId === 'p1') ? 'p2' : 'p1',
       currentBgState = BackgammonState(SDK, gameState, myRelId),
       board = boardDisplayObject,
 
@@ -26,6 +27,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         bgState = 'waitingOnOpponent';
         showOpponentRoll();
       }
+
+      board.showFloatingWhosTurnLabel(whosTurn);
 
       board.setNextButtonClickedCallback(nextButtonClicked);
     };
@@ -111,12 +114,13 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
     };
 
     var turnSubmittedIsMine = function (turn) { // TODO find some real names for these functions
-        // it was my turn, so now its their turn, so display their roll
-        bgState = 'waitingOnOpponent';
+      // it was my turn, so now its their turn, so display their roll
+      bgState = 'waitingOnOpponent';
 
-        lastRoll = currentBgState.getCurrentRoll();
-        showOpponentRoll();
-        board.hidePlayerRoll();
+      lastRoll = currentBgState.getCurrentRoll();
+      showOpponentRoll();
+      board.hidePlayerRoll();
+      board.showFloatingWhosTurnLabel(opponentRelId);
     };
 
     var turnSubmittedIsOpponents = function (turn) {
@@ -139,6 +143,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       lastRoll = currentBgState.getCurrentRoll();;
       setPlayerRoll();
       showPlayerRoll();
+      board.showFloatingWhosTurnLabel(myRelId);
     };
 
     var addPendingAction = function (action, knockTempMove) {

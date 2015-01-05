@@ -104,6 +104,7 @@ module.exports = function (grunt) {
   grunt.registerTask('updateRules', ['shell:updateRules']);
   grunt.registerTask('updateUtils', ['shell:updateUtils']);
   grunt.registerTask('gstatus', ['shell:gstatus']);
+  grunt.registerTask('gs', ['shell:gstatus']);
   grunt.registerTask('style', ['shell:style']);
   grunt.registerTask('clearLogs', ['shell:clear_logs']);
 

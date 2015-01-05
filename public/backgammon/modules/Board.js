@@ -461,6 +461,12 @@ define(['RenderHelper'], function (RenderHelper) {
       that.stopKnockMoveLocationSpaces();
     };
 
+    that.showFloatingWhosTurnLabel = function (playerRel) {
+      $('#turnlabel').html(_.capitalize(usernames[playerRel]) + '\'s Turn ');
+      $('.whoturn-popup').fadeIn(1000, function () {
+        $('.whoturn-popup').fadeOut(3000);
+      });
+    };
 
     ///////// NEXT-ROLL BUTTON /////////
 

@@ -73,13 +73,19 @@ describe('ETC: ', function () {
             console.log('1st Turn Played');
 
             return multiplayerHelper.waitForTurnQ({agent: gameCreatorUserAgent2, gameId: createdGameId, waitTilTurn: 1})
-              .then(function () {
+              .then(function (turn1) {
+                should.exist(turn1.playerTurns['p1'].actions[0].metadata);
                 return bgTestHelper.readRollAndBoardThenPlayDumbTurnQ({agent: gameCreatorUserAgent2, playerRel: 'p2', gameId: createdGameId});
               })
           })
           .then(function () {
             console.log('2nd Turn Played');
-
+            return multiplayerHelper.waitForTurnQ({agent: gameCreatorUserAgent2, gameId: createdGameId, waitTilTurn: 2})
+              .then(function (turn2) {
+                should.exist(turn2.playerTurns['p2'].actions[0].metadata);
+              });
+          })
+          .then(function () {
             done();
           })
           .fail(testHelper.mochaError(done));

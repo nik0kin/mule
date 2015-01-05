@@ -1,6 +1,6 @@
 Mule
 =======
-**Turn-Based Game Platform featuring Multiplayer Asyncronous Gameplay**
+**Turn-Based Game Platform featuring Asyncronous Multiplayer Gameplay**
 
 Roadmap to 0.0.1 / Milestones:
 - I - Users/Games

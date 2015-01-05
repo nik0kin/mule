@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" href="../css/boardView.css">
 
+    <link rel="stylesheet" href="backgammon.css">
     <link rel="stylesheet" href="fonts.css">
 
     <script data-main="modules/main" src="../lib/require.js"></script>
@@ -19,16 +20,19 @@
 
 <body>
 
-<div class="container">
+<div class="container col-centered">
     <div class="row">
-        <div class="col-md-10">
-            <canvas id="myCanvas"></canvas> <br>
-        </div>
+        <canvas id="myCanvas"></canvas>
     </div>
-    <a href="../../../"> Back to Mule-Frontend </a>
-    <br>
-    <span id="debugLabel">Debug Label</span>
-    <span id="refreshLabel">Refresh Label</span>
+    <div class="row">
+        <a href="../../../"> Back to Mule-Frontend </a>
+        <br>
+        <span id="debugLabel">Debug Label</span>
+        <span id="refreshLabel">Refresh Label</span>
+    </div>
+    <div class="whoturn-popup">
+        <h2><b id='turnlabel'></b></h2>
+    </div>
 </div>
 
 </body>
