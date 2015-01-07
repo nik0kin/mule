@@ -1,29 +1,27 @@
 /**
  * app/controllers/gameServices/index.js
- *
- * Created by niko on 2/3/14.
  */
 
-var winston = require('winston');
-
 var gameServicesHelper = require('./helper'),
+  logging = require('mule-utils').logging,
   responseUtils = require('mule-utils/responseUtils');
 
 exports.joinGame = function(req, res){
-  winston.info('POST /games/:id/join', req.params.id);
+  var gameId = req.params.id;
+  logging.vog('POST /games/:id/join', gameId);
 
   var responseJSON = {
     status: 0,
     statusMsg: "Success"
   };
 
-  gameServicesHelper.joinQ({gameId : req.params.id, joiner : req.user})
+  gameServicesHelper.joinQ({gameId: gameId, joiner: req.user})
     .done(function (value) {
       responseJSON.gameId = value._id;
       return res.status(200).send(responseJSON);
     }, function (err) {
       err = err.toString();
-      winston.log('info', 'join failed', err); //TODO if joinQ has a undefined error, it will not  put err as statusMsg (change winston to logger in gameServicesHelper to jog your memory)
+      logging.err('join failed', gameId, err); //TODO if joinQ has a undefined error, it will not  put err as statusMsg (change winston to logger in gameServicesHelper to jog your memory)
       return responseUtils.sendForbiddenError(res, err);
     });
 };

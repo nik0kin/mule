@@ -15,11 +15,11 @@ var express = require('express'),
     fs = require('fs'),
     _ = require('lodash'),
     passport = require('passport'),
-    winston = require('winston'),
     mkdirp = require('mkdirp'),
     dateUtils = require('mule-utils/dateUtils');
 
 var MuleUtils = require('mule-utils'),
+  logging = MuleUtils.logging,
   MuleRules = require('mule-rules'),
   MuleModels = require('mule-models');
 
@@ -38,8 +38,7 @@ var env = process.env.NODE_ENV || 'development',
 mkdirp('logs', function (err) {
   if (err) console.error(err);
 
-  winston.add(winston.transports.File, { filename: 'logs/mule' + dateUtils.getNiceDate()  + '.log' });
-  winston.remove(winston.transports.Console);
+  logging.init(4, 'logs/mule' + dateUtils.getNiceDate()  + '.log');
 });
 
 //Bootstrap connection

@@ -51,14 +51,19 @@ define(function () {
     return newBitmap;
   };
 
-  that.drawDebugRect = function (normalizedRect, stage) {
+  that.drawRect = function (normalizedRect, color, stage) {
     var shape = new createjs.Shape(),
       x = normalizedRect.x * scaledViewPortSize.x,
       y = normalizedRect.y * scaledViewPortSize.y,
       width = normalizedRect.w * scaledViewPortSize.x,
       height = normalizedRect.h * scaledViewPortSize.y;
-    shape.graphics.beginFill("#ff0000").drawRect(x, y, width, height);
+    shape.graphics.beginFill(color).drawRect(x, y, width, height);
     stage.addChild(shape);
+    return shape;
+  };
+
+  that.drawDebugRect = function (normalizedRect, stage) {
+    that.drawRect (normalizedRect, "#ff0000", stage);
   };
 
   var isBetween = function (num, scaledMaxNum, low, high) {

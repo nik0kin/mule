@@ -3,17 +3,17 @@
  */
 
 var _ = require('lodash'),
-  Q = require('q'),
-  winston = require('winston');
+  Q = require('q');
 
-var User = require('mule-models').User.Model;
+var User = require('mule-models').User.Model,
+  logging = require('mule-utils').logging;
 
 exports.indexQ = function () {
   return User.find({}, 'username _id').execQ();
 };
 
 exports.createQ = function (validatedParams) {
-  winston.info('Attempting to create user: params: ', validatedParams);
+  logging.log('Attempting to create user: params: ', null, validatedParams);
 
   var newUser = new User(validatedParams);
   newUser.provider = 'local';
@@ -22,7 +22,6 @@ exports.createQ = function (validatedParams) {
 };
 
 exports.readQ = function (userId){
-  winston.info('reading User: ' + userId);
   return User.findByIdQ(userId, 'username _id');
 };
 

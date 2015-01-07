@@ -42,6 +42,9 @@ define(['../q'], function (Q) {
     };
 
     ////// USER SERVICES //////
+    that.sessionQ = function () {
+      return $.get(contextPath + 'session');
+    };
 
     that.loginQ = function (params) {
       return $.ajax({

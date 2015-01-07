@@ -4,18 +4,17 @@
  */
 
 var fs = require('fs'),
-  _ = require('lodash'),
-  mongoose = global.getMongoose(),
-  winston = require('winston');
+  _ = require('lodash');
 
 var GameBoard = require('mule-models').GameBoard,
+  logging = require('mule-utils').logging,
   responseUtils = require('mule-utils/responseUtils'),
   gameBoardHelper = require('./helper'),
   gameHelper = require('../../games/crud/helper');
 
 
 exports.index = function (req, res) {
-  winston.info('GET /gameBoards');
+  logging.vog('GET /gameBoards');
 
   gameBoardHelper.indexQ()
     .then(function (ruleBundles) {
@@ -26,13 +25,13 @@ exports.index = function (req, res) {
 };
 
 exports.create = function (req, res) {
-  winston.info('POST /gameBoards');
+  logging.vog('POST /gameBoards');
 
   responseUtils.sendForbiddenError(res, 'GameBoards are only created while a Game is created');
 };
 
 exports.read = function (req, res) {
-  winston.info('GET /gameBoards/:id', req.params.id);
+  logging.vog('GET /gameBoards/:id', req.params.id);
 
   gameBoardHelper.readQ(req.params.id)
     .then(function (gameBoard){
@@ -57,7 +56,7 @@ exports.destroy = function (req, res) {
 ////////////////
 
 exports.readGamesBoard = function (req, res) {
-  winston.info('GET /games/:id/board', req.params.id);
+  logging.vog('GET /games/:id/board', req.params.id);
 
   gameHelper.readQ(req.params.id)
     .done(function (foundGame) {

@@ -1,8 +1,8 @@
 var _ = require('lodash'),
-  Q = require('q'),
-  winston = require('winston');
+  Q = require('q');
 
 var utils = require('mule-utils/jsonUtils'),
+  logging = require('mule-utils').logging,
   Game = require('mule-models').Game.Model,
   gameHelper = require('../../../turnSystem/gameHelper'),
   RuleBundleUtils = require('mule-models/models/RuleBundle/util'),
@@ -14,7 +14,7 @@ module.exports = function (params) {    //TODO this is starting to look ugly
   var creator = params.creator;//expecting a user
 
   return Q.promise( function (resolve, reject) {
-    winston.info("User attempting to create new game: params: ", validatedParams );
+    logging.vog("User attempting to create new game: ", null, validatedParams);
 
     validatedParams.gameStatus = 'open';
 
@@ -42,21 +42,21 @@ module.exports = function (params) {    //TODO this is starting to look ugly
               .then(function (newGameRR) {
                 gameBoardHelper.createQ({ruleBundle: newGame.ruleBundle, rules: foundRuleBundle.rules, customBoardSettings: newGame.ruleBundleGameSettings.customBoardSettings})
                   .done(function (gameBoard) {
-                    winston.info('gameBoard Saved', gameBoard);
+                    logging.vog('gameBoard Created');
                     newGameRR.gameBoard = gameBoard._id;
 
                     newGameRR.validate( function (err) {
                       if (err) {
-                        winston.log('error', 'ValidationError for gameConfigs to Game document');
+                        logging.err('ValidationError for gameConfigs to Game document');
                         return reject(err);
                       }
 
                       if (!creator) {
-                        winston.info('doing unit tests');
+                        logging.vog('doing unit tests');
                         newGameRR.saveQ()
                           .done(resolve, reject);
                       } else {
-                        winston.info('creating game with creator: ', creator._doc);
+                        logging.vog('creating game with creator: ', null, creator._doc);
                         gameHelper.joinGameQ(newGameRR, creator)
                           .done(resolve, reject);
                       }
@@ -66,7 +66,7 @@ module.exports = function (params) {    //TODO this is starting to look ugly
           })
           .fail(reject);
       }, function (err) {
-        winston.error(err);
+        logging.err(err);
         reject('invalid ruleBundle id or name: ' + err);
       });
   });
@@ -100,7 +100,7 @@ var parseCustomBoardSettingsQ = function (foundRuleBundle, newGame) {
       _.each(foundRuleBundle.gameSettings.customBoardSettings, function (value, key) {
         var paramToValidate = parseInt(newGame.ruleBundleGameSettings.customBoardSettings[key]); // needs better names
 
-        winston.log('verbose', key + ' ' + JSON.stringify(value) + ' ? ' + paramToValidate);
+        logging.vog(key + ' ' + JSON.stringify(value) + ' ? ' + paramToValidate);
         if (integerUtils.validateIntegerInArrayOrMinMax(value, paramToValidate)) {
           validatedCustomBoardSettings[key] = paramToValidate;
         } else {

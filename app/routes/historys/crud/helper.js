@@ -1,7 +1,6 @@
 
 var _ = require('lodash'),
-  Q = require('q'),
-  winston = require('winston');
+  Q = require('q');
 
 var History = require('mule-models').History.Model;
 

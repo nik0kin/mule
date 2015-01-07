@@ -1,20 +1,15 @@
 /**
  * Controllers->RuleBundle->CRUD-> index.js
- *
  */
 
-var fs = require('fs'),
-  _ = require('lodash'),
-  mongoose = global.getMongoose(),
-  winston = require('winston');
-
 var RuleBundle = require('mule-models').RuleBundle,
+  logging = require('mule-utils').logging,
   responseUtils = require('mule-utils/responseUtils'),
   ruleBundleHelper = require('./helper');
 
 
 exports.index = function (req, res) {
-  winston.info('GET /ruleBundles');
+  logging.vog('GET /ruleBundles');
 
   ruleBundleHelper.indexQ()
     .then(function (ruleBundles) {
@@ -25,7 +20,7 @@ exports.index = function (req, res) {
 };
 
 exports.create = function (req, res) {
-  winston.info('POST /ruleBundles');
+  logging.vog('POST /ruleBundles');
 
   var responseJSON = {
     status: 0,
@@ -41,7 +36,7 @@ exports.create = function (req, res) {
 };
 
 exports.read = function (req, res) {
-  winston.info('GET /ruleBundles/:id', req.params.id);
+  logging.vog('GET /ruleBundles/:id', req.params.id);
 
   ruleBundleHelper.readQ(req.params.id)
     .then(function (ruleBundle){

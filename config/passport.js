@@ -1,7 +1,6 @@
-var mongoose = global.getMongoose(),
-  LocalStrategy = require('passport-local').Strategy,
+var LocalStrategy = require('passport-local').Strategy,
   User = require('mule-models').User.Model,
-  winston = require('winston');
+  logging = require('mule-utils').logging;
 
 
 module.exports = function (passport, config) {
@@ -24,7 +23,7 @@ module.exports = function (passport, config) {
       passwordField: 'password'
     },
     function(_username, password, done) {//later revert back to email?
-      winston.info("attempting to login: \nusername= "+_username+"\npassword= "+password);
+      logging.log("attempting to login: \nusername= "+_username+"\npassword= "+password);
       User.findOne({ username: _username }, function (err, user) {
         if (err) { return done(err); }
         if (!user) {

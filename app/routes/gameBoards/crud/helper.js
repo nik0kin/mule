@@ -4,8 +4,7 @@
  */
 
 var _ = require('lodash'),
-  Q = require('q'),
-  winston = require('winston');
+  Q = require('q');
 
 var utils = require('mule-utils/jsonUtils'),
   GameBoard = require('mule-models').GameBoard.Model,
@@ -18,8 +17,6 @@ exports.indexQ = function () {
 
 // should only be called by Games.create
 exports.createQ = function (params) {
-  winston.info("User attempting to create new GameBoard: params: ", params );
-
   var newGameBoard = new GameBoard({});
 
   newGameBoard.ruleBundle = params.ruleBundle;

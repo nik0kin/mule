@@ -1,21 +1,17 @@
 /**
  * controllers/games/crud/index.js
- *
- * Created by niko on 1/21/14.
  */
 
-var fs = require('fs'),
-  _ = require('lodash'),
-  mongoose = global.getMongoose(),
-  winston = require('winston');
+var _ = require('lodash');
 
 var responseUtils = require('mule-utils/responseUtils'),
+  logging = require('mule-utils').logging,
   gameHelper = require('./helper'),
   getUsersGamesQ = require('./getUsersGames');
 
 
 exports.index = function (req, res) {
-  winston.info('GET /users');
+  logging.vog('GET /users');
 
   gameHelper.indexQ()
     .then(function (games) {
@@ -36,7 +32,7 @@ attempt to do make the game
  */
 
 exports.create = function (req, res) {
-  winston.info('POST /games');
+  logging.vog('POST /games');
 
   var responseJSON = {
     status: 0,
@@ -55,7 +51,7 @@ exports.create = function (req, res) {
 };
 
 exports.read = function (req, res) {
-  winston.info('GET /games/:id', req.params.id);
+  logging.vog('GET /games/:id', req.params.id);
 
   gameHelper.readQ(req.params.id)
     .then(function (game){
@@ -80,7 +76,7 @@ exports.destroy = function (req, res) {
 ///////////////////////////////////////////////////////////////
 
 exports.readUsersGames = function (req, res) {
-  winston.info('GET /users/:id/games', req.params.id);
+  logging.vog('GET /users/:id/games', req.params.id);
 
   getUsersGamesQ(req.params.id)
     .then(function (game){

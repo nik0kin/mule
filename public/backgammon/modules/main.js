@@ -89,11 +89,11 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       GAME.prevControls = GAME.controls;
     };
 
-    GAME.loadGame = function (callback) {
+    GAME.loadGame = function (userId) {
       currentGame = {_id: dumbLib.getUrlParameter('gameId') };
-      currentUser.relId = dumbLib.getUrlParameter('playerRel');
+      currentUser.id = userId;
 
-      refreshGame(callback);
+      refreshGame();
     };
 
     var updateWhosTurnIsIt = function () {
@@ -142,6 +142,15 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       gamePromise
         .then(function(game) {
           currentGame = game;
+
+          if (!currentUser.relId) {
+            // set relId
+            _.each(game.players, function (p, relId) {
+              if (p.playerId == currentUser.id) {
+                currentUser.relId = relId;
+              }
+            });
+          }
 
           if (firstTime) {
             GAME.init(canvas);
@@ -297,7 +306,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
 
     ////////// MAIN /////////////
     var canvas, loaderQueue;
-    function init() {
+    function init (userId) {
       canvas = new createjs.Stage(document.getElementById('myCanvas'));
       canvas.enableMouseOver({frequency: 30});
 
@@ -317,12 +326,23 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         function (_loaderQueue){
           loaderQueue = _loaderQueue;
           console.log("done loading assets");
-          GAME.loadGame();
+          GAME.loadGame(userId);
         }
       );
 
     }
 
+    var preInit = function () {
+      SDK.Users.sessionQ()
+        .then(function (result) {
+          init(result._id);
+        })
+        .fail(function () {
+          alert('You are not Logged in...redirecting to MuleFrontend.');
+          window.location.replace('../../../')
+        });
+    };
+
     console.log("init-ing");
-    init();
+    preInit();
   });

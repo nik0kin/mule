@@ -1,15 +1,14 @@
-
-var _ = require('lodash'),
-  winston = require('winston');
+var _ = require('lodash');
 
 var GameBoard = require('mule-models').GameBoard.Model,
+  logging = require('mule-utils').logging,
   responseUtils = require('mule-utils/responseUtils'),
   gameStateHelper = require('./helper'),
   gameHelper = require('../../games/crud/helper');
 
 
 exports.index = function (req, res) {
-  winston.info('GET /historys');
+  logging.vog('GET /historys');
 
   gameStateHelper.indexQ()
     .then(function (historys) {
@@ -21,7 +20,7 @@ exports.index = function (req, res) {
 
 
 exports.read = function (req, res) {
-  winston.info('GET /gameStates/:id', req.params.id);
+  logging.vog('GET /gameStates/:id', req.params.id);
 
   gameStateHelper.readQ(req.params.id)
     .then(function (history){
@@ -37,7 +36,7 @@ exports.read = function (req, res) {
 ////////////////
 
 exports.readGamesState = function (req, res) {
-  winston.info('GET /games/:id/state', req.params.id);
+  logging.vog('GET /games/:id/state', req.params.id);
 
   gameHelper.readQ(req.params.id)
     .done(function (foundGame) {

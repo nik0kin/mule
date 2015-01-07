@@ -47,57 +47,60 @@ define(['RenderHelper'], function (RenderHelper) {
     nonGameplayUiPositions = {
       playerIcon: {x: .055 , y: .80},
       playerUsername: {x: .065, y: .83},
+      playerTurnIndicator: {x: .059, y: .87, w: .01, h: .008},
       opponentIcon: {x: .055 , y: .16},
-      opponentUsername: {x: .065, y: .19}
+      opponentUsername: {x: .065, y: .19},
+      opponentTurnIndicator: {x: .059, y: .23, w: .01, h: .008}
     };
 
 
   var pieceStartLocations = {
-      'redJail': {
-        x: botJailClickAreaRect.x + jailOffset.x,
-        y: botJailClickAreaRect.y + jailOffset.botY
-      },
-      'blackJail': {
-        x: topJailClickAreaRect.x + jailOffset.x,
-        y: topJailClickAreaRect.y + jailOffset.topY
-      },
-
-      'blackScoreSpace': {
-        x: .96, y: .885
-      },
-      'redScoreSpace': {
-        x: .96, y: .39
-      },
-
-      1: {x: .8835, y: .84}, // using .6575 as x seperator value
-      2: {x: .827, y: .84},
-      3: {x: .7705, y: .84},
-      4: {x: .714, y: .84},
-      5: {x: .6575, y: .84},
-      6: {x: .601, y: .84},
-
-      7: {x: .449, y: .84},
-      8: {x: .3925, y: .84},
-      9: {x: .336, y: .84},
-      10: {x: .2795, y: .84},
-      11: {x: .223, y: .84},
-      12: {x: .1665, y: .84},
-
-      13: {x: .1665, y: .17},
-      14: {x: .223, y: .17},
-      15: {x: .2795, y: .17},
-      16: {x: .336, y: .17},
-      17: {x: .3925, y: .17},
-      18: {x: .449, y: .17},
-
-      19: {x: .601, y: .17},
-      20: {x: .6575, y: .17},
-      21: {x: .714, y: .17},
-      22: {x: .7705, y: .17},
-      23: {x: .827, y: .17},
-      24: {x: .8835, y: .17}
+    'redJail': {
+      x: botJailClickAreaRect.x + jailOffset.x,
+      y: botJailClickAreaRect.y + jailOffset.botY
     },
-    pieceSeperationY = .06,
+    'blackJail': {
+      x: topJailClickAreaRect.x + jailOffset.x,
+      y: topJailClickAreaRect.y + jailOffset.topY
+    },
+
+    'blackScoreSpace': {
+      x: .96, y: .885
+    },
+    'redScoreSpace': {
+      x: .96, y: .39
+    },
+
+    1: {x: .8835, y: .84}, // using .6575 as x seperator value
+    2: {x: .827, y: .84},
+    3: {x: .7705, y: .84},
+    4: {x: .714, y: .84},
+    5: {x: .6575, y: .84},
+    6: {x: .601, y: .84},
+
+    7: {x: .449, y: .84},
+    8: {x: .3925, y: .84},
+    9: {x: .336, y: .84},
+    10: {x: .2795, y: .84},
+    11: {x: .223, y: .84},
+    12: {x: .1665, y: .84},
+
+    13: {x: .1665, y: .17},
+    14: {x: .223, y: .17},
+    15: {x: .2795, y: .17},
+    16: {x: .336, y: .17},
+    17: {x: .3925, y: .17},
+    18: {x: .449, y: .17},
+
+    19: {x: .601, y: .17},
+    20: {x: .6575, y: .17},
+    21: {x: .714, y: .17},
+    22: {x: .7705, y: .17},
+    23: {x: .827, y: .17},
+    24: {x: .8835, y: .17}
+  };
+
+  var pieceSeperationY = .06,
     scoredPieceSeperationY = .017,
     maxMoveLocationsForOneToken = 4;
 
@@ -134,12 +137,10 @@ define(['RenderHelper'], function (RenderHelper) {
       images.board.background = loaderQueue.getItem('board_background').src;
       images.board.overlay = loaderQueue.getItem('board_overlay').src;
 
-      images.die.die1 = loaderQueue.getItem('die1').src;
-      images.die.die2 = loaderQueue.getItem('die2').src;
-      images.die.die3 = loaderQueue.getItem('die3').src;
-      images.die.die4 = loaderQueue.getItem('die4').src;
-      images.die.die5 = loaderQueue.getItem('die5').src;
-      images.die.die6 = loaderQueue.getItem('die6').src;
+      _(6).times(function (i) {
+        var key = 'die' + (i+1);
+        images.die[key] = loaderQueue.getItem(key).src;
+      });
 
       images.pieces.black_piece = loaderQueue.getItem('black_piece').src;
       images.pieces.red_piece = loaderQueue.getItem('red_piece').src;
@@ -234,6 +235,11 @@ define(['RenderHelper'], function (RenderHelper) {
 
       buttonBitmaps.playerIcon = RenderHelper.createScaledBitmapAndAddChild(images.ui.blackIcon, nonGameplayUiPositions.playerIcon, that);
       buttonBitmaps.opponentIcon = RenderHelper.createScaledBitmapAndAddChild(images.ui.redIcon, nonGameplayUiPositions.opponentIcon, that);
+
+      buttonBitmaps.playerTurnIndicator = RenderHelper.drawRect(nonGameplayUiPositions.playerTurnIndicator, '#ffffff', that);
+      buttonBitmaps.opponentTurnIndicator = RenderHelper.drawRect(nonGameplayUiPositions.opponentTurnIndicator, '#ffffff', that);
+      buttonBitmaps.playerTurnIndicator.visible = false;
+      buttonBitmaps.opponentTurnIndicator.visible = false;
 
       /////////
       that.on('click', function (evt) {
@@ -466,6 +472,14 @@ define(['RenderHelper'], function (RenderHelper) {
       $('.whoturn-popup').fadeIn(1000, function () {
         $('.whoturn-popup').fadeOut(3000);
       });
+
+      if (playerRel === 'p1') {
+        buttonBitmaps.playerTurnIndicator.visible = true;
+        buttonBitmaps.opponentTurnIndicator.visible = false;
+      } else if (playerRel === 'p2') {
+        buttonBitmaps.playerTurnIndicator.visible = false;
+        buttonBitmaps.opponentTurnIndicator.visible = true;
+      }
     };
 
     ///////// NEXT-ROLL BUTTON /////////

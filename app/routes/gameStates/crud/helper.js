@@ -1,8 +1,3 @@
-
-var _ = require('lodash'),
-  Q = require('q'),
-  winston = require('winston');
-
 var GameState = require('mule-models').GameState.Model;
 
 exports.indexQ = function () {

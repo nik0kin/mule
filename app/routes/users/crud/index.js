@@ -2,12 +2,8 @@
  * Controllers->Users-> index.js
  */
 
-var _ = require('lodash'),
-  mongoose = global.getMongoose(),
-  Q = require('q'),
-  winston = require('winston');
-
 var jsonUtils = require('mule-utils/jsonUtils'),
+  logging = require('mule-utils').logging,
   responseUtils = require('mule-utils/responseUtils'),
   User = require('mule-models').User,
   helper = require('./helper');
@@ -30,7 +26,7 @@ exports.create = function (req, res) {
   responseJSON.userId = "";
 
   jsonUtils.validateJSONBody(req.body, userParamSpec, function (validatedParams) {
-    winston.log('info', "User attempting to register: params: ", validatedParams );
+    logging.log('User attempting to register: params: ', null, validatedParams);
 
     helper.createQ(validatedParams)
       .done(function (user) {
@@ -42,10 +38,10 @@ exports.create = function (req, res) {
 
         responseJSON.userId = user._id;
         responseJSON.username = user.username;
-        winston.info('\'' + user.username +'\' created and logged in');
+        logging.log('\'' + user.username +'\' created and logged in');
         return res.status(200).send(responseJSON);
       }, function (err) {
-        winston.info('register failed');
+        logging.log('register failed');
         return responseUtils.sendInternalServerError(res, err);
       });
   }, function (missingKey) {

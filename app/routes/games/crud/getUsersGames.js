@@ -4,9 +4,7 @@
  * - filters by given userId
  */
 
-var _ = require('lodash'),
-  Q = require('q'),
-  winston = require('winston');
+var _ = require('lodash');
 
 var utils = require('mule-utils/jsonUtils'),
   GameCrud = require('./helper'),

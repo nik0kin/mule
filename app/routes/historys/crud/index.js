@@ -1,15 +1,14 @@
-
-var _ = require('lodash'),
-  winston = require('winston');
+var _ = require('lodash');
 
 var GameBoard = require('mule-models').GameBoard.Model,
+  logging = require('mule-utils').logging,
   responseUtils = require('mule-utils/responseUtils'),
   historyHelper = require('./helper'),
   gameHelper = require('../../games/crud/helper');
 
 
 exports.index = function (req, res) {
-  winston.info('GET /historys');
+  logging.vvog('GET /historys');
 
   historyHelper.indexQ()
     .then(function (historys) {
@@ -21,7 +20,7 @@ exports.index = function (req, res) {
 
 
 exports.read = function (req, res) {
-  winston.info('GET /historys/:id', req.params.id);
+  logging.vvog('GET /historys/:id', req.params.id);
 
   historyHelper.readQ(req.params.id)
     .then(function (history){
@@ -65,13 +64,13 @@ var readGamesHistoryHelper = function (req, res, helperFunction) {
 };
 
 exports.readGamesHistory = function (req, res) {
-  winston.info('GET /games/:id/history', req.params.id);
+  logging.vvog('GET /games/:id/history', req.params.id);
 
   readGamesHistoryHelper(req, res, historyHelper.readQ);
 };
 
 exports.readGamesFullHistory = function (req, res) {
-  winston.info('GET /games/:id/history/all', req.params.id);
+  logging.vvog('GET /games/:id/history/all', req.params.id);
 
   readGamesHistoryHelper(req, res, historyHelper.readFullQ);
 };

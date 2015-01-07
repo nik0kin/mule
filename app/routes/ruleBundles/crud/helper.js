@@ -1,13 +1,9 @@
 /**
  * Controllers->RuleBundle->CRUD-> helper.js
- *
  */
 
-var _ = require('lodash'),
-  Q = require('q'),
-  winston = require('winston');
-
 var utils = require('mule-utils/jsonUtils'),
+  logging = require('mule-utils').logging,
   RuleBundle = require('mule-models').RuleBundle.Model;
 
 exports.indexQ = function () {
@@ -15,7 +11,8 @@ exports.indexQ = function () {
 };
 
 exports.createQ = function (params) {
-  winston.info("User attempting to create new RuleBundle: params: ", params );
+  // TODO wtf is this shit, users arent allowed to create RBs
+  logging.vog("User attempting to create new RuleBundle: params: ", null, params);
 
   var newRoleBundle = new RuleBundle(params);
   return newRoleBundle.saveQ();
