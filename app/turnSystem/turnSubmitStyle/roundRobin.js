@@ -27,8 +27,8 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
             return exports.progressTurnQ(gso, player);
           })
           .then(function (progressTurnMetaData) {
-            //return gso.history.addMetaToLastAddedTurnAndSaveQ(progressTurnMetaData);
-            return gso.history;
+            return gso.history.addMetaToLastAddedTurnAndSaveQ(progressTurnMetaData);
+            // return gso.history;
           });
       } else {
         console.log('Not your turn!');
