@@ -2,6 +2,7 @@ var Q = require('q'),
   _ = require('lodash');
 
 var brain = require('../turnSystem/brain'),
+  logging = require('mule-utils').logging,
   SpaceState = require('mule-models').SpaceState.Model,
   PieceState = require('mule-models').PieceState.Model;
 
@@ -264,7 +265,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
       statePromises = [];
 
     if (newPieceStates.length > 0) {
-      console.log('persistQ: newPieceStates: ' + newPieceStates.length);
+      logging.log('persistQ: newPieceStates: ' + newPieceStates.length, game._id);
       _.each(newPieceStates, function (newPiece) {
         var promise = newPiece.saveQ()
           .then(function (savedPieceState) {
@@ -297,7 +298,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
 
           return foundPieceState.saveQ()
             .then(function (updatedPieceState) {
-              //console.log('updatedPieceState: ' + updatedPieceState._id)
+              logging.vvog('updatedPieceState: ' + updatedPieceState._id, game._id);
               dbObjectsChanged++;
             });
         });
@@ -369,7 +370,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
         return Q.all(savePromises);
       })
       .then(function () {
-        console.log('Persist Successful (' + dbObjectsChanged + ')');
+        logging.log('Persist Successful (' + dbObjectsChanged + ')', game._id);
         resetM();
       });
   };
@@ -378,9 +379,9 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
 
   that.log = function (string) {
     if (debugPrefix) {
-      console.log(debugPrefix + ': ' + string);
+      logging.MLog(debugPrefix + ': ' + string, game._id);
     } else {
-      console.log(string);
+      logging.MLog(string, game._id);
     }
   };
 

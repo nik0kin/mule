@@ -2,6 +2,7 @@ var _ = require('lodash'),
   Q = require('q');
 
 var Game = require('mule-models').Game.Model,
+  Logger = require('mule-utils').logging,
   turnBrain = require('../brain');
 
 var MS_PER_SEC = 1000;
@@ -22,7 +23,7 @@ exports.initTurnTimerChecks = function (minimumTimerCheck) {
 exports.checkForExpiredTurns = function () {
   Game.findQ({nextTurnTime: {$lte: new Date()}})
     .then(function (result) {
-      console.log('checking for expired games');
+      Logger.log('Checking for expired games');
 
       var promiseArray = [];
       _.each(result, function (game) {
@@ -30,7 +31,7 @@ exports.checkForExpiredTurns = function () {
           promiseArray.push(turnBrain.forceTurnProgress(game));
         }
       });
-      console.log('amt: ' + promiseArray.length);
+      Logger.log('Expired game count: ' + promiseArray.length);
       return Q.all(promiseArray);
     })
     .done(function () {

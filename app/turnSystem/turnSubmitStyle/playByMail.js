@@ -4,13 +4,13 @@ var _ = require('lodash'),
 var GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
+  Logger = require('mule-utils').logging,
   bundleHooks = require('../../bundleHooks'),
   actionsHelper = require('./../actionsHelper');
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
-  console.log('Submitting turn (playByMail) for ' + player);
-  console.log(turn);
+  Logger.log('Submitting turn (playByMail) for ' + player, game._id, turn);
 
   var _historyObject, turnNumber;
   return GameBoard.findByIdQ(gameBoardId)
@@ -23,7 +23,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
       return historyObject.addPlayByMailPlayerTurnAndSaveQ(player, turn);
     })
     .then(function (historyObject) {
-      console.log('successfully submitted turn (playByMail)');
+      Logger.log('successfully submitted turn (playByMail)', game._id);
       _historyObject = historyObject;
 
       // check if all turns are submitted
@@ -31,11 +31,11 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
     })
     .then(function (canAdvance) {
       if (canAdvance) {
-        console.log('advancing round');
+        Logger.log('advancing round', game._id);
         // progress turn if they are
         return exports.progressRoundQ(game, player, _historyObject, ruleBundle);
       } else {
-        console.log('all turns not in: not progressing');
+        Logger.log('all turns not in: not progressing', game._id);
       }
     })
     .then(function () {
@@ -43,8 +43,8 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
       return Q(turnNumber);
     })
     .fail(function (err) {
-      console.log('submit turn fail: ');
-      console.log(err);
+      Logger.log('playByMail submit turn fail: ', game._id, err);
+      throw err;
     });
 };
 
@@ -88,7 +88,7 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
       }
     })
     .then(function (history) {
-      console.log('Round successful: ' + history.currentRound);
+      Logger.log('Round successful: ' + history.currentRound, game._id);
       return history.incrementRoundQ();
     })
     .then(function () {

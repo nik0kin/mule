@@ -11,6 +11,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
   PieceState = require('mule-models').PieceState.Model,
   SpaceState = require('mule-models').SpaceState.Model,
+  Logger = require('mule-utils').logging,
   bundleHooks = require('../bundleHooks');
 
 exports.startGameQ = function (game) {
@@ -139,7 +140,7 @@ exports.startGameQ = function (game) {
       return _gameBoard.saveQ();
     })
     .then(function (savedGameBoardState) {
-      console.log('calling gameStart ' + _gameBoard.ruleBundle.name);
+      Logger.log('calling gameStart ' + _gameBoard.ruleBundle.name, game._id);
       return bundleHooks.gameStartHookQ(game._id, _gameBoard.ruleBundle.name);
     })
     .then(function () {
@@ -149,8 +150,7 @@ exports.startGameQ = function (game) {
       return savedGame;
     })
     .fail(function (err) {
-      console.log('startGameQ failed: ');
-      console.log(err);
+      Logger.err('startGameQ failed: ', game._id, err);
       throw err;
     });
 };

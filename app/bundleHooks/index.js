@@ -1,6 +1,7 @@
 var Q = require('q');
 
 var MuleRules = require('mule-rules'),
+  Logger = require('mule-utils').logging,
   GameBoard = require('mule-models').GameBoard.Model,
   brain = require('../turnSystem/brain'),
   createMQ = require('./M'),
@@ -9,14 +10,14 @@ var MuleRules = require('mule-rules'),
 exports.createMQ = createMQ;
 
 // returns a boardDef
-exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, ruleBundleRules) {
+exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, ruleBundleRules, gameId) {
   var generateFunctionQ = MuleRules.getBundleCode(ruleBundleName).boardGenerator;
 
   if (!generateFunctionQ || typeof generateFunctionQ !== 'function') {
     throw 'missing board generator for ' + ruleBundleName;
   }
 
-  console.log('generating for: ' + ruleBundleName);
+  Logger.log('Generating Board for: ' + ruleBundleName);
   
   return generateFunctionQ(customBoardSettings, ruleBundleRules);
 };
@@ -40,7 +41,7 @@ exports.winConditionHookQ = function (gso) {
     bundleWinConditionQ;
 
   if (bundleCode && typeof (bundleWinConditionQ = bundleCode.winCondition) === 'function') {
-    console.log('calling bundleProgressTurnQ');
+    Logger.log('calling bundleProgressTurnQ', gso.game._id);
     return createMQ(gso.game._id)
       .then (function (M) {
         return bundleWinConditionQ(M);
@@ -58,17 +59,17 @@ exports.validateTurnHookQ = function (gameId, ruleBundle, playerRel, actions) {
   if (bundleCode && (validateTurnQ = bundleCode.validateTurn)) {
     return createMQ(gameId, 'validateTurnHookQ')
       .then(function (M) {
-        console.log('[START] validateTurnHookQ');
+        Logger.log('[START] validateTurnHookQ', gameId);
         return validateTurnQ(M, playerRel, actions);
       })
       .then(function (_actions) {
-        console.log('[END] validateTurnHookQ');
+        Logger.log('[END] validateTurnHookQ', gameId);
         _actions = _actions || actions;
         return Q(_actions);
       })
       .fail(function (err) {
         var errorMsg = '[ERROR] validateTurnHookQ: ' + err;
-        console.log(errorMsg);
+        Logger.err(errorMsg, gameId);
         throw errorMsg;
       });
   } else {
@@ -83,7 +84,7 @@ exports.progressRoundHookQ = function (ruleBundle, game) {
   if (bundleCode && typeof (bundleProgressRoundQ = bundleCode.progressRound) === 'function') {
     return createMQ(game._id)
       .then(function (M) {
-        console.log('calling bundleProgressQ');
+        Logger.log('calling bundleProgressQ', game._id);
         return bundleProgressRoundQ(M);
       });
   } else {
@@ -96,7 +97,7 @@ exports.progressTurnHookQ = function (gso) {
   var bundleCode = MuleRules.getBundleCode(gso.ruleBundle.name),
     bundleProgressTurnQ;
   if (bundleCode && typeof (bundleProgressTurnQ = bundleCode.progressTurn) === 'function') {
-    console.log('calling bundleProgressTurnQ');
+    Logger.log('calling bundleProgressTurnQ');
     return createMQ(gso.game._id)
       .then(function (M) {
         return bundleProgressTurnQ(M);

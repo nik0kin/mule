@@ -2,6 +2,7 @@ var _ = require('lodash'),
   Q = require('q');
 
 var turnBrain = require('../../turnSystem/brain'),
+  Logger = require('mule-utils').logging,
   actionsHelper = require('../../turnSystem/actionsHelper'),
   RuleBundle = require('mule-models').RuleBundle.Model,
   Game = require('mule-models').Game.Model;
@@ -30,7 +31,7 @@ exports.playTurnQ = function (gameId, playerRel, userId, actions) {
     })
     .then(function () {
       playerRelId = playerRel || _game.getPlayerPosition(userId);
-      console.log('user: ' + playerRel + ' -> ' + playerRelId);
+      Logger.log('playTurn: user: ' + playerRel + ' -> ' + playerRelId, gameId);
 
       if (playerRelId === -1) {
         throw {status: 403, err: 'INVALID PLAYER'};
@@ -43,11 +44,11 @@ exports.playTurnQ = function (gameId, playerRel, userId, actions) {
       return actionsHelper.validateActionsQ(_game._id, _ruleBundle, playerRelId, actions);
     })
     .then(function (validatedActions) {
-      console.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')');
+      Logger.log('submitting turn (' + _ruleBundle.turnSubmitStyle + ')', gameId);
       return turnBrain.submitPlayerTurnQ(_game, playerRelId, _game.gameBoard, validatedActions, _ruleBundle);
     })
     .then(function (turnNumber) {
-      console.log('p[' + playerRelId + '] justed submitted turn: ' + turnNumber);
+      Logger.log('p[' + playerRelId + '] justed submitted turn: ' + turnNumber, gameId);
       return {msg: "Success", turnNumber: turnNumber};
     });
 };

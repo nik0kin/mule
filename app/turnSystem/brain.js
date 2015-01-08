@@ -3,6 +3,7 @@ var _ = require('lodash'),
 
 var roundRobinTurnSystem = require('./turnSubmitStyle/roundRobin'),
   playByMailTurnSystem = require('./turnSubmitStyle/playByMail'),
+  Logger = require('mule-utils').logging,
   Game = require('mule-models').Game.Model,
   GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
@@ -25,40 +26,40 @@ exports.submitPlayerTurnQ = function (game, playerRelId, gameBoardId, actions, r
 exports.forceTurnProgress = function (game) {
   exports.loadGameStateObjectQ(game)
     .done(function (gameStateObject) {
-      console.log('try forcing for ' + gameStateObject.game._id);
+      var history = gameStateObject.history;
+      Logger.vog('Trying to forceTurnProgress', gameStateObject.game._id);
       var startTime = Date.now();
       var playerRel;
       if (gameStateObject.ruleBundle.turnSubmitStyle === 'roundRobin') {
         playerRel = gameStateObject.game.getRoundRobinNextPlayerRel(); // player that needs to play
-        console.log('forcing ' + playerRel + '\'s turn progress (round ' + gameStateObject.history.currentRound + ')');
-        gameStateObject.history.addRoundRobinPlayerTurnAndSaveQ(playerRel, undefined)
+        var logStr = 'forcing {0}\'s turn progress (round {1})'.format(playerRel, history.currentRound);
+        Logger.vog(logStr, game._id);
+        history.addRoundRobinPlayerTurnAndSaveQ(playerRel, undefined)
           .then(function () {
             return roundRobinTurnSystem.progressTurnQ(gameStateObject, playerRel);
           })
           .done(function () {
-            console.log('force complete ' + (Date.now() - startTime) + 'ms');
+            Logger.log('force complete ' + (Date.now() - startTime) + 'ms', game._id);
           });
       } else if (gameStateObject.ruleBundle.turnSubmitStyle === 'playByMail') {
-        gameStateObject.history.getPlayersThatHaveNotPlayedTheCurrentTurnQ()
+        history.getPlayersThatHaveNotPlayedTheCurrentTurnQ()
           .then(function (notPlayedPlayerRels) {
             if (notPlayedPlayerRels.length === 0) { return; }
             playerRel = undefined; // only affects a log message, maybe shouldnt exist in progressRoundQ ?
-            console.log('forcing round progress on ' + JSON.stringify(notPlayedPlayerRels) + ' (round ' + gameStateObject.history.currentRound + ')');
-            return gameStateObject.history.addPlayByMailPlayerTurnAndSaveQ(notPlayedPlayerRels, undefined);
+            Logger.log('forcing round progress on ' + JSON.stringify(notPlayedPlayerRels) + ' (round ' + history.currentRound + ')', game._id);
+            return history.addPlayByMailPlayerTurnAndSaveQ(notPlayedPlayerRels, undefined);
           })
           .then(function () {
-            return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, gameStateObject.history, gameStateObject.ruleBundle);
+            return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, history, gameStateObject.ruleBundle);
           })
           .done(function () {
-            console.log('force complete ' + (Date.now() - startTime) + 'ms');
+            Logger.log('force complete ' + (Date.now() - startTime) + 'ms', game._id);
           }, function (err) {
-            console.log('force failed:');
-            console.log(err);
+            Logger.err('force failed:', game._id, err);
           });
       }
     }, function (err) {
-      console.log('ERROR IN FORCE:');
-      console.log(err);
+      Logger.err('ERROR IN FORCE:', game._id, err);
     });
 };
 
@@ -69,6 +70,8 @@ exports.loadGameStateObjectQ = function (game) {
   // _spaceStates,
     _history,
     _ruleBundle;
+
+  var startTime = Date.now();
 
   return GameBoard.findByIdQ(game.gameBoard)
     .then(function (foundGameBoard) {
@@ -94,7 +97,7 @@ exports.loadGameStateObjectQ = function (game) {
         gameState: maybeGameState,
         history: _history
       };
-      console.log('loaded gso');
+      Logger.log('Loaded GSO, ' + (Date.now() - startTime) + 'ms', game._id);
       return Q(gso);
     });
 };

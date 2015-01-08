@@ -1,12 +1,12 @@
 var _ = require('lodash'),
   Q = require('q');
 
-var helper = require('./helper');
+var helper = require('./helper'),
+  Logger = require('mule-utils').logging;
 
 var playTurnFail = function (res) {
   return function (err) {
-    console.log('playTurn fail: ');
-    console.log(err);
+    Logger.log('playTurn fail: ', null, err);
     return res.status(err.status || 400).send({err: JSON.stringify(err)});
   };
 };

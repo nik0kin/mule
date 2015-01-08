@@ -48,7 +48,6 @@ exports.readQ = function (gameBoardId){
             return gameBoard;
           });
       } else if (gameBoard.boardType == 'built') {
-        console.log('custom map!');
         return gameBoard;
       } else {
         throw 'wtf boardType:' + gameBoard.boardType;

@@ -38,7 +38,8 @@ var env = process.env.NODE_ENV || 'development',
 mkdirp('logs', function (err) {
   if (err) console.error(err);
 
-  logging.init(4, 'logs/mule' + dateUtils.getNiceDate()  + '.log');
+  logging.init(4, __dirname + '/logs/mule' + dateUtils.getNiceDate() + '.log');
+  MuleModels.initLogger(logging);
 });
 
 //Bootstrap connection
@@ -68,7 +69,7 @@ turnTimerSystem.initTurnTimerChecks(muleConfig.minimumGameRoundTimerCheck);
 //Start the app by listening on <port>
 var port = process.env.PORT || config.port;
 app.listen(port);
-console.log('The Mule has started his journey ('+port+')');
+logging.log('The Mule has started his journey ('+port+')');
 
 // dumb hack to avoid mongodb session-collection race condition for first rest call
 /*setTimeout(function () {

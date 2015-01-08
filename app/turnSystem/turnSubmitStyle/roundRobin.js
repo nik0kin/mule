@@ -3,6 +3,7 @@ var _ = require('lodash'),
 
 var GameBoard = require('mule-models').GameBoard.Model,
   History = require('mule-models').History.Model,
+  Logger = require('mule-utils').logging,
   gameHelper = require('./../gameHelper'),
   actionsHelper = require('./../actionsHelper'),
   bundleHooks = require('../../bundleHooks'),
@@ -10,8 +11,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
-  console.log('Submitting turn (roundRobin) for ' + player);
-  console.log(turn);
+  Logger.log('Submitting turn (roundRobin) for ' + player, game._id, turn);
 
   var gso, turnNumber;
   return brain.loadGameStateObjectQ(game)
@@ -20,7 +20,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
 
       turnNumber = gso.history.currentTurn;
       if (gso.history.isPlayersTurn(player)) {
-        console.log('advancing turn');
+        Logger.log('advancing turn', game._id);
         // progress turn if they are the next player to play
         return gso.history.addRoundRobinPlayerTurnAndSaveQ(player, turn)
           .then(function () {
@@ -31,37 +31,36 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
             // return gso.history;
           });
       } else {
-        console.log('Not your turn!');
+        Logger.err('Not your turn!', game._id);
         throw 'Not your turn!';
       }
     })
     .then(function (historyObject) {
-      console.log('successfully submitted turn (roundRobin)');
+      Logger.log('successfully submitted turn (roundRobin)', game._id);
       gso.history = historyObject;
       // check if all turns are submitted
       return gso.history.getCanAdvanceRoundRobinTurnQ();
     })
     .then(function (canAdvance) {
       if (canAdvance) {
-        console.log('advancing round');
+        Logger.log('advancing round', game._id);
         // progress turn if they are
         return exports.progressRoundQ(gso, player);
       } else {
-        console.log('all turns not in: not progressing round count');
+        Logger.log('all turns not in: not progressing round count', game._id);
       }
     })
     .then(function () {
       return Q(turnNumber);
     })
     .fail(function (err) {
-      console.log('roundrobin submit turn fail: ');
-      console.log(err);
+      Logger.log('roundrobin submit turn fail: ', game._id, err);
       throw err;
     });
 };
 
 exports.progressTurnQ = function (gso, player) {
-  console.log('roundrobin progressTurn:');
+  Logger.log('roundrobin progressTurn:', gso.game._id);
   var _savedHistoryObject;
 
   // do all actions for that player (in history)
@@ -78,14 +77,14 @@ exports.progressTurnQ = function (gso, player) {
         });
     })
     .then(function () {
-      console.log('Turn successful for ' + player + ': ' + gso.history.currentRound);
+      Logger.log('Turn successful for ' + player + ': ' + gso.history.currentRound, gso.game._id);
       gso.history.progressRoundRobinPlayerTurnTicker();
       return gso.history.saveQ();
     })
     .then(function (savedHistoryObject) {
       _savedHistoryObject = savedHistoryObject;
 
-      console.log('bundleProgressTurnQ: ' + gso.ruleBundle.name);
+      Logger.log('bundleProgressTurnQ: ' + gso.ruleBundle.name, gso.game._id);
       var metaData;
       // TODO this really needs to go before "Turn successful"
       return bundleHooks.progressTurnHookQ(gso)
@@ -115,15 +114,15 @@ exports.progressTurnQ = function (gso, player) {
       return Q(_savedHistoryObject);
     })
     .fail(function (err) {
-      console.log('err in roundRobin.progressTurn');
-      console.log(err);
+      Logger.err('err in roundRobin.progressTurn', gso.game._id, err);
+      throw 'err in roundRobin.progressTurn ' + JSON.stringify(err);
     });
 };
 
 exports.progressRoundQ = function (gso, player) {
   return Q()
     .then(function () {
-      console.log('Round successful: ' + gso.history.currentRound);
+      Logger.log('Round successful: ' + gso.history.currentRound, gso.game._id);
       return gso.history.incrementRoundQ();
     })
     .then(function () {
