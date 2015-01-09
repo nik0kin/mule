@@ -6,7 +6,7 @@ var helper = require('./helper'),
 
 var playTurnFail = function (res) {
   return function (err) {
-    Logger.log('playTurn fail: ', null, err);
+    Logger.err('playTurn fail: ', null, err);
     return res.status(err.status || 400).send({err: JSON.stringify(err)});
   };
 };
