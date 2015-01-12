@@ -40,6 +40,8 @@ exports.startGameQ = function (game) {
 
       var createPromises = [];
 
+      Logger.log('Creating new ' + currentRuleBundle.name + ' game', game._id);
+
       // GAME STATE
       var newGameState = new GameState({});
 
@@ -140,7 +142,6 @@ exports.startGameQ = function (game) {
       return _gameBoard.saveQ();
     })
     .then(function (savedGameBoardState) {
-      Logger.log('calling gameStart ' + _gameBoard.ruleBundle.name, game._id);
       return bundleHooks.gameStartHookQ(game._id, _gameBoard.ruleBundle.name);
     })
     .then(function () {

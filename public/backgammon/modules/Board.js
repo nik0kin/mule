@@ -247,6 +247,11 @@ define(['RenderHelper'], function (RenderHelper) {
       });
     }
 
+    var isTopSpace = function (spaceId) {
+      return Number(spaceId) > 12 || spaceId === 'blackScoreSpace' || spaceId === 'blackJail';
+    };
+
+
     // tokensOnSpot is how many tokens were on the space before adding a new one.
     var getTokenPixelPosition = function (spaceId, tokensOnSpot) {
       if (spaceId === 'blackScoreSpace' || spaceId === 'redScoreSpace') {
@@ -260,16 +265,22 @@ define(['RenderHelper'], function (RenderHelper) {
         upOrDownModifier = (spaceId === 'redJail' || parseInt(spaceId) > 12) ? 1 : -1,
         yOffsetDueToTokensAmount;
 
-      // Piece Stacking for over 6 pieces per space
-      // 1 - 6 follow normal pattern
-      // 7 - 11   add half pieceSeperationY
-      // 12 - 15  add whole pieceSeperationY
-      if (tokensOnSpot < 6) {
+      // Piece Stacking for over 5 pieces per space
+      // 1 - 5 follow normal pattern
+      // 6 - 9    add .5*pieceSeperationY
+      // 10 - 12  add pieceSeperationY
+      // 13 - 14  add 1.5*pieceSeperationY
+      // 15       add 2*pieceSeperationY
+      if (tokensOnSpot < 5) {
         yOffsetDueToTokensAmount = tokensOnSpot * pieceSeperationY;
-      } else if (tokensOnSpot < 11) {
-        yOffsetDueToTokensAmount = (tokensOnSpot - 6) * pieceSeperationY + pieceSeperationY/2;
+      } else if (tokensOnSpot < 9) {
+        yOffsetDueToTokensAmount = (tokensOnSpot - 5) * pieceSeperationY + pieceSeperationY*.5;
+      } else if (tokensOnSpot < 12) {
+        yOffsetDueToTokensAmount = (tokensOnSpot - 9) * pieceSeperationY + pieceSeperationY;
+      } else if (tokensOnSpot < 14) {
+        yOffsetDueToTokensAmount = (tokensOnSpot - 12) * pieceSeperationY + pieceSeperationY*1.5;
       } else if (tokensOnSpot < 15) {
-        yOffsetDueToTokensAmount = (tokensOnSpot - 12) * pieceSeperationY + pieceSeperationY;
+        yOffsetDueToTokensAmount = (tokensOnSpot - 14) * pieceSeperationY + pieceSeperationY*2;
       }
 
       return RenderHelper.getScaledPos(normalizedStartLocation.x, normalizedStartLocation.y + yOffsetDueToTokensAmount * upOrDownModifier);
@@ -286,8 +297,42 @@ define(['RenderHelper'], function (RenderHelper) {
         }
     };
 
+    var reorderBotTokens = function (tokenBitmaps) {
+      // UGHly function, we need to bring the stacks to the front
+      //   starting with the top most token layer (5/4/3/2/1)
+      //   most stacks will be the bottom layer (5)
+      //   and for each layer, we need to bring them to the front
+      //   in the reverse order they are in the array
+      // PRETTIER z-indexing, (but at what cost?)
+      var i,
+        amt = tokenBitmaps.length,
+        maxZ = that.getNumChildren() - 1;
+      for (i=4;i>=0;i--) {
+        if (!tokenBitmaps[i]) continue;
+        that.setChildIndex(tokenBitmaps[i], maxZ);
+      }
+      for (i=8;i>=5;i--) {
+        if (!tokenBitmaps[i]) continue;
+        that.setChildIndex(tokenBitmaps[i], maxZ);
+      }
+      for (i=11;i>=9;i--) {
+        if (!tokenBitmaps[i]) continue;
+        that.setChildIndex(tokenBitmaps[i], maxZ);
+      }
+      for (i=13;i>=12;i--) {
+        if (!tokenBitmaps[i]) continue;
+        that.setChildIndex(tokenBitmaps[i], maxZ);
+      }
+      for (i=14;i>=14;i--) { //lol
+        if (!tokenBitmaps[i]) continue;
+        that.setChildIndex(tokenBitmaps[i], maxZ);
+      }
+    };
+
     that.drawTokens = function (color, loc, amt) {
-      var i;
+      var i,
+        tokenBitmaps = getTokenBitmapArray(loc);
+      //console.log('drawing initial tokens at ' + loc);
 
       for (i=0; i<amt; i++) {
         var src = images.pieces[color === 'red' ? 'red_piece' : 'black_piece'];
@@ -306,8 +351,11 @@ define(['RenderHelper'], function (RenderHelper) {
         that.addChild(newBitmap);
 
         // adjust token bitmap arrays
-        var tokenBitmap = getTokenBitmapArray(loc);
-        tokenBitmap.push(newBitmap);
+        tokenBitmaps.push(newBitmap);
+      }
+
+      if (!isTopSpace(loc)) {
+        reorderBotTokens(tokenBitmaps);
       }
     };
 
@@ -321,7 +369,18 @@ define(['RenderHelper'], function (RenderHelper) {
           aToken.x = pos.x;
           aToken.y = pos.y;
           nextSpaceTokenBitmapArray.push(aToken);
-          that.setChildIndex(aToken, that.getNumChildren() - 1);  // ensure tokens don't display under other tokens
+
+          // set z-ordering
+          if (isTopSpace(destSpaceId)) { // top
+            // only need to ensure the last added is above the other
+            //  tokens on the space (and everything else)
+            that.setChildIndex(aToken, that.getNumChildren() - 1);
+          } else { // bottom
+            // the movedToken needs to be below the other tokens on the same space and above
+            // stack level (5/4/3/2/1) but above the below stack levels
+            //that.swapChildrenAt
+            reorderBotTokens(nextSpaceTokenBitmapArray);
+          }
 
           // change sprite piece scored
           if (destSpaceId === 'redScoreSpace') {
