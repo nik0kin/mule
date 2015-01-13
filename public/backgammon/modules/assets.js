@@ -53,6 +53,7 @@ define(function(){
         {src: path + 'button-next-active-p2.png', id: 'button-next-black'},
         {src: path + 'button-next-active-p1.png', id: 'button-next-red'},
         {src: path + 'button-roll.png', id: 'button-roll'},
+        {src: path + 'button-undo.png', id: 'button-undo'},
         {src: path + 'button-undo-inactive.png', id: 'button-undo-inactive'},
 
 

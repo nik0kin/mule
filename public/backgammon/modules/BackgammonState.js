@@ -12,6 +12,8 @@ define(function () {
           but the piece.locationId will remain where it originally was. look at changePendingPieceOnBackgammonBoard()
         */
       pendingTurn,
+      pendingMovesStack = [],
+      pendingKnocksMap = {}, // pendingTurnIndex -> knockInfo
 
       pendingScore,
       myScore, //gets updated every Turn
@@ -27,6 +29,8 @@ define(function () {
       pendingTurn = {
         moveTokens: []
       };
+      pendingMovesStack = [];
+      pendingKnocksMap = {};
 
       // setup backgammonBoard
       backgammonBoard = {
@@ -136,13 +140,16 @@ define(function () {
     };
 
     that.getPendingTurn = function () { return pendingTurn; }
+    that.getPendingMovesAmount = function () { return pendingMovesStack.length; };
 
     that.addPendingMoveAction = function (subMoveAction, knockedEnemyToken) {
-
-      var existingAction = _.find(pendingTurn.moveTokens, function (moveAction) {
+      var existingActionI;
+      var existingAction = _.find(pendingTurn.moveTokens, function (moveAction, key) {
+        existingActionI = key;
         return moveAction.pieceId === subMoveAction.pieceId;
       }),
-        currentPieceSpaceId;
+        currentPieceSpaceId,
+        turnIndex = existingActionI;
       if (existingAction) {
         currentPieceSpaceId = existingAction.spaceId[existingAction.spaceId.length - 1];
         existingAction.rollUsed.push(subMoveAction.rollUsed);
@@ -155,18 +162,50 @@ define(function () {
           rollUsed: [subMoveAction.rollUsed],
           spaceId: [subMoveAction.spaceId]
         });
+        turnIndex = pendingTurn.moveTokens.length - 1;
       }
+
+      pendingMovesStack.push(turnIndex);
 
       changePendingPieceOnBackgammonBoard(currentPieceSpaceId, subMoveAction.spaceId, subMoveAction.pieceId);
 
       if (knockedEnemyToken) {
         var knockedPieceSpaceId = SDK.GameBoards.getPiecesFromId(originalGameState, knockedEnemyToken.pieceId).locationId;
         changePendingPieceOnBackgammonBoard(knockedPieceSpaceId, knockedEnemyToken.jailSpaceId, knockedEnemyToken.pieceId);
+        pendingKnocksMap[pendingMovesStack.length-1] = knockedEnemyToken;
       }
 
       if (subMoveAction.spaceId === myScoreSpaceId) {
         pendingScore++;
       }
+    };
+
+    that.undoPendingMove = function () {
+      var r = {};
+
+      var pendingMoveIndex = pendingMovesStack.pop(),
+        move = pendingTurn.moveTokens[pendingMoveIndex];
+
+      if (move.spaceId.length === 1) {
+        r.pendingTurnSpaceId = move.spaceId[0];
+        r.rollUsed = move.rollUsed[0];
+        r.backToSpaceId = that.getPiecesOriginSpaceId(move.pieceId);
+        pendingTurn.moveTokens.pop();
+      } else {
+        r.pendingTurnSpaceId = move.spaceId.pop();
+        r.rollUsed = move.rollUsed.pop();
+        r.backToSpaceId = move.spaceId[move.spaceId.length - 1]; // would be 2nd to last element, but we just pop()-ed the last one
+      }
+
+      if (pendingKnocksMap[pendingMovesStack.length]) {
+        r.knock = pendingKnocksMap[pendingMovesStack.length];
+        changePendingPieceOnBackgammonBoard(r.knock.jailSpaceId, r.pendingTurnSpaceId, r.knock.pieceId);
+        delete pendingKnocksMap[pendingMovesStack.length];
+      }
+
+      changePendingPieceOnBackgammonBoard(r.pendingTurnSpaceId, r.backToSpaceId, move.pieceId);
+
+      return r;
     };
 
     // used all dice rolls
@@ -188,6 +227,16 @@ define(function () {
       // TODO if cant unjail
 
       return requiredActionsAmount === totalActions;
+    };
+
+    that.getPiecesOriginSpaceId = function (pieceId) {
+      var foundSpaceId;
+      _.each(originalGameState.pieces, function (piece) {
+        if (piece.id === pieceId) {
+          foundSpaceId = piece.locationId;
+        }
+      });
+      return foundSpaceId;
     };
 
     /////////////////////////////////////

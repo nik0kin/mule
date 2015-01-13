@@ -54,6 +54,9 @@ define(['RenderHelper'], function (RenderHelper) {
     };
 
 
+  var topTokenY = .16,
+    botTokenY = .84;
+
   var pieceStartLocations = {
     'redJail': {
       x: botJailClickAreaRect.x + jailOffset.x,
@@ -71,33 +74,33 @@ define(['RenderHelper'], function (RenderHelper) {
       x: .96, y: .39
     },
 
-    1: {x: .8835, y: .84}, // using .6575 as x seperator value
-    2: {x: .827, y: .84},
-    3: {x: .7705, y: .84},
-    4: {x: .714, y: .84},
-    5: {x: .6575, y: .84},
-    6: {x: .601, y: .84},
+    1: {x: .8835, y: botTokenY}, // using .6575 as x seperator value
+    2: {x: .827, y: botTokenY},
+    3: {x: .7705, y: botTokenY},
+    4: {x: .714, y: botTokenY},
+    5: {x: .6575, y: botTokenY},
+    6: {x: .601, y: botTokenY},
 
-    7: {x: .449, y: .84},
-    8: {x: .3925, y: .84},
-    9: {x: .336, y: .84},
-    10: {x: .2795, y: .84},
-    11: {x: .223, y: .84},
-    12: {x: .1665, y: .84},
+    7: {x: .449, y: botTokenY},
+    8: {x: .3925, y: botTokenY},
+    9: {x: .336, y: botTokenY},
+    10: {x: .2795, y: botTokenY},
+    11: {x: .223, y: botTokenY},
+    12: {x: .1665, y: botTokenY},
 
-    13: {x: .1665, y: .17},
-    14: {x: .223, y: .17},
-    15: {x: .2795, y: .17},
-    16: {x: .336, y: .17},
-    17: {x: .3925, y: .17},
-    18: {x: .449, y: .17},
+    13: {x: .1665, y: topTokenY},
+    14: {x: .223, y: topTokenY},
+    15: {x: .2795, y: topTokenY},
+    16: {x: .336, y: topTokenY},
+    17: {x: .3925, y: topTokenY},
+    18: {x: .449, y: topTokenY},
 
-    19: {x: .601, y: .17},
-    20: {x: .6575, y: .17},
-    21: {x: .714, y: .17},
-    22: {x: .7705, y: .17},
-    23: {x: .827, y: .17},
-    24: {x: .8835, y: .17}
+    19: {x: .601, y: topTokenY},
+    20: {x: .6575, y: topTokenY},
+    21: {x: .714, y: topTokenY},
+    22: {x: .7705, y: topTokenY},
+    23: {x: .827, y: topTokenY},
+    24: {x: .8835, y: topTokenY}
   };
 
   var pieceSeperationY = .06,
@@ -153,7 +156,8 @@ define(['RenderHelper'], function (RenderHelper) {
         nextRed: loaderQueue.getItem('button-next-red').src,
         nextDisable: loaderQueue.getItem('button-next-inactive').src,
         roll: loaderQueue.getItem('button-roll').src,
-        undo: loaderQueue.getItem('button-undo-inactive').src
+        undoActive: loaderQueue.getItem('button-undo').src,
+        undoInactive: loaderQueue.getItem('button-undo-inactive').src
       };
 
       images.ui = {
@@ -206,8 +210,11 @@ define(['RenderHelper'], function (RenderHelper) {
         nextButtonClickedCallback();
       });
 
-      buttonBitmaps.undo = RenderHelper.createScaledBitmapAndAddChild(images.buttons.undo, buttonPostions.undo, that);
-
+      buttonBitmaps.undo = RenderHelper.createScaledBitmapAndAddChild(images.buttons.undoInactive, buttonPostions.undo, that);
+      buttonBitmaps.undo.on('click', function () {
+        console.log('undo clicked');
+        undoButtonClickedCallback();
+      });
       // initialize tokenBitmaps
       _(24).times(function (n) {
         tokenBitmaps[n] = [];
@@ -541,7 +548,7 @@ define(['RenderHelper'], function (RenderHelper) {
       }
     };
 
-    ///////// NEXT-ROLL BUTTON /////////
+    ///////// NEXT-ROLL/UNDO BUTTON /////////
 
     that.setDisabledNextButton = function () {
       buttonBitmaps.next.image.src = images.buttons.nextDisable;
@@ -559,9 +566,19 @@ define(['RenderHelper'], function (RenderHelper) {
       buttonBitmaps.next.image.src = images.buttons.roll;
     };
 
-    var nextButtonClickedCallback;
-    that.setNextButtonClickedCallback = function (_nextButtonClickedCallback) {
-      nextButtonClickedCallback = _nextButtonClickedCallback;
+    that.setUndoAvailable = function () {
+      buttonBitmaps.undo.image.src = images.buttons['undoActive'];
+    };
+
+    that.setUndoUnavailable = function () {
+      buttonBitmaps.undo.image.src = images.buttons['undoInactive'];
+    };
+
+    var nextButtonClickedCallback,
+      undoButtonClickedCallback;
+    that.setClickedCallbacks = function (params) {
+      nextButtonClickedCallback = params.next;
+      undoButtonClickedCallback = params.undo
     };
 
     ////////////////////////////////////

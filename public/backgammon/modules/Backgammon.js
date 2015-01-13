@@ -30,7 +30,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
 
       board.showFloatingWhosTurnLabel(whosTurn);
 
-      board.setNextButtonClickedCallback(nextButtonClicked);
+      board.setClickedCallbacks({next: nextButtonClicked, undo: undoButtonClicked});
     };
 
     var isDoubles = function () {
@@ -262,6 +262,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         console.log(currentBgState.getPendingTurn());
         console.log('rollsLeft: ');
         console.log(rollsLeft);
+
+        board.setUndoAvailable();
       } else {
         // if its not a possible move, select that token (if available) or deselect
         console.log('invalid spot');
@@ -337,6 +339,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         submitTurnCallback(that.getPendingTurn(), function () {
           submittable = false;
           board.setDisabledNextButton();
+          board.setUndoUnavailable();
         }, function (err) {
           submittable = true;
           board.setEnabledNextButton();
@@ -345,6 +348,40 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
 
       if (bgState === 'awaitingRoll') {
         clickShaker();
+      }
+    };
+
+    var undoTurn = function () {
+      var pendingTurn = currentBgState.getPendingTurn();
+      var undoInfo = currentBgState.undoPendingMove();
+
+      console.log('undo: ' + undoInfo.pendingTurnSpaceId + ' -> ' + undoInfo.backToSpaceId)
+      board.moveToken(undoInfo.pendingTurnSpaceId, undoInfo.backToSpaceId);
+
+      // readd used roll
+      rollsLeft.push(undoInfo.rollUsed);
+
+      // undo knocked
+      if (undoInfo.knock) {
+        console.log('undoing knock ' + JSON.stringify(undoInfo.knock));
+        board.moveToken(undoInfo.knock.jailSpaceId, undoInfo.pendingTurnSpaceId);
+      }
+
+      if (currentBgState.getPendingMovesAmount() === 0) {
+        board.setUndoUnavailable();
+      }
+
+      // unlite submit button
+      if (submittable) {
+        submittable = false;
+        board.setDisabledNextButton();
+      }
+    };
+
+    var undoButtonClicked = function () {
+      var pendingTurn = currentBgState.getPendingTurn();
+      if (bgState === 'rolled' && !!pendingTurn && pendingTurn.moveTokens.length > 0) {
+        undoTurn();
       }
     };
 
