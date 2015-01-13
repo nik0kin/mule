@@ -51,14 +51,28 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
         rollsLeft.push(lastRoll.die1, lastRoll.die2);
       }
       console.log('setRollsLeft: ' + JSON.stringify(rollsLeft));
-
-      checkIfCantMove();
     };
 
     var removeRolls = function (rollsUsed) {
       _.each(rollsUsed, function (roll) {
         rollsLeft.splice(_.indexOf(rollsLeft, roll), 1);
       });
+    };
+
+    var fadePlayerDie = function (rollUsed) {
+      if (!isDoubles()) {
+        board.fadePlayerDie(lastRoll.die1 === rollUsed ? 1 : 2, false);
+      } else {
+        board.fadePlayerDie(4 - rollsLeft.length, true);
+      }
+    };
+
+    var unfadePlayerDie = function (rollUsed) {
+      if (!isDoubles()) {
+        board.unfadePlayerDie(lastRoll.die1 === rollUsed ? 1 : 2, false);
+      } else {
+        board.unfadePlayerDie(4 - rollsLeft.length, true);
+      }
     };
 
     var getOnePieceIdOnSpace = function (spaceId, playerRel) {
@@ -144,6 +158,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       setPlayerRoll();
       showPlayerRoll();
       board.showFloatingWhosTurnLabel(myRelId);
+      board.fadeOpponentRoll();
     };
 
     var addPendingAction = function (action, knockTempMove) {
@@ -171,6 +186,8 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       bgState = 'rolled';
       board.showShaker(false);
       board.setDisabledNextButton();
+
+      checkIfCantMove();
     };
 
     var unselection = function () {
@@ -254,7 +271,9 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
           pieceId: pieceIdClicked,
           spaceId: clickedSpaceId
         }, knock);
+
         removeRolls(rollsUsed);
+        fadePlayerDie(rollUsed);
 
         checkIfCantMove();
 
@@ -333,7 +352,7 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       }
     }
 
-    var submittable = true;
+    var submittable = false;
     var nextButtonClicked = function () {
       if (bgState === 'rolled' && submittable) {
         submitTurnCallback(that.getPendingTurn(), function () {
@@ -358,12 +377,12 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       console.log('undo: ' + undoInfo.pendingTurnSpaceId + ' -> ' + undoInfo.backToSpaceId)
       board.moveToken(undoInfo.pendingTurnSpaceId, undoInfo.backToSpaceId);
 
-      // readd used roll
+      // re-add used roll
+      unfadePlayerDie(undoInfo.rollUsed);
       rollsLeft.push(undoInfo.rollUsed);
 
       // undo knocked
       if (undoInfo.knock) {
-        console.log('undoing knock ' + JSON.stringify(undoInfo.knock));
         board.moveToken(undoInfo.knock.jailSpaceId, undoInfo.pendingTurnSpaceId);
       }
 
@@ -375,6 +394,10 @@ define(['../../mule-js-sdk/sdk', 'BackgammonLogic', 'BackgammonState'], function
       if (submittable) {
         submittable = false;
         board.setDisabledNextButton();
+      }
+
+      if (unjailBlocked) {
+        unjailBlocked = false;
       }
     };
 

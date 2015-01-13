@@ -36,7 +36,8 @@ define(['RenderHelper'], function (RenderHelper) {
       opponent: { // on the left
         die1: {x: .21, y: .5},
         die2: {x: .27, y: .5}
-      }
+      },
+      fadeXOffset: .025
     },
     diceClickAreaRect = {x: dicePosition['player'].die1.x, y: dicePosition['player'].die1.y, w: .11, h: .08},
     buttonPostions = {
@@ -120,6 +121,10 @@ define(['RenderHelper'], function (RenderHelper) {
         player: {},
         opponent: {}
       },
+      fadeBitmaps = {
+        player: {},
+        opponent: {}
+      },
       tokenBitmaps = {},
       jailBitmaps = {
         'redJail': [],
@@ -144,6 +149,7 @@ define(['RenderHelper'], function (RenderHelper) {
         var key = 'die' + (i+1);
         images.die[key] = loaderQueue.getItem(key).src;
       });
+      images.die.fade = loaderQueue.getItem('dice_fade').src
 
       images.pieces.black_piece = loaderQueue.getItem('black_piece').src;
       images.pieces.red_piece = loaderQueue.getItem('red_piece').src;
@@ -169,14 +175,28 @@ define(['RenderHelper'], function (RenderHelper) {
       RenderHelper.createScaledBitmapAndAddChild(images.board.background, {x:0,y:0}, that);
       RenderHelper.createScaledBitmapAndAddChild(images.board.overlay, {x:0,y:0}, that);
 
+      //dice bitmaps
       var createDiceBitmaps = function (whichPlayer) {
         diceBitmaps[whichPlayer].die1 = RenderHelper.createScaledBitmapAndAddChild(images.die.die1, dicePosition[whichPlayer].die1, that);
         diceBitmaps[whichPlayer].die2 = RenderHelper.createScaledBitmapAndAddChild(images.die.die2, dicePosition[whichPlayer].die2, that);
       };
-
       createDiceBitmaps('player');
       createDiceBitmaps('opponent');
 
+      var createFadeBitmap = function (i, whichPlayer, pos) {
+        fadeBitmaps[whichPlayer][i] = RenderHelper.createScaledBitmapAndAddChild(images.die.fade, pos, that);
+        fadeBitmaps[whichPlayer][i].visible = false;
+      };
+      var createFadeBitmaps = function (whichPlayer) {
+        createFadeBitmap(1, whichPlayer, dicePosition[whichPlayer].die1);
+        createFadeBitmap(2, whichPlayer, {x: dicePosition[whichPlayer].die1.x + dicePosition.fadeXOffset, y: dicePosition[whichPlayer].die1.y});
+        createFadeBitmap(3, whichPlayer, dicePosition[whichPlayer].die2);
+        createFadeBitmap(4, whichPlayer, {x: dicePosition[whichPlayer].die2.x + dicePosition.fadeXOffset, y: dicePosition[whichPlayer].die2.y});
+      };
+      createFadeBitmaps('player');
+      createFadeBitmaps('opponent');
+
+      // shaker lol
       shakerBitmap = RenderHelper.createScaledBitmapAndAddChild('assets/shaker.png', shakerPos, that);
       shakerBitmap.visible = false;
 
@@ -255,7 +275,7 @@ define(['RenderHelper'], function (RenderHelper) {
     }
 
     var isTopSpace = function (spaceId) {
-      return Number(spaceId) > 12 || spaceId === 'blackScoreSpace' || spaceId === 'blackJail';
+      return Number(spaceId) > 12 || spaceId === 'blackScoreSpace' || spaceId === 'redJail';
     };
 
 
@@ -458,6 +478,10 @@ define(['RenderHelper'], function (RenderHelper) {
     var hideRoll = function (whichPlayer) {
       diceBitmaps[whichPlayer].die1.visible = false;
       diceBitmaps[whichPlayer].die2.visible = false;
+      fadeBitmaps[whichPlayer][1].visible = false;
+      fadeBitmaps[whichPlayer][2].visible = false;
+      fadeBitmaps[whichPlayer][3].visible = false;
+      fadeBitmaps[whichPlayer][4].visible = false;
     };
 
     that.showPlayerRoll = function (roll) {
@@ -470,10 +494,38 @@ define(['RenderHelper'], function (RenderHelper) {
 
     that.showOpponentRoll = function (roll) {
       showRoll('opponent', roll);
+      fadeBitmaps['opponent'][1].visible = false;
+      fadeBitmaps['opponent'][2].visible = false;
+      fadeBitmaps['opponent'][3].visible = false;
+      fadeBitmaps['opponent'][4].visible = false;
     };
 
     that.hideOpponentRoll = function () {
       hideRoll('opponent');
+    };
+
+    var baseFadeDie = function (whichPlayer, dieNumber, isDoubles, enabled) {
+      if (!isDoubles) {
+        fadeBitmaps[whichPlayer][dieNumber === 1 ? 1 : 3].visible = enabled;
+        fadeBitmaps[whichPlayer][dieNumber === 1 ? 2 : 4].visible = enabled;
+      } else {
+        fadeBitmaps[whichPlayer][dieNumber].visible = enabled;
+      }
+    };
+
+    that.fadePlayerDie = function (dieNumber, isDoubles) {
+      baseFadeDie('player', dieNumber, isDoubles, true);
+    };
+
+    that.unfadePlayerDie = function (dieNumber, isDoubles) {
+      baseFadeDie('player', dieNumber, isDoubles, false);
+    };
+
+    that.fadeOpponentRoll = function () {
+      fadeBitmaps['opponent'][1].visible = true;
+      fadeBitmaps['opponent'][2].visible = true;
+      fadeBitmaps['opponent'][3].visible = true;
+      fadeBitmaps['opponent'][4].visible = true;
     };
 
     //////// INDICATORS //////////////

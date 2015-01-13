@@ -39,6 +39,7 @@ define(function(){
         {src: path + 'dice-4.png', id: 'die4'},
         {src: path + 'dice-5.png', id: 'die5'},
         {src: path + 'dice-6.png', id: 'die6'},
+        {src: 'assets/fadeRect.png', id: 'dice_fade'},
 
         {src: path + 'checker-p1.png', id: 'red_piece'},
         {src: path + 'checker-p2.png', id: 'black_piece'},
