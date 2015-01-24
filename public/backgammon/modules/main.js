@@ -57,8 +57,10 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
     };
 
     var newTurnHook = function (result) {
+      playerMap = Spinal.getPlayersMap();
       ourBackgammon.updateGameState(result.gameState);
       parseTurn(result.turn);
+      updateDebugLabel();
     };
 
     var submitTurn = function (pendingTurn, successCallback, failureCallback) {
@@ -98,7 +100,6 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
     var updateDebugLabel = function () {
       var isPlayer1Turn = !playerMap['p1'].played,
         whosTurnLabel = (whosTurn === userPlayerRel) ? 'YOUR TURN' : 'their turn';
-      console.log('UPDAINGZZZZ');
       $('#debugLabel').html('turn: ' + Spinal.getCurrentTurnNumber() + ', ' + whosTurnLabel);
     };
 
@@ -154,7 +155,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         function (_loaderQueue){
           loaderQueue = _loaderQueue;
           console.log("done loading assets");
-          initMuleSpinal()
+          initMuleSpinal();
         }
       );
 
@@ -178,6 +179,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           playerMap = Spinal.getPlayersMap();
           GAME.init(canvas);
           Spinal.startRefresh();
+          updateDebugLabel();
         });
     };
 

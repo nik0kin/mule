@@ -165,11 +165,10 @@ define(['../q', '../utils/index'], function (Q, utils) {
       };
 
       //////// REFRESH ////////
-      var dontQuery = true;
+      var dontQuery = true,
+        lastRefreshTime;
 
-      // reads a new Game/History
-      //  and if History.currentTurn changes
-      //  then read new Turn and GameState
+      // refreshes immediately
       that.startRefresh = function () {
         dontQuery = false;
         refresh();
@@ -179,7 +178,19 @@ define(['../q', '../utils/index'], function (Q, utils) {
         dontQuery = true;
       };
 
+      that.getTimeTilNextRefresh = function () {
+        if (dontQuery) {
+          return -1;
+        }
+
+        return (lastRefreshTime + config.refreshTime) - Date.now();
+      };
+
+      // reads a new Game/History
+      //  and if History.currentTurn changes
+      //  then read new Turn and GameState
       var refresh = function () {
+        lastRefreshTime = Date.now();
         if (dontQuery) {
           //setTimeout(refresh, config.refreshTime);
           return;
