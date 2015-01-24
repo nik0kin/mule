@@ -1,4 +1,8 @@
-/* ripped from mulesprawl (and rick & the ghost) */
+/*
+ * main.js
+ * - loads assets & inits mule Spinal
+ * - then hands control over to Backgammon/Board
+ */
 
 var GAME = {};
 GAME.SIZE = { x: 1280, y: 960 };
@@ -7,7 +11,9 @@ GAME.SIZE = { x: 1280, y: 960 };
 define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-js-sdk/sdk"],
   function(Loader, generateAssets, Backgammon, Board, dumbLib, sdk){
     var SDK = sdk('../../'),
-      themeFromUrl = dumbLib.getUrlParameter('theme'),
+      Spinal = SDK.Spinal();
+
+    var themeFromUrl = dumbLib.getUrlParameter('theme'),
       scale = (dumbLib.getUrlParameter('scale') || 65) / 100,
       ourAssets = generateAssets(themeFromUrl);
 
@@ -16,13 +22,8 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
     GAME.fps = 30;
     GAME.state;
 
-    var currentUser = {},
+    var userPlayerRel,
       playerMap,
-      currentGameBoard,
-      currentGameState,
-      currentGame,
-      currentTurn = 0,
-      currentHistory,
       ourBackgammon,
       isGameOver = false,
       firstLoad = true,
@@ -30,78 +31,24 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       whosTurn,
       submittable = false;
 
-    var gameMap;
-
-    GAME.controls = {
-      //for moving map
-      enter: false
-    };
-
-    //temporary
-    var preContainer;
-
-
     GAME.init = function(canvas){
       GAME.stage = canvas;
       GAME.state = STATES.pregame;
       GAME.SIZE.x *= scale;
       GAME.SIZE.y *= scale;
 
-      //load shit?
-
-      //GAME.state = STATES.pregame;
-      preContainer = new createjs.Container();
-
-      var rectangle = new createjs.Shape();
-      rectangle.graphics.beginFill("black").drawRect(0,0,GAME.SIZE.x, GAME.SIZE.y);
       $('#myCanvas').attr('width', GAME.SIZE.x);
       $('#myCanvas').attr('height', GAME.SIZE.y);
-      rectangle.on("click",function () {
-        GAME.startGame();
-      });
-      preContainer.addChild(rectangle);
 
-
-      GAME.stage.addChild(preContainer);
-
-      setInterval(GAME.update, 1000 / GAME.fps);
-
-    };
-
-    //var tempPic;
-
-    GAME.update = function(){
-
-      switch(GAME.state){
-
-        case STATES.pregame:
-          if(GAME.controls.enter){
-            GAME.startGame();
-          }
-          break;
-        case STATES.ingame:
-
-
-
-          break;
-      }
-
-      GAME.prevControls = GAME.controls;
-    };
-
-    GAME.loadGame = function (userId) {
-      currentGame = {_id: dumbLib.getUrlParameter('gameId') };
-      currentUser.id = userId;
-
-      refreshGame();
+      GAME.startGame();
     };
 
     var updateWhosTurnIsIt = function () {
-      var nextWhosTurn = SDK.Historys.getWhosTurnIsIt(currentHistory);
+      var nextWhosTurn = SDK.Historys.getWhosTurnIsIt(Spinal.getHistory());
       if (whosTurn !== nextWhosTurn) {
-        if (nextWhosTurn === currentUser.relId) {
+        if (nextWhosTurn === userPlayerRel) {
           console.log('beginPlayersTurn');
-          dontQuery = true;
+          Spinal.stopRefresh();
         } else {
           console.log('beginOpponentTurn');
         }
@@ -109,128 +56,21 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
       }
     };
 
-    var counter = 0, timerCount = 5, firstTime = true, refreshTime = 1000, dontQuery = false;
-    var refreshGame = function () {
-      if (dontQuery) {
-        setTimeout(refreshGame, refreshTime);
-        return;
-      }
-
-      counter--;
-      var counterString = '';
-      _(timerCount - counter).times(function () {
-        counterString += '.';
-      });
-      $('#refreshLabel').html(counterString);
-
-      if (counter > 0) {
-        setTimeout(refreshGame, refreshTime);
-        return;
-      } else {
-        counter = timerCount;
-      }
-
-      var gamePromise;
-
-      if (firstTime) {
-        gamePromise = SDK.Games.readQ(currentGame._id)
-      } else { //ghetto promise
-        var defer = $.Deferred(),
-          gamePromise = defer.then(function (v) { return v; });
-        defer.resolve(currentGame);
-      }
-      gamePromise
-        .then(function(game) {
-          currentGame = game;
-
-          if (!currentUser.relId) {
-            // set relId
-            _.each(game.players, function (p, relId) {
-              if (p.playerId == currentUser.id) {
-                currentUser.relId = relId;
-              }
-            });
-          }
-
-          if (firstTime) {
-            GAME.init(canvas);
-            firstTime = false;
-          }
-          //checkWin();
-
-          return SDK.Historys.readGamesHistoryQ(currentGame._id)
-        })
-        .then(function(history) {
-          currentHistory = history;
-
-          if (currentHistory.currentTurn === currentTurn) {
-            return; // dont query board if you dont need to
-          }
-
-          currentTurn = currentHistory.currentTurn;
-
-          SDK.Games.getPlayersMapQ(currentGame)
-            .then(function (_playerMap) {
-
-              _.each(currentGame.players, function (value, key) {
-                _playerMap[key].played = currentHistory.currentTurnStatus[key];
-              });
-
-              playerMap = _playerMap;
-
-              updateWhosTurnIsIt();
-
-              updateDebugLabel();
-            });
-
-          SDK.GameBoards.readGamesBoardQ(currentGame._id)
-            .done(function(gameBoard) {
-              currentGameBoard = gameBoard;
-
-              if (firstLoad) {
-                firstLoad = false;
-                //SDK.Historys.markAllTurnsRead(currentHistory);
-              } else {
-                //look at last turn
-                //var t = SDK.Historys.getLastUnreadTurn(currentHistory);
-
-                //  TODO this could potentially skip turns if the clients internet was down for a minute
-                SDK.Turns.readGamesTurnQ(currentGame._id, currentTurn - 1)
-                  .then(function (turn) {
-                    parseTurn(turn);
-                  });
-              }
-
-              console.log('refreshed');
-            });
-
-            SDK.GameStates.readGamesStateQ(currentGame._id)
-            .done(function(gameState) {
-              currentGameState = gameState;
-              if (ourBackgammon) ourBackgammon.updateGameState(currentGameState);
-
-              console.log('stated');
-            });
-        });
-      if (!isGameOver) {
-        setTimeout(refreshGame, refreshTime);
-      }
+    var newTurnHook = function (result) {
+      ourBackgammon.updateGameState(result.gameState);
+      parseTurn(result.turn);
     };
 
     var submitTurn = function (pendingTurn, successCallback, failureCallback) {
       console.log('submitting turn');
       if (pendingTurn === null) return;
 
-      var params = {
-        playerId: currentUser.relId,
-        gameId: currentGame._id,
-        actions: [{
-          type: 'TurnAction',
-          params: pendingTurn
-        }]
-      };
+      var actions = [{
+        type: 'TurnAction',
+        params: pendingTurn
+      }];
 
-      SDK.PlayTurn.sendQ(params)
+      Spinal.submitTurnQ(actions)
         .then(function (result) {
           console.log('Submitted turn');
           console.log(result);
@@ -243,7 +83,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
           alert(JSON.stringify(err));
         });
 
-      dontQuery = false;
+      Spinal.startRefresh();
     };
 
     var parseTurn = function (turn) {
@@ -257,25 +97,20 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
 
     var updateDebugLabel = function () {
       var isPlayer1Turn = !playerMap['p1'].played,
-        whosTurnLabel = (whosTurn === currentUser.relId) ? 'YOUR TURN' : 'their turn';
+        whosTurnLabel = (whosTurn === userPlayerRel) ? 'YOUR TURN' : 'their turn';
       console.log('UPDAINGZZZZ');
-      $('#debugLabel').html('turn: ' + currentTurn + ', ' + whosTurnLabel);
+      $('#debugLabel').html('turn: ' + Spinal.getCurrentTurnNumber() + ', ' + whosTurnLabel);
     };
 
     GAME.startGame = function () {
-      if (firstLoad) return;
       GAME.state = STATES.ingame;
 
-      preContainer.visible = false;
       console.log("end pregame state");
-
-      // ghetto wait for gameState
-      while(!currentGameState) { ; }
 
       var boardViewParams = {
           scale: scale,
-          gameBoard:currentGameBoard,
-          gameState: currentGameState,
+          gameBoard: Spinal.getGameBoard(),
+          gameState: Spinal.getGameState(),
           mainClickCallback: clickSpace,
           fontDefs: ourAssets.fonts,
           usernames: {p1: playerMap.p1.name, p2: playerMap.p2.name},
@@ -283,21 +118,14 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         },
         newBoardView = Board(boardViewParams);
       GAME.stage.addChild(newBoardView);
-      gameMap = newBoardView;
 
       ourBackgammon = Backgammon(
-        currentUser.relId,
-        SDK.Historys.getWhosTurnIsIt(currentHistory),
-        currentGameState,
+        Spinal.getUserPlayerRel(),
+        SDK.Historys.getWhosTurnIsIt(Spinal.getHistory()),
+        Spinal.getGameState(),
         newBoardView,
         submitTurn
       );
-    };
-
-    GAME.resetGame = function(){
-      console.log("reseting game");
-      init();
-      console.log("reset State: "+GAME.state)
     };
 
     var clickSpace = function (space) {
@@ -306,7 +134,7 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
 
     ////////// MAIN /////////////
     var canvas, loaderQueue;
-    function init (userId) {
+    var init = function (userId) {
       canvas = new createjs.Stage(document.getElementById('myCanvas'));
       canvas.enableMouseOver({frequency: 30});
 
@@ -326,23 +154,38 @@ define(["Loader", "assets", 'Backgammon', "Board", '../../dumbLib', "../../mule-
         function (_loaderQueue){
           loaderQueue = _loaderQueue;
           console.log("done loading assets");
-          GAME.loadGame(userId);
+          initMuleSpinal()
         }
       );
 
     }
 
-    var preInit = function () {
-      SDK.Users.sessionQ()
+    var initMuleSpinal = function () {
+      var config = {
+        refreshTime: 3000,
+        turnSubmitStyle: 'roundRobin',
+        gameIdUrlKey: 'gameId',
+        useSessionForUserId: true,
+        newTurnHook: newTurnHook,
+        noSessionHook: noSessionHook
+      };
+
+      Spinal.initQ(config)
         .then(function (result) {
-          init(result._id);
-        })
-        .fail(function () {
-          alert('You are not Logged in...redirecting to MuleFrontend.');
-          window.location.replace('../../../')
+          console.log('Spinal initted');
+          console.log(result)
+          userPlayerRel = Spinal.getUserPlayerRel();
+          playerMap = Spinal.getPlayersMap();
+          GAME.init(canvas);
+          Spinal.startRefresh();
         });
     };
 
+    var noSessionHook = function () {
+      alert('You are not Logged in...redirecting to MuleFrontend.');
+      window.location.replace('../../../')
+    };
+
     console.log("init-ing");
-    preInit();
+    init();
   });
