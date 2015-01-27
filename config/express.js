@@ -5,6 +5,7 @@
 
 var express = require('express'),
   session = require('express-session'),
+  cors = require('cors'),
   MongoStore = require('connect-mongo')(session),
   compression = require('compression'),
   morgan = require('morgan'),
@@ -17,6 +18,8 @@ var express = require('express'),
 module.exports = function (app, config, passport) {
 
   app.set('showStackError', true);
+
+  app.use(cors());
 
   // should be placed before express.static
   app.use(compression({
