@@ -1,10 +1,11 @@
 /**
  * Test->API->userServices-> loginSpec.js
  *
- * Created by niko on 2/5/14.
  */
 
-var app = require('../../../server');
+var initTestMule = require('../../configUtils').initTestMule;
+
+var muleServer = 'http://localhost:3130/';
 
 var should = require('should'),
   request = require('supertest');
@@ -14,6 +15,7 @@ var testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130');
 
 describe('API: ', function () {
+  before(initTestMule);
   describe('User Services: ', function () {
     describe('POST /LoginAuth: ', function () {
       var validAccountCredentials = {username: 'validuser', password : 'validpw'};
@@ -32,7 +34,7 @@ describe('API: ', function () {
       after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
       it('should work with a valid registered username/password', function (done) {
-        request(app)
+        request(muleServer)
           .post('/LoginAuth')
           .send(validAccountCredentials)
           .set('Accept', 'application/json')
@@ -45,7 +47,7 @@ describe('API: ', function () {
       });
 
       it('shouldn\'t work with an invalid username/password', function (done) {
-        request(app)
+        request(muleServer)
           .post('/LoginAuth')
           .send({username : 'amadeupname', password : 'afakepassword'})
           .set('Accept', 'application/json')
@@ -57,7 +59,7 @@ describe('API: ', function () {
       });
 
       it('shouldn\'t work with no username submitted', function (done) {
-        request(app)
+        request(muleServer)
           .post('/LoginAuth')
           .send({password : 'validpw'})
           .set('Accept', 'application/json')
@@ -69,7 +71,7 @@ describe('API: ', function () {
       });
 
       it('shouldn\'t work with no password submitted', function (done) {
-        request(app)
+        request(muleServer)
           .post('/LoginAuth')
           .send({username : 'validuser'})
           .set('Accept', 'application/json')
@@ -81,7 +83,7 @@ describe('API: ', function () {
       });
 
       it('should return the users ID on success', function (done) {
-        request(app)
+        request(muleServer)
           .post('/LoginAuth')
           .send(validAccountCredentials)
           .set('Accept', 'application/json')

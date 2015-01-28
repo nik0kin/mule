@@ -3,18 +3,23 @@
  *
  */
 
-require('../../server.js');
+var initTestMule = require('../configUtils').initTestMule;
 
 var should = require('should'),
   Q = require('q'),
   _ = require('lodash');
 
-var User = require('mule-models').User,
-  users = require('../../app/routes/users/crud/helper'),
+var users,
   dbHelper = require('mule-models/test/dbHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper');
 
 describe('Controllers: ', function () {
+  before(function (done) {
+    initTestMule(function () {
+      users = require('../../app/routes/users/crud/helper');
+      done();
+    });
+  });
   describe('Users (helper): ', function() {
     afterEach(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 

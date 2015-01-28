@@ -90,6 +90,7 @@ exports.progressTurnHookQ = function (gso) {
   // these are more managed by turnSystem/actionHelper right now
 
 exports.actionValidateQ = function (Action, gameId, playerRel, actionParams) {
+  Logger.vog('ActionParams:', gameId, actionParams);
   return createMQ(gameId)
     .then(function (M) {
       return Action.validateQ(M, playerRel, actionParams);

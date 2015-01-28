@@ -1,4 +1,8 @@
-require ('../../../../server.js');
+/**
+ * Games API: createSpec
+ */
+
+var initTestMule = require('../../../configUtils').initTestMule;
 
 var _ = require('lodash'),
   should = require('should'),
@@ -6,7 +10,6 @@ var _ = require('lodash'),
 
 var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
   dbHelper = require('mule-models/test/dbHelper'),
-  User = require('mule-models').User,
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   testParams = require('./createParams'),
   gameAPIHelper = require('mule-utils/lib/testUtils/api/gameHelper');
@@ -14,6 +17,7 @@ var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://lo
 var loggedInAgent;
 
 describe('API', function () {
+  before(initTestMule);
   describe('Games: ', function () {
     before(function (done) {
       this.timeout(3000);
@@ -24,7 +28,7 @@ describe('API', function () {
         }, testHelper.mochaError(done));
     });
 
-    after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
+    after(dbHelper.clearUsersAndGamesCollection);
 
     describe('POST /games', function () {
       var invalidGameId = '53030c89296d98e92a9b2635' // but valid mongodb id

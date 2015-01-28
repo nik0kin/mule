@@ -2,7 +2,7 @@
  * GameBoard: otherCrudSpec
  */
 
-require ('../../../../server.js');
+var initTestMule = require('../../../configUtils').initTestMule;
 
 var should = require('should'),
   _ = require('lodash');
@@ -18,6 +18,7 @@ var loggedInAgent;
 var createdGameId;
 
 describe('API: ', function () {
+  before(initTestMule);
   describe('GameBoards ', function () {
     before(function (done) {
       this.timeout(5000)

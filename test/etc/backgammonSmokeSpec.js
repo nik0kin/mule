@@ -1,9 +1,8 @@
-
 var should = require('should'),
   Q = require('q'),
   _ = require('lodash');
 
-require('../../server.js');
+var initTestMule = require('../configUtils').initTestMule;
 
 var dbHelper = require('mule-models/test/dbHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
@@ -30,6 +29,8 @@ var userCreds1 = {username: 'gameCreator89', password : 'OWWOWOWOAKDAS9'},
   userCreds2 = {username: 'gameCreator99', password : 'OWWOWOWOAKDAS9'};
 
 describe('ETC: ', function () {
+  before(initTestMule);
+
   describe('Backgammon Smoke: ', function () {
     var gameCreatorUserAgent1, gameCreatorUserAgent2;
     var createdGameId;

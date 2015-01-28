@@ -1,10 +1,9 @@
 /**
  * Test->API->CRUD-> getUsersGamesSpec.js
  *
- * Created by niko on 2/6/14.
  */
 
-require ('../../../../server.js');
+var initTestMule = require('../../../configUtils').initTestMule;
 
 var _ = require('lodash'),
   should = require('should'),
@@ -19,6 +18,7 @@ var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://lo
   gameUtils = require('mule-utils/generalGameUtils');
 
 describe('API: ', function () {
+  before(initTestMule);
   describe('Games: ', function () {
     describe('GET /users/:id/games : ', function () {
       var ourUserAgent;

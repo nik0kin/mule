@@ -3,15 +3,17 @@
  *
  */
 
-require('../../../server.js');
+var initTestMule = require('../../configUtils').initTestMule;
+
+var muleServer = 'http://localhost:3130/';
 
 var should = require('should'),
   request = require('supertest');
 
-var User = require('mule-models').User,
-  dbHelper = require('mule-models/test/dbHelper');
+var dbHelper = require('mule-models/test/dbHelper');
 
 describe('API', function () {
+  before(initTestMule);
   describe('Users: ', function() {
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 
@@ -20,7 +22,7 @@ describe('API', function () {
 
     describe('POST /users', function(){
       it('respond with json', function(done){
-        request(app) //"http://localhost:3130")
+        request(muleServer) //"http://localhost:3130")
           .post('/users')
           .send(dumbAccount)
           .set('Accept', 'application/json')
@@ -31,7 +33,7 @@ describe('API', function () {
           });
       });
       it('should respond with status===0 when all goes well', function(done){
-        request(app)
+        request(muleServer)
           .post('/users')
           .send(dumbAccount2)
           .set('Accept', 'application/json')
@@ -43,7 +45,7 @@ describe('API', function () {
           });
       });
       it('should respond with _id of created user', function(done){
-        request(app)
+        request(muleServer)
           .post('/users')
           .send(dumbAccount2)
           .set('Accept', 'application/json')
@@ -57,7 +59,7 @@ describe('API', function () {
     });
     describe('GET /users', function () {
       it('should respond with an array', function (done) {
-        request(app)
+        request(muleServer)
           .get('/users')
           .expect(200)
           .end(function(err, res){
@@ -69,7 +71,7 @@ describe('API', function () {
     });
     describe('GET /users/:id', function () {
       it('should respond with an object containing username and _id', function (done) {
-        request(app) //create a user to look for
+        request(muleServer) //create a user to look for
           .post('/users')
           .send(dumbAccount2)
           .set('Accept', 'application/json')
@@ -80,7 +82,7 @@ describe('API', function () {
             var userId = res.body.userId;
 
             //look for the user
-            request(app)
+            request(muleServer)
               .get('/users/' + userId)
               .expect(200)
               .end(function(err, res){
@@ -96,7 +98,7 @@ describe('API', function () {
           });
       });
       it('should respond a 404 for a invalid userId', function (done) {
-        request(app)
+        request(muleServer)
           .get('/users/adsfdsdfNOTREAL')
           .expect(404)
           .end(function(err, res){

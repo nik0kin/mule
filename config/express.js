@@ -15,7 +15,7 @@ var express = require('express'),
     flash = require('connect-flash'),
   pkg = require('../package.json');
 
-module.exports = function (app, config, passport) {
+module.exports = function (app, config, dbUrl, passport) {
 
   app.set('showStackError', true);
 
@@ -30,7 +30,8 @@ module.exports = function (app, config, passport) {
   }));
 
   //statically serve test site
-  app.use('/webservices/public', express.static(config.root + '/public' ));
+  var publicPath = require('path').normalize(__dirname + '/..' + '/public');
+  app.use(config.routesPrefix + '/public', express.static(publicPath));
 
   app.use(function(req, res, next) {
     if(req.url == '/webservices')
@@ -66,7 +67,7 @@ module.exports = function (app, config, passport) {
     resave: true,
     saveUninitialized: true,
     store: new MongoStore({
-      url: config.db,
+      url: dbUrl,
       collection : 'sessions'
     })
   }));

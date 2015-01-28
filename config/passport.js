@@ -3,7 +3,7 @@ var LocalStrategy = require('passport-local').Strategy,
   logging = require('mule-utils').logging;
 
 
-module.exports = function (passport, config) {
+module.exports = function (passport) {
   // require('./initializer')
 
   // serialize sessions

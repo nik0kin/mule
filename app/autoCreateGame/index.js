@@ -1,18 +1,20 @@
 var _ = require('lodash'),
   Q = require('q');
 
-var muleConfig = require('../../config/muleConfig'),
-  logging = require('mule-utils').logging,
+var logging = require('mule-utils').logging,
   RuleBundle = require('mule-models').RuleBundle.Model,
   Game = require('mule-models').Game.Model,
   createGameQ = require('../routes/games/crud/createGameHelper');
+
+var muleConfig;
 
 var MS_PER_SEC = 1000;
 
 var timeoutId, minTimerCheck;
 
-exports.initAutoGameChecks = function (minimumTimerCheck) {
-  minTimerCheck = minimumTimerCheck;
+exports.initAutoGameChecks = function (_muleConfig) {
+  muleConfig = _muleConfig;
+  minTimerCheck = muleConfig.minimumAutoCreateGameTimerCheck;
 
   // attach ruleBundle ids
   RuleBundle.findQ()

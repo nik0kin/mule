@@ -1,12 +1,11 @@
 /**
  * joinGameSpec.js
- *   @nikpoklitar
  */
 
 var should = require('should'),
   _ = require('lodash');
 
-require('../../../server.js');
+var initTestMule = require('../../configUtils').initTestMule;
 
 var params = require('./joinGameParams'),
   dbHelper = require('mule-models/test/dbHelper'),
@@ -16,6 +15,7 @@ var params = require('./joinGameParams'),
   gameHelper = require('mule-utils/lib/testUtils/api/gameHelper');
 
 describe('API: ', function () {
+  before(initTestMule);
   describe('Game Services: ', function () {
     var gameCreatorUserAgent;
     var createdGameId;

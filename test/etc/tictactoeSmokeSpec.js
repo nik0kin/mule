@@ -3,7 +3,7 @@ var should = require('should'),
   Q = require('q'),
   _ = require('lodash');
 
-require('../../server.js');
+var initTestMule = require('../configUtils').initTestMule;
 
 var dbHelper = require('mule-models/test/dbHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
@@ -75,6 +75,7 @@ var player2Turns = [{
 }];
 
 describe('ETC: ', function () {
+  before(initTestMule);
   describe('TicTacToe Smoke: ', function () {
     var gameCreatorUserAgent1, gameCreatorUserAgent2;
     var createdGameId;

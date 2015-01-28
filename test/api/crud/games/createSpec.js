@@ -1,5 +1,8 @@
+/**
+ * Games API: createSpec
+ */
 
-require ('../../../../server.js');
+var initTestMule = require('../../../configUtils').initTestMule;
 
 var _ = require('lodash'),
   should = require('should'),
@@ -7,7 +10,6 @@ var _ = require('lodash'),
 
 var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
   dbHelper = require('mule-models/test/dbHelper'),
-  User = require('mule-models').User,
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   testParams = require('./createParams'),
   gameAPIHelper = require('mule-utils/lib/testUtils/api/gameHelper');
@@ -15,6 +17,7 @@ var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://lo
 var loggedInAgent;
 
 describe('API', function () {
+  before(initTestMule);
   describe('Games: ', function () {
     before(function (done) {
       loginHelper.registerAndLoginQ()
@@ -182,4 +185,3 @@ describe('API', function () {
     });
   });
 });
-

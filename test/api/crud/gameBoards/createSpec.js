@@ -1,7 +1,7 @@
 /**
  * GameBoard: createSpec
  */
-
+/*    UNFINISHED BUSINESS PART 3
 require ('../../../../server.js');
 
 var should = require('should'),
@@ -38,3 +38,4 @@ describe('API: ', function () {
     });
   });
 });
+*/

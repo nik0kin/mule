@@ -3,7 +3,7 @@ var should = require('should'),
   Q = require('q'),
   _ = require('lodash');
 
-require('../../server.js');
+var initTestMule = require('../configUtils').initTestMule;
 
 var dbHelper = require('mule-models/test/dbHelper'),
   restHelper = require('mule-utils/lib/testUtils/api/restHelper'),
@@ -50,6 +50,7 @@ var validTurn = {
 };
 
 describe('ETC: ', function () {
+  before(initTestMule);
   describe('MuleSprawl Smoke: ', function () {
     var gameCreatorUserAgent;
     var createdGameId;

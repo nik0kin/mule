@@ -1,8 +1,7 @@
-
 var should = require('should'),
   _ = require('lodash');
 
-require('../../../server.js');
+var initTestMule = require('../../configUtils').initTestMule;
 
 var dbHelper = require('mule-models/test/dbHelper'),
   restHelper = require('mule-utils/lib/testUtils/api/restHelper'),
@@ -12,11 +11,10 @@ var dbHelper = require('mule-models/test/dbHelper'),
   createGameParams = require('./startGameParams');
 
 describe('API: ', function () {
+  before(initTestMule);
   describe('Game Services: ', function () {
     var gameCreatorUserAgent;
     var createdGameId;
-
-
 
     after(function (done) { dbHelper.clearUsersAndGamesCollection(done); });
 

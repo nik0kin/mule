@@ -2,7 +2,7 @@
   "name": "mule",
   "version": "0.0.1",
   "description": "(Abstract) Asyncronous-play Turn-based Game Platform",
-  "main": "server.js",
+  "main": "index.js",
   "directories": {
     "doc": "docs",
     "test": "test"
