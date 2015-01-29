@@ -8,12 +8,12 @@
     "test": "test"
   },
   "scripts": {
-    "start": "pm2 start server.js --name \"mule\"",
-    "stop": "pm2 stop server.js",
-    "test": "NODE_ENV=test grunt test",
-    "debug": "node-debug server.js"
+    "test": "NODE_ENV=test grunt test"
   },
   "dependencies": {
+    "mule-models": "git+https://github.com/nik0kin/mule-models.git#master",
+    "mule-utils": "git+https://github.com/nik0kin/mule-utils.git#master",
+    "mule-rules": "git+https://github.com/nik0kin/mule-rules.git#master",
     "connect-flash": "~0.1.1",
     "connect-mongo": "~0.4.1",
     "cors": "^2.5.3",
