@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir -p games
 cd games
 
 git clone git@github.com:nik0kin/mule-connectx connectx

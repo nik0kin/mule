@@ -21,7 +21,6 @@ var express = require('express'),
 var MuleUtils = require('mule-utils'),
     dateUtils = require('mule-utils/dateUtils'),
     Logger = MuleUtils.logging,
-    MuleRules = require('mule-rules'),
     MuleModels = require('mule-models');
 
 var app;
