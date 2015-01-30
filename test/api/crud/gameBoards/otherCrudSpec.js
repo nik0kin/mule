@@ -25,7 +25,7 @@ describe('API: ', function () {
       loginHelper.registerAndLoginQ()
         .then(function (agent) {
           loggedInAgent = agent;
-          gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validCheckersGameConfig}, 200)
+          gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validBackgammonGameConfig}, 200)
             .done(function (result) {
               should(result.gameId).is.ok;
               createdGameId = result.gameId;
@@ -71,7 +71,7 @@ describe('API: ', function () {
               .done(function (result) {
                 //result.board should be checkerslike
                 should(result.boardType).eql('static');
-                should(_.size(result.board)).eql(32);
+                should(_.size(result.board)).eql(28);
                 done();
               }, testHelper.mochaError(done));
           });
@@ -89,7 +89,7 @@ describe('API: ', function () {
           .done(function (result) {
             //result.board should be checkerslike
             should(result.boardType).eql('static');
-            should(_.size(result.board)).eql(32);
+            should(_.size(result.board)).eql(28);
             done();
           }, testHelper.mochaError(done));
       })

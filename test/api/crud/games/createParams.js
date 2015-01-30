@@ -5,37 +5,35 @@
 
 exports.validCreateGamesBody = {
   gameConfig : {
-    name : "niks checkers game",
+    name : "niks Backgammon game",
     ruleBundle : {
-      name : 'Checkers'
+      name : 'Backgammon'
     },
     //don't need max players when playing checkers
 
     ruleBundleGameSettings : {
       customBoardSettings : {
-        size : 8
       }
     }
   }
 };
 
 exports.expectedCreatedGameBody = {
-  name : "niks checkers game",
+  name : "niks Backgammon game",
   "maxPlayers" : 2,
   "gameStatus" : 'open'
 };
 
 exports.validCreateGamesBodyWithAlteredGameStatus = {
   gameConfig : {
-    name : "niks checkers game",
+    name : "niks Backgammon game",
     ruleBundle : {
-      name : 'Checkers'
+      name : 'Backgammon'
     },
     //don't need max players when playing checkers
 
     ruleBundleGameSettings : {
       customBoardSettings : {
-        size : 8
       }
     },
     "gameStatus" : "}{}#$%#$^sh run OMG hax"
@@ -71,6 +69,18 @@ exports.validCheckersGameConfig = {
   ruleBundleGameSettings : {
     customBoardSettings : {
       size : 8 //TODO size : "8"
+    }
+  }
+};
+
+exports.validBackgammonGameConfig = {
+  name : "niks valid backgammon",
+  ruleBundle : {
+    name : 'Backgammon'
+  },
+
+  ruleBundleGameSettings : {
+    customBoardSettings : {
     }
   }
 };

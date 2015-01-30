@@ -13,7 +13,7 @@ var params = require('./joinGameParams'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
   gameHelper = require('mule-utils/lib/testUtils/api/gameHelper');
-
+/*
 describe('API: ', function () {
   before(initTestMule);
   describe('Game Services: ', function () {
@@ -153,9 +153,11 @@ describe('API: ', function () {
         /*it('should reject if its not a joinable game (inProgress or finished)' , function () {
          //TODO once games can 'Start'
          });*/
+/*
       });
 
     });
 
   });
 });
+*/

@@ -83,8 +83,6 @@ describe('API', function () {
                   should(body[key]).equal(value);
                 });
 
-                should(body.ruleBundleGameSettings.customBoardSettings.size).eql(8);
-
                 should(_.size(body.players)).eql(1);
                 done();
               });
@@ -116,7 +114,7 @@ describe('API', function () {
               });
           });
       });
-
+/*
       it('should accept a maxPlayer value thats within vikings range', function (done) {
         loggedInAgent
           .post('/games')
@@ -136,7 +134,7 @@ describe('API', function () {
             done();
           }, testHelper.mochaError(done));
       });
-
+*/
       it('should ignore (extra, non-rulebundle) customBoardSettings, backgammon with a width parameter', function (done) {
         gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.validBackgammonWithExtras}, 200)
           .done(function (result) {
@@ -164,7 +162,7 @@ describe('API', function () {
               done();
             }, testHelper.mochaError(done));
         });
-
+/*)
         it('if sending an incorrect size (13) for a checkers gameConfig', function (done) {
           gameAPIHelper.createGameQ({agent : loggedInAgent, gameConfig : testParams.invalidCheckersGameConfig}, 406)
             .done(function (result) {
@@ -181,6 +179,7 @@ describe('API', function () {
               done();
             }, testHelper.mochaError(done));
         });
+*/
       });
     });
   });

@@ -1,9 +1,9 @@
 var gameConfigArray = [];
 
 exports.validGameConfig = {
-  name : "niks checkers game",
+  name : "niks Backgammon game",
   ruleBundle : {
-    name : 'Checkers'
+    name : 'Backgammon'
   },
   //don't need max players when playing checkers
 

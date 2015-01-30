@@ -37,32 +37,19 @@ module.exports = function (grunt) {
         command: 'rm -rf node_modules/mule* || npm install'
           + ' && git clone git@github.com:nik0kin/mule-utils.git node_modules/mule-utils'
           + ' && git clone git@github.com:nik0kin/mule-models.git node_modules/mule-models'
-          + ' && git clone git@github.com:nik0kin/mule-rules.git node_modules/mule-rules'
 
           + ' && cd node_modules/mule-utils && npm install'
           + ' && cd ../mule-models && npm install'
-          + ' && cd ../mule-rules && npm install'
           + ' && cd ../..'
-      },
-      updateRules: {
-        command: 'rm -rf node_modules/mule-models/node_modules/mule-rules/*'
-          + ' && cp -rf node_modules/mule-rules/* node_modules/mule-models/node_modules/mule-rules'
       },
       updateUtils: {
         command: 'rm -rf node_modules/mule-models/node_modules/mule-utils/*'
           + ' && cp -rf node_modules/mule-utils/* node_modules/mule-models/node_modules/mule-utils'
-          + ' && rm -rf node_modules/mule-rules/node_modules/mule-utils/*'
-          + ' && cp -rf node_modules/mule-utils/* node_modules/mule-rules/node_modules/mule-utils',
-      },
-      updateModelsRulesUtils: {
-        command: 'rm -rf node_modules/mule-models/node_modules/mule-rules/node_modules/mule-utils/*'
-          + ' && cp -rf node_modules/mule-utils/* node_modules/mule-models/node_modules/mule-rules/node_modules/mule-utils'
       },
       gstatus: {
         options: { stdout: true },
         command: 'echo `pwd` && git status ' 
           + ' && cd node_modules/mule-models && echo `pwd` && git status'
-          + ' && cd ../mule-rules && echo `pwd` && git status '
           + ' && cd ../mule-utils && echo `pwd` && git status'
           + ' && cd ../..'
       },

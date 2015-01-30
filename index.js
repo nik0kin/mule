@@ -31,7 +31,7 @@ var startLoggingQ = function (config) {
     mkdirp(config.logsPath, function (err) {
       if (err) console.error(err);
 
-      Logger.init(4, config.logsPath + '/mule' + dateUtils.getNiceDate() + '.log');
+      Logger.init(config.logLevel || 4, config.logsPath + '/mule' + dateUtils.getNiceDate() + '.log');
       MuleModels.initLogger(Logger);
       resolve();
     });
@@ -55,17 +55,18 @@ var startExpress = function (expressConfig, dbUrl) {
   app.listen(expressConfig.port);
 };
 
-var startMuleSystems = function (muleConfig) {
-  var turnTimerSystem = require('./app/turnSystem/turnTimer'),
+var startMuleSystemsQ = function (muleConfig) {
+  var bundleHooks = require('./app/bundleHooks'),
+      turnTimerSystem = require('./app/turnSystem/turnTimer'),
       autoCreateGameSystem = require('./app/autoCreateGame');
 
   // Load RuleBundles
-  var ruleBundleHelper = require('./app/routes/ruleBundles/crud/helper'); // BUT DUMB
-  require('mule-rules/lib/initRuleBundles').loadOnce(ruleBundleHelper, _.keys(muleConfig.ruleBundles), function () {
-    // this calls back whether rulebundles are created or not
-    autoCreateGameSystem.initAutoGameChecks(muleConfig);
-  });
-  turnTimerSystem.initTurnTimerChecks(muleConfig.minimumGameRoundTimerCheck);
+  return bundleHooks.initRuleBundlesQ(muleConfig)
+    .then(function () {
+      // Start Systems
+      autoCreateGameSystem.initAutoGameChecks(muleConfig);
+      turnTimerSystem.initTurnTimerChecks(muleConfig.minimumGameRoundTimerCheck);
+    });
 };
 
 exports.init = function (config, callback) {
@@ -91,15 +92,16 @@ exports.initQ = function (config) {
 
       startExpress(config.http, config.database.db);
       Logger.log('HTTP Online');
+
+      return startMuleSystemsQ(config.mule);
     })
     .then(function () {
-      startMuleSystems(config.mule);
       Logger.log('Mule Systems Online');
 
       Logger.log('The Mule has started his journey ('+config.http.port+')');
     })
     .fail(function (error) {
       Logger.error('The Mule has stumbled on the path', null, error);
-      throw error;
+      process.exit(-1);
     });
 };

@@ -8,13 +8,18 @@ var testMuleConfig = {
   minimumGameRoundTimerCheck: 10, //seconds
   minimumAutoCreateGameTimerCheck: 30,
   ruleBundles: {
-    'CheCkers': {},
-    'BackGammon': {},
-    'VIKINGS': {},
-    'tictactoe': {},
-    'monopoly': {},
-    'connectX': {},
-    'mulesprawl': {}
+    'BackGammon': {
+      codePath: path.resolve(__dirname + '/games/backgammon/bundleCode')
+    },
+    'tictactoe': {
+      codePath: path.resolve(__dirname + '/games/tictactoe/bundleCode')
+    },
+    'connectX': {
+      codePath: path.resolve(__dirname + '/games/connectx/bundleCode')
+    },
+    'mulesprawl': {
+      codePath: path.resolve(__dirname + '/games/mulesprawl/bundleCode')
+    }
   }
 };
 
@@ -28,6 +33,7 @@ var testConfig = {
   },
   mule: testMuleConfig,
 
+  logLevel: 4, // Verbose
   logsPath:  path.normalize(__dirname + '/logs')
 };
 

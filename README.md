@@ -2,7 +2,7 @@ Mule
 =======
 **Turn-Based Game Platform featuring Asyncronous Multiplayer Gameplay**
 
-Roadmap to 0.0.1 / Milestones:
+Roadmap to 0.1.0 / Milestones:
 - I - Users/Games
 - II - Concept of RuleBundles added
 - III - GameBoard (Spaces' and Pieces)
@@ -76,5 +76,6 @@ or
 TESTS:
 =======
 ```
+(cd ./test && ./installGames.sh)  # or ./updateGames.sh
 npm test
 ```

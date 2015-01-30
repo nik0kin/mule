@@ -1,20 +1,19 @@
 var _ = require('lodash'),
   Q = require('q');
 
-var muleRules = require('mule-rules'),
-  bundleHooks = require('../bundleHooks'),
+var bundleHooks = require('../bundleHooks'),
   Logger = require('mule-utils').logging,
   GameBoard = require('mule-models').GameBoard.Model,
   GameState = require('mule-models').GameState.Model,
   PieceState = require('mule-models').PieceState.Model;
 
 var getAction = function (actionType, ruleBundle) {
-  return muleRules.getActions(ruleBundle.name)[actionType];
+  return bundleHooks.getActions(ruleBundle.name)[actionType];
 };
 
 exports.validateActionsQ = function (gameId, ruleBundle, playerRel, actions) {
   var promiseArray = [],
-    _gameStateId;
+      _gameStateId;
   _.each(actions, function (action, key) {
     var Action = getAction(action.type, ruleBundle);
     if (!Action) {

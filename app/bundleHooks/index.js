@@ -1,20 +1,87 @@
-var Q = require('q');
+var Q = require('q'),
+    _ = require('lodash'),
+    path = require('path'),
+    fs = require('fs');
 
-var MuleRules = require('mule-rules'),
+var RuleBundle = require('mule-models').RuleBundle.Model,
   Logger = require('mule-utils').logging,
   GameBoard = require('mule-models').GameBoard.Model,
   brain = require('../turnSystem/brain'),
   createMQ = require('./M'),
   GameState = require('mule-models').GameState.Model;
 
+// for loading ruleBundle general.json
+require.extensions[".json"] = function (m) {
+  m.exports = JSON.parse(fs.readFileSync(m.filename));
+};
+
 exports.createMQ = createMQ;
 
-//////////
+//////////////////////////////
+
+var bundleModule = {};
+
+var getBundleCode = function (ruleBundleName) {
+  return bundleModule[ruleBundleName.toLowerCase()];
+};
+
+exports.initRuleBundlesQ = function (muleConfig) {
+  Logger.vog('Loading RuleBundles');
+  var promises = [];
+  _.each(muleConfig.ruleBundles, function (ruleBundleNameConfig, ruleBundleName) {
+    promises.push(exports.initRuleBundleQ(ruleBundleNameConfig, ruleBundleName));
+  });
+  return Q.all(promises)
+    .then(function () {
+      Logger.vog('RuleBundles finished loading');
+    });
+};
+
+// loads bundleCode & optional creates a RuleBundle dataobject
+exports.initRuleBundleQ = function (ruleBundleConfig, _ruleBundleName) {
+  var ruleBundleName = _ruleBundleName.toLowerCase();
+
+  Logger.vog('Loading ' + ruleBundleName);
+
+  if (!ruleBundleConfig.codePath) {
+    throw 'ruleBundleConfig.codePath required for ' + _ruleBundleName;
+  }
+  bundleModule[ruleBundleName] = require(ruleBundleConfig.codePath);
+
+  var findRegExp = new RegExp('^' + ruleBundleName + '$', 'i');
+  return RuleBundle.findOneQ({name: findRegExp})
+    .then(function (result) {
+      if (result) {
+        return; // do nothing
+      }
+
+      var ruleBundleJSON = getRuleBundleJSON(ruleBundleConfig.codePath),
+          newRuleBundle = new RuleBundle(ruleBundleJSON);
+
+      return newRuleBundle.saveQ();
+    });
+};
+
+// RuleBundles dataobjects are an unnessary mess
+var getRuleBundleJSON = function (bundleCodePath) {
+  return require(path.join(bundleCodePath, 'general.json'));
+};
+
+exports.getActions = function (ruleBundleName) {
+  var bundleCode = getBundleCode(ruleBundleName);
+  if (bundleCode) {
+    return bundleCode.actions || [];
+  } else {
+    return [];
+  }
+};
+
+//////////////////////////////
   // the boardGeneratorHook is ran before a game is started. The hook doesn't get an M object.
 
 // returns a boardDef
 exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, ruleBundleRules, gameId) {
-  var generateFunctionQ = MuleRules.getBundleCode(ruleBundleName).boardGenerator;
+  var generateFunctionQ = getBundleCode(ruleBundleName).boardGenerator;
 
   if (!generateFunctionQ || typeof generateFunctionQ !== 'function') {
     throw 'missing board generator for ' + ruleBundleName;
@@ -35,7 +102,7 @@ var baseHookQ = function (ruleBundleName, gameId, hookName, param1, param2) {
   //      then: print end msg
   //      fail: display err & propigate
 
-  var bundleCode = MuleRules.getBundleCode(ruleBundleName),
+  var bundleCode = getBundleCode(ruleBundleName),
     hookQ = bundleCode[hookName];
 
   if (hookQ) {
@@ -63,7 +130,7 @@ exports.gameStartHookQ = function (gameId, ruleBundleName) {
   return baseHookQ(ruleBundleName, gameId, 'gameStart');
 };
 
-//returns winner or null
+//returns winner, 'tie', or null
 exports.winConditionHookQ = function (gso) {
   return baseHookQ(gso.ruleBundle.name, gso.game._id, 'winCondition');
 };
