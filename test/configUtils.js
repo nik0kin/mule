@@ -42,5 +42,8 @@ exports.initTestMule = function (done) {
     .then(function () {
       dbHelper.init();
       done();
+    })
+    .fail(function (error) {
+      done(error);
     });
 };

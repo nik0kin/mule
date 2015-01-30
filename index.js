@@ -72,6 +72,9 @@ exports.init = function (config, callback) {
   initQ(config)
     .then(function () {
       callback();
+    })
+    .fail(function (error) {
+      callback(error);
     });
 };
 

@@ -1,3 +1,7 @@
+var _ = require('lodash'),
+    path = require('path');
+
+var Logger = require('mule-utils').logging;
 
 /**
  * Express dependencies.
@@ -29,13 +33,20 @@ module.exports = function (app, config, dbUrl, passport) {
     threshold: 9
   }));
 
+  // statically serve folders from user config
+  _.each(config.serveStaticFolders, function (pathToFolder, route) {
+    var fullRoute = path.join(config.routesPrefix, route);
+    Logger.vog('Statically serving ' + pathToFolder + ' at ' + fullRoute);
+    app.use(fullRoute, express.static(pathToFolder));
+  });
+
   //statically serve test site
-  var publicPath = require('path').normalize(__dirname + '/..' + '/public');
+  var publicPath = path.normalize(__dirname + '/..' + '/public');
   app.use(config.routesPrefix + '/public', express.static(publicPath));
 
   app.use(function(req, res, next) {
-    if(req.url == '/webservices')
-      res.redirect('/webservices/public');
+    if(req.url === config.routesPrefix)
+      res.redirect(config.routesPrefix + '/public');
     else
       next();
   });
