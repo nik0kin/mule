@@ -2,7 +2,7 @@ var path = require('path'),
   should = require('should'),
   request = require('supertest');
 
-var mule = require('mule');
+var mule = require('../../index');
 
 var testConfig = {
   http: {
