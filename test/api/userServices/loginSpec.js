@@ -5,14 +5,14 @@
 
 var initTestMule = require('../../configUtils').initTestMule;
 
-var muleServer = 'http://localhost:3130/';
+var muleServer = 'http://localhost:8011/';
 
 var should = require('should'),
   request = require('supertest');
 
 var testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   dbHelper = require('mule-models/test/dbHelper'),
-  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130');
+  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:8011');
 
 describe('API: ', function () {
   before(initTestMule);

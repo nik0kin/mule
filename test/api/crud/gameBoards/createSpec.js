@@ -7,7 +7,7 @@ require ('../../../../server.js');
 var should = require('should'),
   _ = require('lodash');
 
-var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:8011'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   dbHelper = require('mule-models/test/dbHelper');
 

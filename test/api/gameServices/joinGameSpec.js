@@ -11,7 +11,7 @@ var params = require('./joinGameParams'),
   dbHelper = require('mule-models/test/dbHelper'),
   restHelper = require('mule-utils/lib/testUtils/api/restHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
-  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:8011'),
   gameHelper = require('mule-utils/lib/testUtils/api/gameHelper');
 /*
 describe('API: ', function () {

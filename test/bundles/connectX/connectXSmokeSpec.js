@@ -6,7 +6,7 @@ var initTestMule = require('../../configUtils').initTestMule;
 
 var dbHelper = require('mule-models/test/dbHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
-  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+  loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:8011'),
   multiplayerHelper = require('../../etc/multiplayerHelper'),
   gameHelper = require('mule-utils/lib/testUtils/api/gameHelper');
 

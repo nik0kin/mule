@@ -26,7 +26,7 @@ var testMuleConfig = {
 var testConfig = {
   http: {
     routesPrefix: '',
-    port: 3130
+    port: 8011
   },
   database: {
     db: 'mongodb://localhost/mule_test'

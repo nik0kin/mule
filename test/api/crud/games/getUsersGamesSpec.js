@@ -9,7 +9,7 @@ var _ = require('lodash'),
   should = require('should'),
   Q = require('q');
 
-var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:3130'),
+var loginHelper = require('mule-utils/lib/testUtils/api/loginHelper')('http://localhost:8011'),
   dbHelper = require('mule-models/test/dbHelper'),
   testHelper = require('mule-utils/lib/testUtils/mochaHelper'),
   restHelper = require('mule-utils/lib/testUtils/api/restHelper'),

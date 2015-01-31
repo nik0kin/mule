@@ -5,7 +5,7 @@
 
 var initTestMule = require('../../configUtils').initTestMule;
 
-var muleServer = 'http://localhost:3130/';
+var muleServer = 'http://localhost:8011/';
 
 var should = require('should'),
   request = require('supertest');
@@ -22,7 +22,7 @@ describe('API', function () {
 
     describe('POST /users', function(){
       it('respond with json', function(done){
-        request(muleServer) //"http://localhost:3130")
+        request(muleServer) //"http://localhost:8011")
           .post('/users')
           .send(dumbAccount)
           .set('Accept', 'application/json')

@@ -7,7 +7,7 @@ var request = require('supertest'),
 var initTestMule = require('./configUtils').initTestMule;
 
 describe('App', function(){
-  var url = 'http://localhost:3130';
+  var url = 'http://localhost:8011';
 
   before(initTestMule);
 

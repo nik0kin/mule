@@ -10,7 +10,7 @@ var testConfig = {
     serveStaticFolders: {
       '/static/test': path.join(__dirname, 'testFolder')
     },
-    port: 3130
+    port: 8011
   },
   database: {
     db: 'mongodb://localhost/mule_test'
@@ -35,7 +35,7 @@ var initTestMule = function (done) {
     });
 };
 
-var muleServerUrl = 'http://localhost:3130';
+var muleServerUrl = 'http://localhost:8011';
 
 // Currently we have trouble testing multiple configs, since mocha doesnt drop loaded modules inbetween test files
 describe.skip('Config', function () {
