@@ -51,13 +51,22 @@ exports.initRuleBundleQ = function (ruleBundleConfig, _ruleBundleName) {
   var findRegExp = new RegExp('^' + ruleBundleName + '$', 'i');
   return RuleBundle.findOneQ({name: findRegExp})
     .then(function (result) {
+      var checkRuleBundleName = function (rbName) {
+        rbName = rbName.toLowerCase();
+        if (ruleBundleName !== rbName) {
+          delete bundleModule[ruleBundleName];
+          throw 'config.mule.ruleBundles[' + ruleBundleName + ']'
+              + ' key doesnt match general.json name: ' + rbName;
+        }
+      };
       if (result) {
+        checkRuleBundleName(result.name);
         return; // do nothing
       }
 
       var ruleBundleJSON = getRuleBundleJSON(ruleBundleConfig.codePath),
           newRuleBundle = new RuleBundle(ruleBundleJSON);
-
+      checkRuleBundleName(newRuleBundle.name);
       return newRuleBundle.saveQ();
     });
 };
