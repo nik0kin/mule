@@ -75,6 +75,9 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
 
   ///  Game (static)  ///
   that.getGameInfo; // P2
+  that.getPlayerRels = function () {
+    return _.keys(game.players);
+  };
 
   ///  GameBoard (static)  ///
   that.getBoardInfo; // P2
@@ -158,7 +161,9 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
     return spacesByLocationId[locationId];
   };
 
-  that.getSpaces = function (searchArgs) {};
+  that.getSpaces = function (searchArgs) {
+    return spacesByLocationId;
+  };
 
   that.setSpace = function (spaceId, spaceObject) {
     if (!spaceObject.attributes) {
