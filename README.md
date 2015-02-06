@@ -7,11 +7,12 @@ Roadmap to 0.1.0 / Milestones:
 - II - Concept of RuleBundles added
 - III - GameBoard (Spaces' and Pieces)
 - IV - Turn System
-- V - Action System Experiments (TicTacToe, MuleSprawl, Backgammon)  <--CURRENT
-- VI - Huge Cleanup / Refactor Month
-- VII - RuleBundle API
-- VIII - Efficiency
-- IX - AI
+- V - Action System Experiments (TicTacToe, MuleSprawl, Backgammon)
+- VI - RuleBundle API
+- VII - Huge Cleanup / Refactor Month  <--CURRENT
+- VIII - AI
+- IX - Database Abstraction Layer
+- X - Scalability
 
 Latest commit on master hosted at (CI staging):
 - MuleFrontend: http://zion.tgp.io:313/

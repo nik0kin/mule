@@ -18,7 +18,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
       return History.findByIdQ(gameBoard.history);
     })
     .then(function (historyObject) {
-      turnNumber = historyObject.currentTurn;
+      turnNumber = historyObject.currentRound;
       // save the turn
       return historyObject.addPlayByMailPlayerTurnAndSaveQ(player, turn);
     })
