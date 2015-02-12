@@ -92,6 +92,12 @@ exports.progressTurnQ = function (gso, player) {
                 //TODO where should progressTurn's meta data go? (in players actions?)
                 return fHistory.addRoundRobinMetaAndSaveQ({actions:[{type: 'metadata', metadata: _metaData}] });
               });
+          } else {
+            return History.findByIdQ(gso.history._id)
+              .then(function (fHistory) {
+                fHistory.currentTurn++;
+                return fHistory.saveQ();
+              });
           }
         });
     })
