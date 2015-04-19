@@ -12,42 +12,69 @@ var MS_PER_SEC = 1000;
 
 var timeoutId, minTimerCheck;
 
-exports.initAutoGameChecks = function (_muleConfig) {
+var initAutoGameChecks = function (_muleConfig) {
   muleConfig = _muleConfig;
   minTimerCheck = muleConfig.minimumAutoCreateGameTimerCheck;
 
-  // attach ruleBundle ids
   RuleBundle.findQ()
     .then(function (ruleBundles) {
+      // get rulebundle ids
+      var ruleBundleIds = {};
+      _.each(ruleBundles, function (rb) {
+        ruleBundleIds[rb.name.toLowerCase()] = rb._id;
+      });
+
+      // attach ruleBundle ids to config settings
+      var attachIdToGameConfig = function (gameConfig, rulebundleName) {
+        var ruleBundleId = ruleBundleIds[rulebundleName];
+        gameConfig.ruleBundle = {id: ruleBundleId};
+      };
+
       _.each(muleConfig.ruleBundles, function (value, key) {
         if (!value.autoCreateGame) return;
 
-        //find key in rule bundles
-        var ruleBundle = _.find(ruleBundles, function (rb) {
-          return rb.name.toLowerCase() === key.toLowerCase();
-        });
-        value.autoCreateGame.ruleBundle = { id: ruleBundle._id };
+        // autoCreateGame can be game settings or an array of game settings
+        if (_.isArray(value.autoCreateGame)) {
+          _.each(value.autoCreateGame, function (v) {
+            attachIdToGameConfig(v, key.toLowerCase());
+          });
+        } else {
+          attachIdToGameConfig(value.autoCreateGame, key.toLowerCase());
+        }
       });
 
-      exports.checkForNoOpenGames();
+      checkForNoOpenGames();
     });
 
 };
 
-exports.checkForNoOpenGames = function () {
-  logging.log('Checking for no Open Games');
+exports.initAutoGameChecks = initAutoGameChecks;
+
+var checkForNoOpenGames = function () {
+  logging.log('Checking for any Auto Games that need to be created');
+
+  var checkPerGameConfig = function (gameConfig, ruleBundleName) {
+    gameConfig = _.clone(gameConfig);
+    checkForNoOpenRuleBundleGames(gameConfig, ruleBundleName);
+  };
   _.each(muleConfig.ruleBundles, function (value, key) {
-    if (value.autoCreateGame) {
-      var gameConfig = _.clone(value.autoCreateGame);
-      exports.checkForNoOpenRuleBundleGames(gameConfig, key);
+    if (!value.autoCreateGame) return;
+
+    if (_.isArray(value.autoCreateGame)) {
+      _.each(value.autoCreateGame, function (v) {
+        checkPerGameConfig(v, key.toLowerCase());
+      });
+    } else {
+      checkPerGameConfig(value.autoCreateGame, key.toLowerCase());
     }
   });
 
-  timeoutId = setTimeout(exports.checkForNoOpenGames, minTimerCheck * MS_PER_SEC);
+  timeoutId = setTimeout(checkForNoOpenGames, minTimerCheck * MS_PER_SEC);
 };
 
-exports.checkForNoOpenRuleBundleGames = function (config, rulebundleName) {
+var checkForNoOpenRuleBundleGames = function (config, rulebundleName) {
   var conditions = {
+    'name': config.name,
     'gameStatus': {
       $regex: 'open'
     }
@@ -62,7 +89,7 @@ exports.checkForNoOpenRuleBundleGames = function (config, rulebundleName) {
 
       if (results && results.length === 0) {
         // create new game
-        logging.log('creating new game: ' + rulebundleName + '[' + config.id + ']');
+        logging.log('creating new game: ' + rulebundleName);
         createGameQ({validatedParams: config})
           .done(function (result) {
             logging.log('autogame created successfully: gameId=' + result._id);
