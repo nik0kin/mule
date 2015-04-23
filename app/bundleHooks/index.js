@@ -86,6 +86,20 @@ exports.getActions = function (ruleBundleName) {
 };
 
 //////////////////////////////
+
+exports.doesValidateCustomBoardSettingsHookExist = function (ruleBundleName) {
+  return !!getBundleCode(ruleBundleName).customBoardSettingsValidator
+}
+
+// returns true or false
+exports.validateCustomBoardSettingsHook = function (ruleBundleName, customBoardSettings) {
+  var validateFunction = getBundleCode(ruleBundleName).customBoardSettingsValidator;
+
+  Logger.log('Checking customBoardSettings for: ' + ruleBundleName);
+
+  return validateFunction(customBoardSettings);
+};
+
   // the boardGeneratorHook is ran before a game is started. The hook doesn't get an M object.
 
 // returns a boardDef

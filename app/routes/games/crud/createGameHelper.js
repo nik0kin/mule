@@ -6,6 +6,7 @@ var utils = require('mule-utils/jsonUtils'),
   Game = require('mule-models').Game.Model,
   gameHelper = require('../../../turnSystem/gameHelper'),
   RuleBundleUtils = require('mule-models/models/RuleBundle/util'),
+  bundleHooks = require('../../../bundleHooks'),
   integerUtils = require('mule-utils/integerUtils'),
   gameBoardHelper = require('../../gameBoards/crud/helper');
 
@@ -97,6 +98,10 @@ var parseCustomBoardSettingsQ = function (foundRuleBundle, newGame) {
     var validatedCustomBoardSettings = {};
 
     if (foundRuleBundle.gameSettings && foundRuleBundle.gameSettings.customBoardSettings) {
+      if (bundleHooks.doesValidateCustomBoardSettingsHookExist(foundRuleBundle.name)) {
+        invalidSettings = bundleHooks.validateCustomBoardSettingsHook(foundRuleBundle.name, newGame.ruleBundleGameSettings.customBoardSettings);
+        validatedCustomBoardSettings = newGame.ruleBundleGameSettings.customBoardSettings;
+      } else {
       _.each(foundRuleBundle.gameSettings.customBoardSettings, function (value, key) {
         var paramToValidate = parseInt(newGame.ruleBundleGameSettings.customBoardSettings[key]); // needs better names
 
@@ -107,6 +112,7 @@ var parseCustomBoardSettingsQ = function (foundRuleBundle, newGame) {
           invalidSettings[key] = {text: 'invalid param (' + JSON.stringify(value) + ')'};
         }
       });
+      }
     } else {
       newGame.ruleBundleGameSettings = {};
     }
