@@ -112,7 +112,15 @@ exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, rul
 
   Logger.log('Generating Board for: ' + ruleBundleName);
   
-  return generateFunctionQ(customBoardSettings, ruleBundleRules);
+  return Q()
+    .then(function () {
+      return generateFunctionQ(customBoardSettings, ruleBundleRules);
+    })
+    .fail(function (err) {
+      var errorMsg = '[ERROR] boardGenerator: ' + err;
+      Logger.err(errorMsg, gameId, err);
+      throw errorMsg;
+    });
 };
 
 //////////
