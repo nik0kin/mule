@@ -80,3 +80,18 @@ TESTS:
 (cd ./test && ./installGames.sh)  # or ./updateGames.sh
 npm test
 ```
+
+DEV:
+=======
+
+Develop `mule-utils` & `mule-models` repo's from mule `node_module/mule-*` directory
+
+Grunt Tasks
+-----------
+
+Grunt tasks use git (authed through ssh)
+
+`grunt updateMule` - clears `./node_modules` and re-npm-install's dependencies. mule-utils & mule-models is git cloned into node_modules
+`grunt updateUtils` - clears `./node_modules/mule-models/node_modules/mule-utils` and re-git-clones `mule-utils`
+
+`grunt monGO` - starts mongodb daemon

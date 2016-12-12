@@ -90,7 +90,6 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['test']);
 
   grunt.registerTask('updateMule', ['shell:mule_update']);
-  grunt.registerTask('updateRules', ['shell:updateRules']);
   grunt.registerTask('updateUtils', ['shell:updateUtils']);
   grunt.registerTask('gstatus', ['shell:gstatus']);
   grunt.registerTask('gs', ['shell:gstatus']);
