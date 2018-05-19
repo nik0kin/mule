@@ -48,6 +48,11 @@ exports.initRuleBundleQ = function (ruleBundleConfig, _ruleBundleName) {
   }
   bundleModule[ruleBundleName] = require(ruleBundleConfig.codePath);
 
+  // if webpacked w/ default
+  if (bundleModule[ruleBundleName].default) {
+    bundleModule[ruleBundleName] = bundleModule[ruleBundleName].default;
+  }
+
   var findRegExp = new RegExp('^' + ruleBundleName + '$', 'i');
   return RuleBundle.findOneQ({name: findRegExp})
     .then(function (result) {
@@ -111,7 +116,7 @@ exports.boardGeneratorHookQ = function (ruleBundleName, customBoardSettings, rul
   }
 
   Logger.log('Generating Board for: ' + ruleBundleName);
-  
+
   return Q()
     .then(function () {
       return generateFunctionQ(customBoardSettings, ruleBundleRules);
