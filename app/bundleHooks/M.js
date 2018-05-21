@@ -186,6 +186,11 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
     var pieceObjectClone = _.clone(pieceObject); // doesn't have mongo properties on it
     pieceObjectClone.id = randomId;
 
+    // Don't allow bundleCode to set mongo _id
+    if (pieceObjectClone.hasOwnProperty('_id')) {
+      delete pieceObjectClone._id;
+    }
+
     var newPieceState = new PieceState(pieceObjectClone);
     newPieceStates.push(newPieceState);
 
