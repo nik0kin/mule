@@ -58,6 +58,7 @@ exports.startGameQ = function (game) {
       _.each(spacesMaster, function (value, key) {
         var newSpaceState = new SpaceState();
         newSpaceState.boardSpaceId = value.id;
+	newSpaceState.class = value.class;
         newSpaceState.attributes = value.attributes;
 
         var promise = newSpaceState.saveQ()

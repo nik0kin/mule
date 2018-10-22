@@ -1,6 +1,6 @@
 {
   "name": "mule",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "(Abstract) Asyncronous-play Turn-based Game Platform",
   "main": "index.js",
   "directories": {
@@ -19,7 +19,7 @@
     "cors": "^2.5.3",
     "express": "4.x",
     "express-session": "~1.7.5",
-    "lodash": "~2.4.1",
+    "lodash": "4.7.11",
     "mkdirp": "0.5.0",
     "morgan": "~1.2.2",
     "mule-models": "git+https://github.com/nik0kin/mule-models.git#master",
