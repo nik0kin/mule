@@ -48,12 +48,12 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
     spaceMongoIdsByLocationId = {};
 
   if (gameState && gameState.pieces && gameState.spaces) {
-    piecesById = _.indexBy(gameState.pieces, 'id');
+    piecesById = _.keyBy(gameState.pieces, 'id');
     _.each(gameState.pieces, function (piece) { // EFF there might be better underscore function for this
       pieceMongoIdsById[piece.id] = piece._id;
     });
 
-    spacesByLocationId = _.indexBy(gameState.spaces, 'boardSpaceId');
+    spacesByLocationId = _.keyBy(gameState.spaces, 'boardSpaceId');
     _.each(gameState.spaces, function (space) { // EFF there might be better underscore function for this
       spaceMongoIdsByLocationId[space.boardSpaceId] = space._id;
     });
@@ -174,27 +174,29 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
 
     var spaceStateMongoId = spaceMongoIdsByLocationId[spaceId];
 
-    if (!_.contains(modifiedSpaceStateIds, spaceStateMongoId)) {
+    if (!_.includes(modifiedSpaceStateIds, spaceStateMongoId)) {
       modifiedSpaceStateIds.push(spaceStateMongoId);
     }
   };
 
-
-  that.addPiece = function (pieceObject) {
-    var randomId = Math.floor((Math.random() * 9999999) + 1); //TODO BAD
-
+  function createPieceState(pieceObject, id) {
     var pieceObjectClone = _.clone(pieceObject); // doesn't have mongo properties on it
-    pieceObjectClone.id = randomId;
+    if (id) pieceObjectClone.id = id;
 
     // Don't allow bundleCode to set mongo _id
     if (pieceObjectClone.hasOwnProperty('_id')) {
       delete pieceObjectClone._id;
     }
 
-    var newPieceState = new PieceState(pieceObjectClone);
-    newPieceStates.push(newPieceState);
+    piecesById[pieceObjectClone.id] = pieceObjectClone;
 
-    piecesById[newPieceState.id] = pieceObjectClone;
+    return new PieceState(pieceObjectClone);
+  }
+
+  that.addPiece = function (pieceObject) {
+    var randomId = Math.floor((Math.random() * 9999999) + 1); // TODO BAD
+    var newPieceState = createPieceState(pieceObject, randomId)
+    newPieceStates.push(newPieceState);
 
     return newPieceState.id;
   };
@@ -251,11 +253,21 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
       pieceObject.attributes = {};
     }
 
+    // If the PieceState is new, replace it
+    var existingNewPieceStateIndex = _.findIndex(newPieceStates, function (pieceState) {
+      return pieceState.id === pieceId;
+    });
+    if (existingNewPieceStateIndex !== -1) {
+      var newPieceState = createPieceState(pieceObject);
+      newPieceStates[existingNewPieceStateIndex] = newPieceState;
+      return;
+    }
+
     piecesById[pieceId] = pieceObject;
 
+    // If the PieceState hasn't been modified before, make sure it gets saved
     var pieceStateMongoId = pieceMongoIdsById[pieceId];
-
-    if (!_.contains(modifiedPieceStateIds, pieceStateMongoId)) {
+    if (!_.includes(modifiedPieceStateIds, pieceStateMongoId)) {
       modifiedPieceStateIds.push(pieceStateMongoId);
     }
   };
@@ -294,7 +306,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
       var promise = PieceState.findByIdQ(pieceStateId)
         .then(function (foundPieceState) {
           if (!foundPieceState) {
-            throw 'persistQ: invalid pieceStateId' + pieceStateId;
+            throw 'persistQ: invalid pieceStateId ' + pieceStateId;
           }
 
           // EFF this prob could be better
