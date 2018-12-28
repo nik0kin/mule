@@ -311,6 +311,16 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
 
           // EFF this prob could be better
           _.each(piecesById[foundPieceState.id], function (value, key) {
+            if (key === '_id') {
+              // this is to prevent an error when _id is set to undefined, but it is a kludge/workaround
+              //   there should not be a pieceId in modifiedPieceStateIds that has not been saved
+              if (value === 'undefined' || value === undefined) {
+                console.log('OHHH NOOO attempting to set _id: ' + value, pieceStateId);
+                console.log(piecesById[foundPieceState.id]);
+                console.log('PLEASE FIX');
+              }
+              return;
+            }
             foundPieceState[key] = value;
           });
 

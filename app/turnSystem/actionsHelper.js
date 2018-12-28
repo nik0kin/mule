@@ -12,8 +12,7 @@ var getAction = function (actionType, ruleBundle) {
 };
 
 exports.validateActionsQ = function (gameId, ruleBundle, playerRel, actions) {
-  var promiseArray = [],
-      _gameStateId;
+  var promiseArray = [];
   _.each(actions, function (action, key) {
     var Action = getAction(action.type, ruleBundle);
     if (!Action) {
@@ -45,21 +44,30 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
 
   _.each(actions, function (action, actionKey) {
     var Action = getAction(action.type, ruleBundle);
-    var promise = bundleHooks.actionDoQ(Action, objs.game._id, playerRel, action.params)
-      .then(function (resultActionMetaData) {
-        Logger.log('Round:' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey, objs.game._id);
+    var promise = function () {
+      return bundleHooks.actionDoQ(Action, objs.game._id, playerRel, action.params)
+       .then(function (resultActionMetaData) {
+         Logger.log('Round:' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey, objs.game._id);
 
-        if (resultActionMetaData) {
-          return objs.history.saveMetaDataToActionQ(playerRel, actionKey, resultActionMetaData);
-        }
-      })
-      .fail(function (err) {
-        var errStr = 'Round:' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + actionKey;
-        Logger.err(errStr, objs.game._id, err);
-        throw errStr + ' ' + err;
-      });
+         if (resultActionMetaData) {
+           return objs.history.saveMetaDataToActionQ(playerRel, actionKey, resultActionMetaData);
+         }
+       })
+       .fail(function (err) {
+         var errStr = 'Round:' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + actionKey;
+         Logger.err(errStr, objs.game._id, err);
+         throw new Error(errStr + ' ' + err);
+       });
+    };
     promiseArray.push(promise);
   });
 
-  return Q.all(promiseArray);
+  // run each Action.doQ one by one
+  //  TODO an integration test
+  //    that Plays a Turn with two actions which both modify playVariables and the same PieceState
+  return runPromisesSequentially(promiseArray);
 };
+
+function runPromisesSequentially(promiseArray) {
+  return promiseArray.reduce(Q.when, Q());
+}
