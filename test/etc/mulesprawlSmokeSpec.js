@@ -76,7 +76,7 @@ describe('ETC: ', function () {
           .then(function (result) {
             createdGameId = result.gameId;
             should(createdGameId).ok;
-            
+
             emptyTurn.gameId = createdGameId;
 
             // play first turn
@@ -88,7 +88,7 @@ describe('ETC: ', function () {
           .fail(testHelper.mochaError(done));
       });
 
-      it(' should place a castle and wait til 2nd round and check for 5house/10farmer', function (done) {
+      it(' should place a castle and wait til 2nd round and check for 6house/12farmer', function (done) {
         var waitTilRound = 2;
         this.timeout(60000);
         //create the game with the first user
@@ -96,7 +96,7 @@ describe('ETC: ', function () {
           .then(function (result) {
             createdGameId = result.gameId;
             should(createdGameId).ok;
-            
+
             // fetch board
             return gameHelper.sendRestRequest({
               agent: gameCreatorUserAgent,
@@ -178,9 +178,9 @@ describe('ETC: ', function () {
             })
           })
           .then(function (result) {
-            // look at all pieces for 5 houses and 10 farmers
-            var expectedHouseCount = 5,
-              expectedFarmerCount = 10,
+            // look at all pieces for 6 houses and 12 farmers
+            var expectedHouseCount = 6,
+              expectedFarmerCount = 12,
               totalHouseCount = 0,
               totalFarmerCount = 0;
 
