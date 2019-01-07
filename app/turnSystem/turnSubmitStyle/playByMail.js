@@ -64,13 +64,15 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
       var turnObject = turns[0],
         promises = [];
       _.each(turnObject.playerTurns, function (turn, player) {
-        var promise = actionsHelper.doActionsQ({
-          game: game,
-          history: historyObject
-        }, turn.actions, player, ruleBundle);
+        var promise = function () {
+          actionsHelper.doActionsQ({
+            game: game,
+            history: historyObject
+          }, turn.actions, player, ruleBundle);
+        };
         promises.push(promise);
       });
-      return Q.all(promises);
+      return runPromisesSequentially(promises);
     })
     .then(function () {
       // Call ProgressRound Hook and save metadata
@@ -101,3 +103,7 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
     });
 
 };
+
+function runPromisesSequentially(promiseArray) {
+  return promiseArray.reduce(Q.when, Q());
+}
