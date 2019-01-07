@@ -84,6 +84,8 @@ exports.initQ = function (config) {
     return Q();
   };
 
+  require('./config').setConfig(config);
+
   return startLoggingQ(config)
     .then(function () {
       Logger.log('Logger Online');

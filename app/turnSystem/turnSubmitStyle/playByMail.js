@@ -2,9 +2,9 @@ var _ = require('lodash'),
   Q = require('q');
 
 var GameBoard = require('mule-models').GameBoard.Model,
-  GameState = require('mule-models').GameState.Model,
   History = require('mule-models').History.Model,
   Logger = require('mule-utils').logging,
+  config = require('../../../config'),
   bundleHooks = require('../../bundleHooks'),
   actionsHelper = require('./../actionsHelper');
 
@@ -49,8 +49,10 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
 };
 
 exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
+  var muleConfig = config.getConfig();
+  var maxAllowedPlayByMailRounds = muleConfig.maxAllowedPlayByMailRounds || 1500;
 
-  if (historyObject.currentRound > 1500) {
+  if (historyObject.currentRound > maxAllowedPlayByMailRounds) {
     // do nothing
     return;
   }
