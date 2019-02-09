@@ -45,16 +45,17 @@ exports.doActionsQ = function (objs, actions, playerRel, ruleBundle) {
   _.each(actions, function (action, actionKey) {
     var Action = getAction(action.type, ruleBundle);
     var promise = function () {
+      Logger.log('[START] Action #' + actionKey, objs.game._id);
       return bundleHooks.actionDoQ(Action, objs.game._id, playerRel, action.params)
        .then(function (resultActionMetaData) {
-         Logger.log('Round:' + objs.history.currentRound + ' - ' + playerRel + ': success action #' + actionKey, objs.game._id);
+         Logger.log('[COMPLETE] Action #' + actionKey + ' Round:' + objs.history.currentRound + ' - ' + playerRel, objs.game._id);
 
          if (resultActionMetaData) {
            return objs.history.saveMetaDataToActionQ(playerRel, actionKey, resultActionMetaData);
          }
        })
        .fail(function (err) {
-         var errStr = 'Round:' + objs.history.currentRound + ' - ' + playerRel + ': error action #' + actionKey;
+         var errStr = '[ERROR] Action #' + actionKey + ' Round:' + objs.history.currentRound + ' - ' + playerRel;
          Logger.err(errStr, objs.game._id, err);
          throw new Error(errStr + ' ' + err);
        });

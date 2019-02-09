@@ -1,6 +1,6 @@
 {
   "name": "mule",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "(Abstract) Asyncronous-play Turn-based Game Platform",
   "main": "index.js",
   "directories": {

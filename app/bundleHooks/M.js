@@ -402,7 +402,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
         return Q.all(savePromises);
       })
       .then(function () {
-        logging.log('Persist Successful (' + dbObjectsChanged + ')', game._id);
+        logging.log('Persist Successful (' + dbObjectsChanged + ' objects saved)', game._id);
         resetM();
       });
   };

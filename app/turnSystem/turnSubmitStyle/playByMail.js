@@ -61,11 +61,13 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
   // do all actions in current round (in history)
   historyObject.getRoundTurnsQ(historyObject.currentRound)
     .then(function (turns) {
+      Logger.log('Starting PlayByMail Round: ' + historyObject.currentRound, game._id);
+
       var turnObject = turns[0],
         promises = [];
       _.each(turnObject.playerTurns, function (turn, player) {
         var promise = function () {
-          actionsHelper.doActionsQ({
+          return actionsHelper.doActionsQ({
             game: game,
             history: historyObject
           }, turn.actions, player, ruleBundle);
@@ -75,6 +77,8 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
       return runPromisesSequentially(promises);
     })
     .then(function () {
+      Logger.log('All Actions Complete - PlayByMail Round: ' + historyObject.currentRound, game._id);
+
       // Call ProgressRound Hook and save metadata
       return bundleHooks.progressRoundHookQ(ruleBundle, game);
     })
