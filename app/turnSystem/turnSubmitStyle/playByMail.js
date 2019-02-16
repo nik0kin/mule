@@ -50,7 +50,7 @@ exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
 
 exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
   var muleConfig = config.getConfig();
-  var maxAllowedPlayByMailRounds = muleConfig.maxAllowedPlayByMailRounds || 1500;
+  var maxAllowedPlayByMailRounds = muleConfig.mule.maxAllowedPlayByMailRounds || 1500;
 
   if (historyObject.currentRound > maxAllowedPlayByMailRounds) {
     // do nothing
