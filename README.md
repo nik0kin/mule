@@ -2,6 +2,8 @@ Mule
 =======
 **Turn-Based Game Platform featuring Asyncronous Multiplayer Gameplay**
 
+![A friendly game of checkers](robot-vs-mule.png)
+
 Roadmap to 0.1.0 / Milestones:
 - I - Users/Games
 - II - Concept of RuleBundles added
@@ -30,7 +32,7 @@ Node (Ubuntu):
     sudo apt-get update
     sudo apt-get install nodejs
 ```
-    
+
 Grunt, forever:
 -----------
 ```
