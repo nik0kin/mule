@@ -4,7 +4,7 @@ var Q = require('q');
 var queueCache = {};
 
 /**
- *  add a process callback to queue, will not be queued at the same time
+ *  add a function to process to the queue, it will not be executed at the same time
  *    as another process with the same gameId
  **/
 exports.addJob = function addJob(gameId, process) {

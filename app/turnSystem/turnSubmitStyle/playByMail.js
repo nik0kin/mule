@@ -6,7 +6,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
   Logger = require('mule-utils').logging,
   config = require('../../../config'),
   bundleHooks = require('../../bundleHooks'),
-  actionsHelper = require('./../actionsHelper');
+  actionsHelper = require('../actionsHelper');
 
 
 exports.submitTurnQ = function (game, player, gameBoardId, turn, ruleBundle) {
