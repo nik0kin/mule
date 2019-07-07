@@ -1,17 +1,13 @@
-var _ = require('lodash'),
-  Q = require('q');
+var _ = require('lodash');
 
 var turnBrain = require('../../turnSystem/brain'),
+  addJob = require('../../jobQueue').addJob,
   Logger = require('mule-utils').logging,
   actionsHelper = require('../../turnSystem/actionsHelper'),
   RuleBundle = require('mule-models').RuleBundle.Model,
   Game = require('mule-models').Game.Model;
 
 exports.playTurnQ = function (gameId, playerRel, userId, actions) {
-  var _game,
-    _ruleBundle,
-    playerRelId;
-
   if (!gameId) {
     throw {err: 'MISSING GAME ID'};
   }
@@ -20,6 +16,15 @@ exports.playTurnQ = function (gameId, playerRel, userId, actions) {
     throw {err: 'MISSING ACTIONS ARRAY'};
   }
 
+  return addJob(gameId, function() {
+    return playTurnJob(gameId, playerRel, userId, actions);
+  });
+}
+
+function playTurnJob(gameId, playerRel, userId, actions) {
+  var _game,
+    _ruleBundle,
+    playerRelId;
   return Game.findByIdQ(gameId)
     .then (function (game) {
       if (!game) {

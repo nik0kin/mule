@@ -24,6 +24,7 @@
     "morgan": "1.9.1",
     "mule-models": "git+https://github.com/nik0kin/mule-models.git#master",
     "mule-utils": "git+https://github.com/nik0kin/mule-utils.git#master",
+    "p-queue": "^6.0.2",
     "passport": "0.2.0",
     "passport-local": "1.0.0",
     "q": "0.9.7",

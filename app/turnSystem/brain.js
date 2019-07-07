@@ -3,6 +3,7 @@ var _ = require('lodash'),
 
 var roundRobinTurnSystem = require('./turnSubmitStyle/roundRobin'),
   playByMailTurnSystem = require('./turnSubmitStyle/playByMail'),
+  addJob = require('../jobQueue').addJob,
   Logger = require('mule-utils').logging,
   Game = require('mule-models').Game.Model,
   GameBoard = require('mule-models').GameBoard.Model,
@@ -23,43 +24,44 @@ exports.submitPlayerTurnQ = function (game, playerRelId, gameBoardId, actions, r
 };
 
 // turn and/or round
-exports.forceTurnProgress = function (game) {
-  exports.loadGameStateObjectQ(game)
-    .done(function (gameStateObject) {
-      var history = gameStateObject.history;
-      Logger.vog('Trying to forceTurnProgress', gameStateObject.game._id);
-      var startTime = Date.now();
-      var playerRel;
-      if (gameStateObject.ruleBundle.turnSubmitStyle === 'roundRobin') {
-        playerRel = gameStateObject.game.getRoundRobinNextPlayerRel(); // player that needs to play
-        var logStr = 'forcing {0}\'s turn progress (round {1})'.format(playerRel, history.currentRound);
-        Logger.vog(logStr, game._id);
-        history.addRoundRobinPlayerTurnAndSaveQ(playerRel, undefined)
-          .then(function () {
-            return roundRobinTurnSystem.progressTurnQ(gameStateObject, playerRel);
-          })
-          .done(function () {
-            Logger.log('force complete ' + (Date.now() - startTime) + 'ms', game._id);
-          });
-      } else if (gameStateObject.ruleBundle.turnSubmitStyle === 'playByMail') {
-        history.getPlayersThatHaveNotPlayedTheCurrentTurnQ()
-          .then(function (notPlayedPlayerRels) {
-            if (notPlayedPlayerRels.length === 0) { return; }
-            playerRel = undefined; // only affects a log message, maybe shouldnt exist in progressRoundQ ?
-            Logger.log('forcing round progress on ' + JSON.stringify(notPlayedPlayerRels) + ' (round ' + history.currentRound + ')', game._id);
-            return history.addPlayByMailPlayerTurnAndSaveQ(notPlayedPlayerRels, undefined);
-          })
-          .then(function () {
-            return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, history, gameStateObject.ruleBundle);
-          })
-          .done(function () {
-            Logger.log('force complete ' + (Date.now() - startTime) + 'ms', game._id);
-          }, function (err) {
-            Logger.err('force failed:', game._id, err);
-          });
-      }
+exports.forceTurnProgress = function (_game) {
+  var startTime;
+  addJob(_game._id, function() {
+    startTime = Date.now();
+    return exports.loadGameStateObjectByIdQ(_game._id)
+      .then(function (gameStateObject) {
+        var game = gameStateObject.game;
+        var history = gameStateObject.history;
+        Logger.vog('Trying to forceTurnProgress', gameStateObject.game._id);
+        var playerRel;
+        if (gameStateObject.ruleBundle.turnSubmitStyle === 'roundRobin') {
+          playerRel = gameStateObject.game.getRoundRobinNextPlayerRel(); // player that needs to play
+          var logStr = 'forcing {0}\'s turn progress (round {1})'.format(playerRel, history.currentRound);
+          Logger.vog(logStr, game._id);
+          return history.addRoundRobinPlayerTurnAndSaveQ(playerRel, undefined)
+            .then(function () {
+              return roundRobinTurnSystem.progressTurnQ(gameStateObject, playerRel);
+            });
+        } else if (gameStateObject.ruleBundle.turnSubmitStyle === 'playByMail') {
+          return history.getPlayersThatHaveNotPlayedTheCurrentTurnQ()
+            .then(function (notPlayedPlayerRels) {
+              if (notPlayedPlayerRels.length === 0) { return; }
+              playerRel = undefined; // only affects a log message, maybe shouldnt exist in progressRoundQ ?
+              Logger.log('forcing round progress on ' + JSON.stringify(notPlayedPlayerRels) + ' (round ' + history.currentRound + ')', game._id);
+              return history.addPlayByMailPlayerTurnAndSaveQ(notPlayedPlayerRels, undefined);
+            })
+            .then(function () {
+              return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, history, gameStateObject.ruleBundle);
+            });
+        }
+      }, function (err) {
+        Logger.err('ERROR IN FORCE:', game._id, err);
+      });
+  })
+    .done(function () {
+      Logger.log('force complete ' + (Date.now() - startTime) + 'ms', _game._id);
     }, function (err) {
-      Logger.err('ERROR IN FORCE:', game._id, err);
+      Logger.err('force failed:', _game._id, err);
     });
 };
 
