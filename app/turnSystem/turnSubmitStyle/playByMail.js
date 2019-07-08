@@ -59,7 +59,7 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
 
   var _metaData;
   // do all actions in current round (in history)
-  historyObject.getRoundTurnsQ(historyObject.currentRound)
+  return historyObject.getRoundTurnsQ(historyObject.currentRound)
     .then(function (turns) {
       Logger.log('Starting PlayByMail Round: ' + historyObject.currentRound, game._id);
 

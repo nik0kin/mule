@@ -24,9 +24,9 @@ exports.submitPlayerTurnQ = function (game, playerRelId, gameBoardId, actions, r
 };
 
 // turn and/or round
-exports.forceTurnProgress = function (_game) {
+exports.forceTurnProgress = function (_game, throwError) {
   var startTime;
-  addJob(_game._id, function() {
+  return addJob(_game._id, function() {
     startTime = Date.now();
     return exports.loadGameStateObjectByIdQ(_game._id)
       .then(function (gameStateObject) {
@@ -54,14 +54,15 @@ exports.forceTurnProgress = function (_game) {
               return playByMailTurnSystem.progressRoundQ(gameStateObject.game, playerRel, history, gameStateObject.ruleBundle);
             });
         }
-      }, function (err) {
-        Logger.err('ERROR IN FORCE:', game._id, err);
       });
   })
-    .done(function () {
+    .then(function () {
       Logger.log('force complete ' + (Date.now() - startTime) + 'ms', _game._id);
     }, function (err) {
       Logger.err('force failed:', _game._id, err);
+      if (throwError) {
+        throw err;
+      }
     });
 };
 
@@ -100,7 +101,7 @@ exports.loadGameStateObjectQ = function (game) {
         history: _history
       };
       Logger.log('Loaded GSO, ' + (Date.now() - startTime) + 'ms', game._id);
-      return Q(gso);
+      return gso;
     });
 };
 

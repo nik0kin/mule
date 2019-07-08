@@ -200,6 +200,30 @@ describe('ETC: ', function () {
           })
           .fail(testHelper.mochaError(done));
       });
+
+      it.only(' should work if the player plays at the same time as a forceProgressRound is happening', function (done) {
+        this.timeout(60000);
+        //create the game with the first user
+        gameHelper.createGameQ({agent: gameCreatorUserAgent, gameConfig: createGameParams})
+          .then(function (result) {
+            createdGameId = result.gameId;
+            should(createdGameId).ok;
+
+            validTurn.gameId = createdGameId;
+            validTurn.actions = [];
+
+            var forceTurnProgress = require('../../app/turnSystem/brain').forceTurnProgress;
+
+            return Q.all([
+              gameHelper.playTurnQ({agent: gameCreatorUserAgent, turn: validTurn}),
+              forceTurnProgress({ _id: createdGameId }, true)
+            ])
+              .then(function () {
+                done()
+              })
+              .fail(testHelper.mochaError(done));
+          })
+      });
     });
   });
 });
