@@ -216,7 +216,7 @@ describe('ETC: ', function () {
 
             return Q.all([
               gameHelper.playTurnQ({agent: gameCreatorUserAgent, turn: validTurn}),
-              forceTurnProgress({ _id: createdGameId }, true)
+              forceTurnProgress({ _id: createdGameId }, 1, true)
             ])
               .then(function () {
                 done()

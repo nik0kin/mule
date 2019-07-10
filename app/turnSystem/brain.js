@@ -24,7 +24,7 @@ exports.submitPlayerTurnQ = function (game, playerRelId, gameBoardId, actions, r
 };
 
 // turn and/or round
-exports.forceTurnProgress = function (_game, throwError) {
+exports.forceTurnProgress = function (_game, turnNumber, throwError) {
   var startTime;
   return addJob(_game._id, function() {
     startTime = Date.now();
@@ -32,6 +32,13 @@ exports.forceTurnProgress = function (_game, throwError) {
       .then(function (gameStateObject) {
         var game = gameStateObject.game;
         var history = gameStateObject.history;
+
+        if (turnNumber !== history.currentTurn) {
+          // This prevents double progressing a Game if a user submits a turn while forceTurnProgress() is called
+          Logger.vog('Skipping forceTurnProgress, because turn #' + turnNumber + ' has passed');
+          return;
+        }
+
         Logger.vog('Trying to forceTurnProgress', gameStateObject.game._id);
         var playerRel;
         if (gameStateObject.ruleBundle.turnSubmitStyle === 'roundRobin') {
