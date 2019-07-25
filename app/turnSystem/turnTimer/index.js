@@ -64,7 +64,6 @@ function getTurnToForceQ(game) {
             if (err) {
               return reject(err);
             }
-            console.log('data', partialHistory)
             resolve(partialHistory[0].currentTurn);
           })
       })
