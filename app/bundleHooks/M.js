@@ -90,7 +90,7 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
   };
 
   that.getCustomBoardSettings = function () {
-    return game.ruleBundleGameSettings.customBoardSettings;
+    return game.ruleBundleGameSettings.customBoardSettings || {};
   };
 
   ///  History (static)  ///
