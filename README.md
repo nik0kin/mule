@@ -20,6 +20,11 @@ Latest commit on master hosted at (CI staging):
 - MuleFrontend: http://zion.tgp.io:313/
 - Old/Debug: http://zion.tgp.io:313/webservices/public/
 
+Looking for a more mature solution, check out our competition:
+---------
+- Boardgame.io: https://github.com/nicolodavis/boardgame.io
+- Nakama: https://github.com/heroiclabs/nakama
+
 INSTALL:
 =======
 
