@@ -23,12 +23,14 @@ exports.initTurnTimerChecks = function (minimumTimerCheck) {
 };
 
 exports.checkForExpiredTurns = function () {
-  Game.findQ({nextTurnTime: {$lte: new Date()}})
+  Game.findQ({ nextTurnTime: { $lte: new Date() } })
     .then(function (result) {
       Logger.log('Checking for expired games');
 
       var promiseArray = [];
       _.each(result, function (game) {
+        if (game.gameStatus === 'finished') return;
+
         if (game.turnProgressStyle === 'autoprogress') {
           promiseArray.push(
             getTurnToForceQ(game)

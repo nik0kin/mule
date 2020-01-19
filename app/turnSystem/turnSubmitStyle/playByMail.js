@@ -6,6 +6,7 @@ var GameBoard = require('mule-models').GameBoard.Model,
   Logger = require('mule-utils').logging,
   config = require('../../../config'),
   bundleHooks = require('../../bundleHooks'),
+  gameHelper = require('../gameHelper'),
   actionsHelper = require('../actionsHelper');
 
 
@@ -88,7 +89,7 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
         return History.findByIdQ(historyObject._id)
           .then(function (fHistory) {
             return fHistory.addPlayByMailMetaAndSaveQ({
-              actions:[{type: 'metadata', metadata: progressRoundMetadata}]
+              actions: [{ type: 'metadata', metadata: progressRoundMetadata }]
             });
           });
       } else {
@@ -99,11 +100,11 @@ exports.progressRoundQ = function (game, player, historyObject, ruleBundle) {
       Logger.log('Round successful: ' + history.currentRound, game._id);
       return history.incrementRoundQ();
     })
-    .then(function () {
-      return game.setTurnTimerQ();
+    .then(function (savedHistory) {
+      return gameHelper.checkWinConditionQ({ game: game, history: savedHistory, ruleBundle: ruleBundle });
     })
     .then(function () {
-      // check win conditions
+      return game.setTurnTimerQ();
     });
 
 };

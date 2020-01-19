@@ -127,7 +127,9 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
     gameState.markModified('globalVariables');
     gameStateChanged = true;
   };
-  that.setGlobalVariables = function (keyValueObject) {};
+  that.setGlobalVariables = function (keyValueObject) {
+    throw new Error('NYI');
+  };
 
   that.addToGlobalVariable = function (key, additionValue) {
     if (!additionValue) return;
@@ -137,19 +139,27 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
 
 
   that.getPlayerVariable = function (playerRel, key) {
+    if (!gameState.playerVariables[playerRel]) {
+      return undefined;
+    }
     return gameState.playerVariables[playerRel][key];
   };
 
   that.getPlayerVariables = function (playerRel) {
-    return gameState.playerVariables[playerRel];
+    return gameState.playerVariables[playerRel] || {};
   };
 
   that.setPlayerVariable = function (playerRel, key, value) {
+    if (!gameState.playerVariables[playerRel]) {
+      gameState.playerVariables[playerRel] = {};
+    }
     gameState.playerVariables[playerRel][key] = value;
     gameState.markModified('playerVariables');
     gameStateChanged = true;
   };
-  that.setPlayerVariables = function (playerRel, keyValueObject) {};
+  that.setPlayerVariables = function (playerRel, keyValueObject) {
+    throw new Error('NYI');
+  };
 
   that.addToPlayerVariable = function (playerRel, key, additionValue) {
     if (!additionValue) return;
@@ -380,9 +390,9 @@ var createHelper = function (gso, _lastTurn, _debugPrefix) {
                 }
               });
             });
-            deletePositions = _.sortBy(deletePositions, function(num){ return num; });
+            deletePositions = _.sortBy(deletePositions, function (num) { return num; });
             deletePositions.reverse();
-            _.each(deletePositions,function (value) {
+            _.each(deletePositions, function (value) {
               // delete them in reverse order
               gameState.pieces.splice(value, 1);
             });
